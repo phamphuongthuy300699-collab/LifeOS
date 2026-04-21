@@ -1,0 +1,11 @@
+{
+  "name": "@lifeos/integrations-yandex",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Yandex Mail + Calendar adapter (planned)",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "typecheck": "tsc --noEmit", "clean": "rm -rf dist" },
+  "dependencies": { "@lifeos/shared": "workspace:*" },
+  "devDependencies": { "typescript": "^5.7.0" }
+}

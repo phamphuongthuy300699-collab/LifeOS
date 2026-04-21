@@ -1,0 +1,24 @@
+{
+  "name": "lifeos",
+  "private": true,
+  "version": "0.0.1",
+  "description": "LifeOS — Personal Productivity Hub",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "db:generate": "turbo run db:generate --filter=@lifeos/db",
+    "db:migrate": "turbo run db:migrate --filter=@lifeos/db",
+    "db:seed": "turbo run db:seed --filter=@lifeos/db",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0"
+  }
+}

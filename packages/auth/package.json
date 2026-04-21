@@ -1,0 +1,21 @@
+{
+  "name": "@lifeos/auth",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Auth logic: JWT, password hashing, Google OAuth helpers",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@lifeos/db": "workspace:*",
+    "@lifeos/shared": "workspace:*",
+    "jose": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.0.0",
+    "typescript": "^5.7.0"
+  }
+}

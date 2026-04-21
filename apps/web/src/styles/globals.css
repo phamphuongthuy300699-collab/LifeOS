@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/*
+ * LifeOS Theme System
+ * CSS custom properties for light/dark theme switching.
+ * Tailwind uses these via the semantic color definitions in tailwind.config.js.
+ */
+
+:root {
+  /* ── Light theme ── */
+  --surface: #ffffff;
+  --surface-secondary: #f8f9fa;
+  --surface-elevated: #ffffff;
+  --content: #1a1a2e;
+  --content-secondary: #4a4a6a;
+  --content-muted: #8b8ba0;
+  --border: #e9ecef;
+  --border-strong: #dee2e6;
+  --accent: #4c6ef5;
+  --accent-foreground: #ffffff;
+
+  /* ── Navigation ── */
+  --nav-bg: #ffffff;
+  --nav-border: #e9ecef;
+  --nav-active: #4c6ef5;
+  --nav-inactive: #8b8ba0;
+}
+
+.dark {
+  /* ── Dark theme ── */
+  --surface: #0f0f1a;
+  --surface-secondary: #1a1a2e;
+  --surface-elevated: #25253d;
+  --content: #e8e8f0;
+  --content-secondary: #a0a0b8;
+  --content-muted: #6b6b80;
+  --border: #2a2a40;
+  --border-strong: #3a3a55;
+  --accent: #748ffc;
+  --accent-foreground: #0f0f1a;
+
+  /* ── Navigation ── */
+  --nav-bg: #0f0f1a;
+  --nav-border: #2a2a40;
+  --nav-active: #748ffc;
+  --nav-inactive: #6b6b80;
+}
+
+/* ── Base reset ── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--surface);
+  color: var(--content);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* ── Safe area for mobile PWA ── */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ── Scrollbar styling (dark mode aware) ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}

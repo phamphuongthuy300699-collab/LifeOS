@@ -1,0 +1,18 @@
+{
+  "name": "@lifeos/domain-tasks",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Task management domain",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@lifeos/shared": "workspace:*", "@lifeos/domain-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
