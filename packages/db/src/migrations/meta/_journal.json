@@ -15,6 +15,13 @@
       "when": 1776882414959,
       "tag": "0001_past_grey_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776972921559,
+      "tag": "0002_busy_goliath",
+      "breakpoints": true
     }
   ]
 }

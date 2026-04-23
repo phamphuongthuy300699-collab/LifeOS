@@ -10,6 +10,10 @@ import { taskRoutes } from './routes/tasks.routes';
 import { noteRoutes } from './routes/notes.routes';
 import { eventRoutes } from './routes/events.routes';
 import { mailRoutes } from './routes/mail.routes';
+import { exerciseRoutes } from './routes/exercises.routes';
+import { workoutPlanRoutes } from './routes/workout-plans.routes';
+import { workoutSessionRoutes } from './routes/workout-sessions.routes';
+import { workoutSetRoutes } from './routes/workout-sets.routes';
 
 /**
  * Create the Hono application with all middleware and routes.
@@ -41,9 +45,10 @@ export function createApp() {
   app.route('/notes', noteRoutes);
   app.route('/events', eventRoutes);
   app.route('/mail', mailRoutes);
-  // app.route('/exercises', exerciseRoutes);
-  // app.route('/workout-plans', workoutPlanRoutes);
-  // app.route('/workout-sessions', workoutSessionRoutes);
+  app.route('/exercises', exerciseRoutes);
+  app.route('/workout-plans', workoutPlanRoutes);
+  app.route('/workout-sessions', workoutSessionRoutes);
+  app.route('/workout-sets', workoutSetRoutes);
   // app.route('/nutrition', nutritionRoutes);
   // app.route('/learning', learningRoutes);
   // app.route('/contacts', contactRoutes);

@@ -20,6 +20,7 @@
     "@lifeos/domain-calendar": "workspace:*",
     "@lifeos/domain-notes": "workspace:*",
     "@lifeos/domain-tasks": "workspace:*",
+    "@lifeos/domain-workouts": "workspace:*",
     "@lifeos/integrations-google": "workspace:*",
     "@lifeos/shared": "workspace:*",
     "bullmq": "^5.76.0",

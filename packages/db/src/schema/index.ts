@@ -17,7 +17,7 @@ export * from './events.schema';
 export * from './mail.schema';
 
 // Phase D — Workouts (Sprint 4)
-// export * from './workouts.schema';
+export * from './workouts.schema';
 
 // Phase E — Nutrition (Sprint 5)
 // export * from './nutrition.schema';
