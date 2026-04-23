@@ -139,3 +139,27 @@ export const entityTagsRelations = relations(entityTags, ({ one }) => ({
     references: [tags.id],
   }),
 }));
+
+// ── Sync Jobs ──────────────────────────────────────────
+
+export const syncJobs = pgTable('sync_jobs', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  workspaceId: uuid('workspace_id')
+    .notNull()
+    .references(() => workspaces.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  integrationType: varchar('integration_type', { length: 50 }).notNull(),
+  entityScope: varchar('entity_scope', { length: 50 }).notNull(),
+  status: varchar('status', { length: 50 }).notNull().default('pending'),
+  runMode: varchar('run_mode', { length: 50 }).notNull().default('manual'),
+  cursor: varchar('cursor', { length: 500 }),
+  errorMessage: text('error_message'),
+  startedAt: timestamp('started_at', { withTimezone: true }),
+  finishedAt: timestamp('finished_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+

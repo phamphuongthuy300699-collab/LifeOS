@@ -1,7 +1,23 @@
 /**
  * @lifeos/domain-tasks
  * Task management domain
- *
- * Exports will be added as the domain is implemented.
  */
-export {};
+
+// Entities
+export { TaskEntity } from './entities/task.entity';
+export type { TaskEntityProps } from './entities/task.entity';
+
+// Repository interfaces
+export type { ITaskRepository, TaskFilter } from './repositories/task.repository';
+
+// DTOs
+export {
+  createTaskSchema,
+  updateTaskSchema,
+  taskFilterSchema,
+} from './dto/task.dto';
+export type {
+  CreateTaskDto,
+  UpdateTaskDto,
+  TaskFilterDto,
+} from './dto/task.dto';

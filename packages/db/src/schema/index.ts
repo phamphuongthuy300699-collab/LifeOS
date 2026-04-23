@@ -8,13 +8,13 @@ export * from './auth.schema';
 export * from './platform.schema';
 
 // Phase B — Core Productivity (Sprint 1-2)
-// export * from './inbox.schema';
-// export * from './tasks.schema';
-// export * from './notes.schema';
-// export * from './events.schema';
+export * from './inbox.schema';
+export * from './tasks.schema';
+export * from './notes.schema';
+export * from './events.schema';
 
 // Phase C — Mail (Sprint 3)
-// export * from './mail.schema';
+export * from './mail.schema';
 
 // Phase D — Workouts (Sprint 4)
 // export * from './workouts.schema';

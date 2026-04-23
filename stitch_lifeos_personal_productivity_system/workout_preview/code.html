@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-nav {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#8a1c00",
+                        "inverse-primary": "#b9c3ff",
+                        "on-primary-fixed": "#001257",
+                        "secondary-container": "#6063ee",
+                        "on-secondary-fixed": "#07006c",
+                        "surface-variant": "#dae2fd",
+                        "tertiary": "#8d1c00",
+                        "on-tertiary-container": "#ffd1c6",
+                        "primary-fixed": "#dde1ff",
+                        "surface-container-highest": "#dae2fd",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#faf8ff",
+                        "secondary": "#4648d4",
+                        "primary-fixed-dim": "#b9c3ff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-primary-container": "#d4d9ff",
+                        "inverse-surface": "#283044",
+                        "error-container": "#ffdad6",
+                        "on-background": "#131b2e",
+                        "tertiary-fixed-dim": "#ffb4a2",
+                        "surface-container": "#eaedff",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "surface": "#faf8ff",
+                        "surface-tint": "#0046fa",
+                        "on-surface": "#131b2e",
+                        "primary": "#0035c5",
+                        "inverse-on-surface": "#eef0ff",
+                        "outline": "#747688",
+                        "on-surface-variant": "#434657",
+                        "background": "#faf8ff",
+                        "on-tertiary-fixed": "#3d0700",
+                        "surface-dim": "#d2d9f4",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#0033c0",
+                        "secondary-fixed": "#e1e0ff",
+                        "primary-container": "#0047ff",
+                        "outline-variant": "#c4c5da",
+                        "tertiary-fixed": "#ffdad2",
+                        "surface-container-high": "#e2e7ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#b82800",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f2f3ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "container-margin": "24px",
+                        "xl": "40px",
+                        "md": "16px",
+                        "unit": "4px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-xl": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-caps": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "0em", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.12em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen pb-40">
+<!-- Top Navigation -->
+<header class="bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-50 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+</button>
+<h1 class="text-on-surface font-['Inter'] font-semibold tracking-tight text-lg">Тренировка</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-slate-200">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Portrait of a young man with athletic build in studio lighting, professional and focused expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwomM1eZ1I4ATa5IDTC4caSwjoTxAEdWBZKSX4z9PjZVnvTq8Y8FlV331VgmYJyL9sxE65R4o67qwh3OmXlBTZZTgsdA3aH1yxFkiEoB9qckz3AGPha195pF5W3LTcJSdZeFbqQPXX0dTQckeBJeLdpa2VtXJvguO06g-J8s5BXkIqnk-tCAoxo7qmxkWSPtfTNchv8iPEf1jPTqkokJV335g8U5DBBdzX31R2qG7wyPUTcytc9vPuTPDAJWn_DH1Ac5aFR23-nJQB"/>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto px-container-margin mt-lg space-y-xl">
+<!-- Hero Section: Workout Intro -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+<div class="md:col-span-8 bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant relative group">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+<img alt="Workout Hero" class="w-full h-64 md:h-80 object-cover group-hover:scale-105 transition-transform duration-700" data-alt="High-contrast shot of a clean, modern gym with barbells and plates on a rack, moody atmospheric lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCM6K08NQ1hDRIwlYjGmnYQhQmIS5gpz7VPYbGPllPg-v7gIB6XJkYk28gB9xRUQijbNHgvjT8OjmzwwDkYrQki8YqMudFzCDJef5ykNbAa6oh6WLdfa55VgBT9MYDoUzB9sfyM1Ndedg7xNEvqAz2_2fS-d-I6BQzh_IIBhC5hg2YCn5fC6x6frAH2hl5ZoEz-bZ4V59w2oUouRMuc9ZFdw0olO092cmIN1zo8ctFR0I2-wniachag-kNaF_W_EviOLX52naApgmXH"/>
+<div class="absolute bottom-0 left-0 p-lg z-20 text-white">
+<span class="font-label-caps text-label-caps bg-primary text-white px-3 py-1 rounded-full mb-3 inline-block">СИЛА И РЕЛЬЕФ</span>
+<h2 class="font-display-xl text-headline-lg md:text-display-xl">Грудь и Трицепс: Интенсив</h2>
+<p class="text-white/80 font-body-md mt-2 max-w-xl">Цель: Гипертрофия и развитие взрывной силы верхней части тела через базовые и изолирующие упражнения.</p>
+</div>
+</div>
+<!-- Stats Column -->
+<div class="md:col-span-4 flex flex-col gap-4">
+<div class="bg-surface-container rounded-xl p-lg border border-outline-variant flex-1 flex flex-col justify-between">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">ОЖИДАЕМАЯ ДЛИТЕЛЬНОСТЬ</p>
+<h3 class="font-headline-lg text-primary">65 мин</h3>
+</div>
+<div class="pt-4 border-t border-outline-variant/30">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary text-sm">history</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">ПОСЛЕДНИЙ РАЗ</span>
+</div>
+<p class="text-on-surface font-body-md">4 дня назад (12 окт)</p>
+<p class="text-on-surface-variant text-sm mt-1">Вес вырос на <span class="text-green-600 font-semibold">+2.5кг</span></p>
+</div>
+</div>
+<div class="bg-secondary-container p-lg rounded-xl flex items-center justify-between text-white">
+<div>
+<p class="text-white/70 text-xs font-label-caps mb-1">ИНТЕНСИВНОСТЬ</p>
+<p class="font-headline-md">Высокая</p>
+</div>
+<span class="material-symbols-outlined text-4xl">bolt</span>
+</div>
+</div>
+</section>
+<!-- Exercise List -->
+<section class="space-y-md">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-on-surface">План упражнений</h3>
+<span class="text-on-surface-variant font-label-caps text-label-caps">6 УПРАЖНЕНИЙ</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Task Strip / Exercise Item -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl flex items-center gap-4 hover:border-primary transition-all cursor-pointer">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden flex-shrink-0">
+<img alt="Bench Press" class="w-full h-full object-cover" data-alt="Close-up of athlete performing bench press in a minimalist gym setting with sharp shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeqZXyu8QplmowAw91hTfx7vO3pNW3t5WaiotTMFzF2Kb67pMxbFjCrxQdMgteLp9K3QG4jJnhg4uYz_6x5ryT8OeSCFPcgadPvDjzmA7gqw1bMlcl1SzBUfi88ufwe67jQuD3IRDxyeiIWFIH5OiJIZGesH8ghq1Dl1dB4jirkUVqvn9nw-hQK-e_k7l34B8uFfWv41C6XLVcBb2e5QAkvOUV_0kSsasxPA-m-hRYmeVQhBH_9n6ZMYTFYe1BXXOSGZjQXO4of8fV"/>
+</div>
+<div class="flex-1">
+<p class="font-body-lg font-semibold text-on-surface">Жим штанги лежа</p>
+<p class="text-on-surface-variant text-sm">4 подхода • 8-10 повторений</p>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-primary">85 кг</p>
+<p class="text-[10px] text-on-surface-variant uppercase">ВЕС ПР.</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl flex items-center gap-4 hover:border-primary transition-all cursor-pointer">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden flex-shrink-0">
+<img alt="Dumbbell Fly" class="w-full h-full object-cover" data-alt="Dumbbells lying on the floor in a sunlight-drenched exercise space with neutral tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBT2l_HMaMNimD5Fh6gOcHJsjd_W6a7mlbAsq645Iu7GV2VQvBJEuFbDDu4rlgNpAA58KqPahQHRwIkW_xa-YtQVslNrlzmigxS7NTL_mOuA9kTrA2XhwoSqhw52leutVPll3QUehKt6vtM9pGd0hJQammQ7De5aMO710nomMYNPWfB11Dn-RUAXkL_GFNquALmRYamIqES0L0uYrDaUg3hCS0Ma-6LAJI5o78ZZ5Oi8TpdohAtf3gP6BgejgjrEK6GoKstfknO8a_p"/>
+</div>
+<div class="flex-1">
+<p class="font-body-lg font-semibold text-on-surface">Разводка гантелей</p>
+<p class="text-on-surface-variant text-sm">3 подхода • 12 повторений</p>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-primary">16 кг</p>
+<p class="text-[10px] text-on-surface-variant uppercase">ВЕС ПР.</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl flex items-center gap-4 hover:border-primary transition-all cursor-pointer">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden flex-shrink-0">
+<img alt="Dips" class="w-full h-full object-cover" data-alt="Tattooed athlete doing tricep dips on parallel bars in an industrial style fitness center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_-R2g7QyJMFfuhAdSHNRDixo_mLl-FkrBk0ncdmRO3h-QjHb2NAoLI8sgFrM1xCCPTKR8iCRVdQluMDq80tYGZioshQpVBZrkDcKaHLcA4TdrU2PNsDhbX6VVoR6WzfhrHsGCBO6zVK5kfUxY9OYES8pSTiAUW0n6iA6WPffiGBYps6zy2MPPzSPq6_j3hQmOZEs1outlAY5b4FY7PC3KRYzLryE54qdN-BRk3izgcCXOVIzTk4QZP5z7fVySN7qVexHcgC4Cp8GL"/>
+</div>
+<div class="flex-1">
+<p class="font-body-lg font-semibold text-on-surface">Отжимания на брусьях</p>
+<p class="text-on-surface-variant text-sm">3 подхода • Максимум</p>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-primary">Свой вес</p>
+<p class="text-[10px] text-on-surface-variant uppercase">ВЕС ПР.</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl flex items-center gap-4 hover:border-primary transition-all cursor-pointer">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden flex-shrink-0">
+<img alt="Cable Extensions" class="w-full h-full object-cover" data-alt="Gym cable machine attachment close-up, metallic textures and clean focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX-hTkZmFUv52iUbWYHpgAYDDPH6Nj4LPGLdwGWDiEJNXgJD9s73-replQeZ1aMlYa_aqnAGlYSodZ25Mi-m8T0ygff5cbmV5gHtA-cME-p2aUE59OVMY1B2Dw7vzaMOXwqIBglWXRWntoTrfNCSOzq2pRH_sT0hMD7zCaqeTMLvhXKhekxEK14YzRXw_sDvwvgIMY9KAkJRe_iwJI2DKC1gjGtnhFmoFg25S-XctAUt6hOkguPasaw2vLUmtLxqN-v8ocvH4m6RI5"/>
+</div>
+<div class="flex-1">
+<p class="font-body-lg font-semibold text-on-surface">Разгибания в кроссовере</p>
+<p class="text-on-surface-variant text-sm">4 подхода • 15 повторений</p>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-primary">25 кг</p>
+<p class="text-[10px] text-on-surface-variant uppercase">ВЕС ПР.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Summary & Prep Section -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="bg-surface-container-high rounded-xl p-lg space-y-md">
+<h4 class="font-headline-md flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">notes</span>
+                    Заметки с прошлого раза
+                </h4>
+<div class="bg-surface-container-lowest p-md rounded-lg border border-outline-variant italic text-on-surface-variant">
+                    "В жиме лежа можно попробовать добавить +2.5 кг в первых двух подходах. Тщательнее разминай локти перед брусьями."
+                </div>
+</div>
+<div class="bg-surface-container-high rounded-xl p-lg space-y-md">
+<h4 class="font-headline-md flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">restaurant</span>
+                    Нутриция перед тренировкой
+                </h4>
+<div class="space-y-sm">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface">Кофеин/Предтреник (200мг)</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface">Углеводный перекус (30-40г)</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Fixed Bottom Action Bar -->
+<div class="fixed bottom-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-slate-200 p-6 flex flex-col items-center">
+<button class="bg-primary hover:bg-primary-container text-white w-full md:max-w-md py-4 rounded-full font-headline-md transition-all shadow-lg active:scale-95 flex items-center justify-center gap-3 group">
+            Начать тренировку
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">play_arrow</span>
+</button>
+<!-- Bottom Nav Shell -->
+<nav class="flex justify-around items-center pt-3 pb-safe px-4 w-full mt-4">
+<div class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined">event_note</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Сегодня</span>
+</div>
+<div class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined">inbox</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Входящие</span>
+</div>
+<div class="flex flex-col items-center text-blue-600 font-bold">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Тренировки</span>
+</div>
+<div class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined">restaurant</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Питание</span>
+</div>
+<div class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Еще</span>
+</div>
+</nav>
+</div>
+</body></html>

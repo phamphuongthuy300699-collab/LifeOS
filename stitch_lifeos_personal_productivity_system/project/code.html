@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#8a1c00",
+                        "inverse-primary": "#b9c3ff",
+                        "on-primary-fixed": "#001257",
+                        "secondary-container": "#6063ee",
+                        "on-secondary-fixed": "#07006c",
+                        "surface-variant": "#dae2fd",
+                        "tertiary": "#8d1c00",
+                        "on-tertiary-container": "#ffd1c6",
+                        "primary-fixed": "#dde1ff",
+                        "surface-container-highest": "#dae2fd",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#faf8ff",
+                        "secondary": "#4648d4",
+                        "primary-fixed-dim": "#b9c3ff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-primary-container": "#d4d9ff",
+                        "inverse-surface": "#283044",
+                        "error-container": "#ffdad6",
+                        "on-background": "#131b2e",
+                        "tertiary-fixed-dim": "#ffb4a2",
+                        "surface-container": "#eaedff",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "surface": "#faf8ff",
+                        "surface-tint": "#0046fa",
+                        "on-surface": "#131b2e",
+                        "primary": "#0035c5",
+                        "inverse-on-surface": "#eef0ff",
+                        "outline": "#747688",
+                        "on-surface-variant": "#434657",
+                        "background": "#faf8ff",
+                        "on-tertiary-fixed": "#3d0700",
+                        "surface-dim": "#d2d9f4",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#0033c0",
+                        "secondary-fixed": "#e1e0ff",
+                        "primary-container": "#0047ff",
+                        "outline-variant": "#c4c5da",
+                        "tertiary-fixed": "#ffdad2",
+                        "surface-container-high": "#e2e7ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#b82800",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f2f3ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "2px",
+                        "lg": "4px",
+                        "xl": "8px",
+                        "full": "12px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "container-margin": "24px",
+                        "xl": "40px",
+                        "md": "16px",
+                        "unit": "4px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-xl": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-caps": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "0em", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.12em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #faf8ff;
+            color: #131b2e;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #E2E8F0;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md antialiased pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 docked full-width top-0 sticky z-50 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="professional headshot of a focused man in a minimalist office setting with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdkKi-A5dmCOUcDbWSEcNcEqB7DtihUg9bpXWbNJMyGbBgJwjl58OzFtCgXd6KNUl3hMOBMzxoJdRSkBzgWCDrvBFb9_0V2UMMeeMcsJi12s7Xr1fXd3j5yi60uV2W0v0ZmWGWJ86fcipswyxbm-jxuMBhHyIhVVXto2EsqRjASlusbPhbhOikTX_E9qWgD04qevJ3BCHBX2BtU8fFH_1pU5g_a3fpJDcmc-Sf8Aa4HPF5b6tqvsB1qBLL-NP66tbbELhaLp_iYPMb"/>
+</div>
+<h1 class="font-Inter font-semibold tracking-tight text-lg font-bold text-slate-900 dark:text-slate-50">Доброе утро</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-lg">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+</button>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto px-6 py-xl">
+<!-- Project Header Section -->
+<section class="mb-xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-md">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="px-3 py-1 bg-primary text-on-primary text-[10px] font-label-caps rounded-full uppercase">Active</span>
+<span class="text-outline font-label-caps text-[12px] uppercase">PROJECT ID: LX-402</span>
+</div>
+<h2 class="font-display-xl text-display-xl text-on-surface mb-xs">Запуск LifeOS 2.0</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Комплексная реструктуризация цифровой среды для достижения максимальной дисциплины и фокуса в 2024 году.</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-6 py-3 bg-primary text-on-primary font-label-caps text-[12px] rounded-lg hover:shadow-[0_0_15px_rgba(0,53,197,0.3)] transition-all">РЕДАКТИРОВАТЬ</button>
+<button class="p-3 border border-outline-variant text-on-surface rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+<div class="w-full h-[4px] bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary-container" style="width: 65%;"></div>
+</div>
+<div class="flex justify-between mt-xs">
+<span class="font-label-caps text-[10px] text-outline uppercase">Progress: 65%</span>
+<span class="font-label-caps text-[10px] text-outline uppercase">Deadline: 15 Ноября</span>
+</div>
+</section>
+<!-- Bento Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+<!-- Next Action Highlight (Glassmorphism) -->
+<div class="md:col-span-8 bg-white border border-outline-variant p-lg rounded-xl flex flex-col justify-between min-h-[240px] relative overflow-hidden">
+<div class="relative z-10">
+<span class="font-label-caps text-primary text-[12px] uppercase tracking-widest mb-md block">Следующее действие</span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-md">Финальная ревизия архитектуры базы данных</h3>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="schedule">schedule</span>
+<span class="font-body-md text-body-md">14:00 - 15:30</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="priority_high">priority_high</span>
+<span class="font-body-md text-body-md">Высокий приоритет</span>
+</div>
+</div>
+</div>
+<div class="relative z-10 mt-xl">
+<button class="px-6 py-4 bg-on-background text-on-primary font-label-caps text-[12px] rounded-lg hover:opacity-90 transition-all flex items-center gap-sm">
+                        НАЧАТЬ ТАЙМЕР ФОКУСА
+                        <span class="material-symbols-outlined" data-icon="play_arrow">play_arrow</span>
+</button>
+</div>
+<!-- Abstract visual element -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+</div>
+<!-- Stats Card -->
+<div class="md:col-span-4 bg-surface-container border border-outline-variant p-lg rounded-xl flex flex-col gap-lg">
+<div>
+<span class="font-label-caps text-outline text-[12px] uppercase mb-sm block">Аналитика проекта</span>
+<div class="flex justify-between items-end">
+<span class="font-display-xl text-[40px] leading-none text-on-surface">12</span>
+<span class="font-body-md text-on-surface-variant pb-1">задач активно</span>
+</div>
+</div>
+<div class="h-px bg-outline-variant/30 w-full"></div>
+<div class="flex flex-col gap-sm">
+<div class="flex justify-between font-body-md">
+<span class="text-on-surface-variant">Завершено</span>
+<span class="text-on-surface font-semibold">24</span>
+</div>
+<div class="flex justify-between font-body-md">
+<span class="text-on-surface-variant">Просрочено</span>
+<span class="text-error font-semibold">0</span>
+</div>
+</div>
+</div>
+<!-- Milestone Timeline -->
+<div class="md:col-span-4 bg-white border border-outline-variant p-lg rounded-xl">
+<h4 class="font-headline-md text-headline-md mb-lg">Вехи проекта</h4>
+<div class="space-y-lg relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-outline-variant">
+<div class="relative pl-lg">
+<div class="absolute left-0 top-1 w-[22px] h-[22px] bg-primary rounded-full flex items-center justify-center border-4 border-white shadow-sm">
+<span class="material-symbols-outlined text-[12px] text-white" data-icon="check" data-weight="fill">check</span>
+</div>
+<span class="font-label-caps text-outline text-[10px] uppercase">12 Октября</span>
+<p class="font-body-md text-on-surface font-medium">Концептуальный дизайн</p>
+</div>
+<div class="relative pl-lg">
+<div class="absolute left-0 top-1 w-[22px] h-[22px] bg-primary rounded-full flex items-center justify-center border-4 border-white shadow-sm">
+<span class="material-symbols-outlined text-[12px] text-white" data-icon="sync" data-weight="fill">sync</span>
+</div>
+<span class="font-label-caps text-primary text-[10px] uppercase">В процессе</span>
+<p class="font-body-md text-on-surface font-semibold">Разработка UI-системы</p>
+</div>
+<div class="relative pl-lg opacity-50">
+<div class="absolute left-0 top-1 w-[22px] h-[22px] bg-surface-variant rounded-full flex items-center justify-center border-4 border-white"></div>
+<span class="font-label-caps text-outline text-[10px] uppercase">28 Октября</span>
+<p class="font-body-md text-on-surface">Бета-тестирование</p>
+</div>
+</div>
+</div>
+<!-- Related Tasks -->
+<div class="md:col-span-8 bg-white border border-outline-variant rounded-xl overflow-hidden">
+<div class="px-lg py-md border-b border-outline-variant flex justify-between items-center">
+<h4 class="font-headline-md text-headline-md">Список задач</h4>
+<button class="text-primary font-label-caps text-[12px] flex items-center gap-xs">
+                        ДОБАВИТЬ
+                        <span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+</button>
+</div>
+<div class="divide-y divide-outline-variant">
+<div class="p-md flex items-center gap-md hover:bg-surface-container-low transition-colors group">
+<button class="w-6 h-6 border-2 border-outline-variant rounded-md flex items-center justify-center group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px] text-primary opacity-0 group-hover:opacity-100" data-icon="check">check</span>
+</button>
+<div class="flex-1">
+<p class="font-body-md text-on-surface">Создать компоненты навигации</p>
+<span class="font-label-caps text-[10px] text-outline uppercase">Design System</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline text-[20px]" data-icon="attachment">attachment</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold">JD</div>
+</div>
+</div>
+<div class="p-md flex items-center gap-md hover:bg-surface-container-low transition-colors group">
+<button class="w-6 h-6 border-2 border-outline-variant rounded-md flex items-center justify-center group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px] text-primary opacity-0 group-hover:opacity-100" data-icon="check">check</span>
+</button>
+<div class="flex-1">
+<p class="font-body-md text-on-surface">Оптимизировать API-запросы</p>
+<span class="font-label-caps text-[10px] text-outline uppercase">Performance</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold">SK</div>
+</div>
+</div>
+<div class="p-md flex items-center gap-md hover:bg-surface-container-low transition-colors group">
+<button class="w-6 h-6 border-2 border-outline-variant rounded-md flex items-center justify-center group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px] text-primary opacity-0 group-hover:opacity-100" data-icon="check">check</span>
+</button>
+<div class="flex-1">
+<p class="font-body-md text-on-surface">Подготовить документацию для разработчиков</p>
+<span class="font-label-caps text-[10px] text-outline uppercase">DevOps</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-error text-[20px]" data-icon="flag">flag</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold">AM</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl fixed bottom-0 w-full z-50 border-t border-slate-200 dark:border-slate-800 flex justify-around items-center pt-3 pb-8 px-4 w-full">
+<button class="flex flex-col items-center text-slate-400 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="font-Inter text-[10px] font-medium uppercase tracking-widest mt-1">Сегодня</span>
+</button>
+<button class="flex flex-col items-center text-slate-400 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400">
+<span class="material-symbols-outlined" data-icon="inbox">inbox</span>
+<span class="font-Inter text-[10px] font-medium uppercase tracking-widest mt-1">Входящие</span>
+</button>
+<button class="flex flex-col items-center text-blue-600 dark:text-blue-500 font-bold">
+<span class="material-symbols-outlined" data-icon="fitness_center" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-Inter text-[10px] font-medium uppercase tracking-widest mt-1">Проекты</span>
+</button>
+<button class="flex flex-col items-center text-slate-400 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+<span class="font-Inter text-[10px] font-medium uppercase tracking-widest mt-1">Питание</span>
+</button>
+<button class="flex flex-col items-center text-slate-400 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+<span class="font-Inter text-[10px] font-medium uppercase tracking-widest mt-1">Еще</span>
+</button>
+</nav>
+</body></html>

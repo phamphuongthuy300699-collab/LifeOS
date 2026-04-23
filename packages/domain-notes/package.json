@@ -10,7 +10,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@lifeos/shared": "workspace:*", "@lifeos/domain-core": "workspace:*"
+    "@lifeos/shared": "workspace:*",
+    "@lifeos/domain-core": "workspace:*",
+    "zod": "^3.24.0"
   },
   "devDependencies": {
     "typescript": "^5.7.0"

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeOS - Learning Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#8a1c00",
+                    "inverse-primary": "#b9c3ff",
+                    "on-primary-fixed": "#001257",
+                    "secondary-container": "#6063ee",
+                    "on-secondary-fixed": "#07006c",
+                    "surface-variant": "#dae2fd",
+                    "tertiary": "#8d1c00",
+                    "on-tertiary-container": "#ffd1c6",
+                    "primary-fixed": "#dde1ff",
+                    "surface-container-highest": "#dae2fd",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#faf8ff",
+                    "secondary": "#4648d4",
+                    "primary-fixed-dim": "#b9c3ff",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "on-primary-container": "#d4d9ff",
+                    "inverse-surface": "#283044",
+                    "error-container": "#ffdad6",
+                    "on-background": "#131b2e",
+                    "tertiary-fixed-dim": "#ffb4a2",
+                    "surface-container": "#eaedff",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "surface": "#faf8ff",
+                    "surface-tint": "#0046fa",
+                    "on-surface": "#131b2e",
+                    "primary": "#0035c5",
+                    "inverse-on-surface": "#eef0ff",
+                    "outline": "#747688",
+                    "on-surface-variant": "#434657",
+                    "background": "#faf8ff",
+                    "on-tertiary-fixed": "#3d0700",
+                    "surface-dim": "#d2d9f4",
+                    "on-secondary-container": "#fffbff",
+                    "on-primary-fixed-variant": "#0033c0",
+                    "secondary-fixed": "#e1e0ff",
+                    "primary-container": "#0047ff",
+                    "outline-variant": "#c4c5da",
+                    "tertiary-fixed": "#ffdad2",
+                    "surface-container-high": "#e2e7ff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#b82800",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f2f3ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "container-margin": "24px",
+                    "xl": "40px",
+                    "md": "16px",
+                    "unit": "4px",
+                    "xs": "4px",
+                    "gutter": "16px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-xl": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-caps": ["Space Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "0em", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.12em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 24px;
+        }
+        .backdrop-blur-xl { backdrop-filter: blur(24px); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-24">
+<!-- TopAppBar Section -->
+<header class="bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-50 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Professional male portrait in a minimalist studio setting with soft neutral lighting and clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_YSOAkhtjvpvZVhFGdY0yZYYMYvVtdGyimvhnoB1XTqNnGhWsx59LoYP-PixXgWMYrrq0uf9OoEF0AkVRe3iY2xc3Rg2Q6nbhOOGra8W4zyvvSAwauuQxe5Biq2Rn-kYihXwQY1K7xrxokECZUS0YcxuwUHzknZOHx6REnfXAP9Mj67OZv-saXs1LW-BnKSWZGVZeKoFZ2sro7I1SQYyilgpid7k3g4_aJkxOrGm6_oYP7Cjo--GWs-gseJoVQbE6sFQdAZtwv3i2"/>
+</div>
+<h1 class="text-lg font-bold text-slate-900 font-headline-md tracking-tight">Доброе утро</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-500">
+<span class="material-symbols-outlined">calendar_today</span>
+</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-xl space-y-xl">
+<!-- Header & Stats Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-lg">
+<div>
+<span class="font-label-caps text-label-caps text-primary mb-sm block uppercase tracking-widest">Академия LifeOS</span>
+<h2 class="font-headline-lg text-display-xl text-on-surface">Обучение</h2>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-md">
+<div class="p-md bg-surface-container-low border border-outline-variant rounded-xl">
+<p class="font-label-caps text-[10px] text-outline mb-xs uppercase">Курсов завершено</p>
+<p class="font-headline-md text-primary">12</p>
+</div>
+<div class="p-md bg-surface-container-low border border-outline-variant rounded-xl">
+<p class="font-label-caps text-[10px] text-outline mb-xs uppercase">Часов в неделю</p>
+<p class="font-headline-md text-primary">8.5</p>
+</div>
+<div class="hidden sm:block p-md bg-surface-container-low border border-outline-variant rounded-xl">
+<p class="font-label-caps text-[10px] text-outline mb-xs uppercase">Streak</p>
+<p class="font-headline-md text-primary">14д</p>
+</div>
+</div>
+</section>
+<!-- Bento Layout: Active Track & Quick Access -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Active Learning Track Card -->
+<div class="lg:col-span-2 relative overflow-hidden group border border-outline-variant rounded-xl bg-surface-container-lowest p-lg flex flex-col justify-between min-h-[320px]">
+<div class="absolute inset-0 z-0 opacity-5 transition-opacity group-hover:opacity-10">
+<img class="w-full h-full object-cover" data-alt="Abstract 3D rendering of React logo and floating geometric nodes in a clean white digital environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTfJMzqEfz-yRS4fUGAhvmNK97A32gAYcv3ZAcWPjqX0Nayqqjf07u84t6l3S7adBolNjphRQMvcntG_iqobjwi-mj7kfer7tMMsIeSavZ7Ge4HlZbbdZpgHux-72v2hZWMBcBeT542g2ShCHDoSzjYpIcEFQOxFXOjkHTi_Tw9QmgPLL83GiaDjt4yP1RwJrnWpVfLmIsE3tLCsNEYilhJRgoSp2bJEImVhDvi0hNsBe59RKxT5GdZZfSJXYnE_emfaBn9ipd9DTT"/>
+</div>
+<div class="relative z-10">
+<div class="flex items-start justify-between mb-lg">
+<div class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold font-label-caps uppercase">В процессе</div>
+<span class="material-symbols-outlined text-outline">more_vert</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Next.js Development</h3>
+<p class="text-on-surface-variant font-body-md max-w-md">Продвинутая архитектура приложений, серверные компоненты и оптимизация производительности.</p>
+</div>
+<div class="relative z-10 space-y-md">
+<div class="flex justify-between text-sm font-label-caps text-outline">
+<span>Прогресс курса</span>
+<span class="text-primary font-bold">68%</span>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary-container w-[68%]"></div>
+</div>
+<button class="w-full py-4 bg-primary text-white font-label-caps rounded-lg hover:shadow-lg hover:shadow-primary/20 transition-all flex items-center justify-center gap-2 group">
+                        Продолжить обучение
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Next Topic Card -->
+<div class="border border-outline-variant rounded-xl bg-surface-container-high p-lg flex flex-col justify-between">
+<div>
+<p class="font-label-caps text-label-caps text-outline mb-md uppercase">Следующая тема</p>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md mb-md">
+<div class="flex items-center gap-md mb-sm">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm">menu_book</span>
+</div>
+<span class="font-label-caps text-[10px] text-primary uppercase">Урок 14</span>
+</div>
+<h4 class="font-headline-md text-body-lg text-on-surface">Server-side Data Fetching</h4>
+<p class="text-sm text-outline mt-1">Осталось: 15 минут чтения</p>
+</div>
+</div>
+<div class="space-y-sm">
+<p class="text-xs text-outline font-body-md">Запланировано на сегодня, 18:30</p>
+<button class="w-full py-3 border border-primary text-primary font-label-caps rounded-lg hover:bg-primary/5 transition-colors uppercase text-xs tracking-widest">
+                        Напомнить позже
+                    </button>
+</div>
+</div>
+</section>
+<!-- Backlog of Materials -->
+<section class="space-y-lg">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface">Материалы к изучению</h3>
+<button class="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
+                    Все закладки
+                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+<!-- Material 1 -->
+<div class="group cursor-pointer border border-outline-variant rounded-xl bg-white overflow-hidden hover:border-primary transition-colors">
+<div class="h-32 bg-slate-100 overflow-hidden">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-110 group-hover:scale-100" data-alt="Clean lines of code on a dark monitor in a professional programmer's workspace with soft bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_Ib1sA88AIEfzlMXZmPan-P3zTbK9cWdaa03HoNADn5C6_5sBe2nrngjAJGaAxE5IxWUKTPy1LMHgbNgQ9h32MJq56DcqUQ2JMG4k0n998HB-zZ3NCRl2jV6hbndvqKnpo2UrRbH0K_JhFrBV4g8MrXvBstKPcphTfg3HEBKDZgdz56RLaiiF7oFiG-5v53XFfunrmnAYiAyR8EscD1dobZR0DKOzKXNsG37sa7G9pey9kfxZRRZeNvJ_k1vARJI346ffru0k387y"/>
+</div>
+<div class="p-md space-y-sm">
+<span class="font-label-caps text-[10px] text-outline uppercase tracking-widest">Статья • Medium</span>
+<h5 class="font-body-lg font-semibold text-on-surface line-clamp-2">The Zen of Python: Code Architecture</h5>
+<div class="flex items-center justify-between pt-md">
+<span class="text-xs text-outline">12 мин</span>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">bookmark</span>
+</div>
+</div>
+</div>
+<!-- Material 2 -->
+<div class="group cursor-pointer border border-outline-variant rounded-xl bg-white overflow-hidden hover:border-primary transition-colors">
+<div class="h-32 bg-slate-100 overflow-hidden">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-110 group-hover:scale-100" data-alt="Modern digital interface showing data analytics and colorful charts on a high-resolution display" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbtQAgVb98822mR8HjiOu--U1jLLOYQOFzxbbUrJFosQYTKdmbKupd0qIgEaOU9mZstvpqM14MThbNZhdm0TO_SQpqQanchvvS63bKoT9usJ2nYF6ccRdcolKmNX8T-YHpPgot-iNk83x13SWLgK8jYABbPvVl95Gx29TFyHrboId0P_E6dqgixSsrRsAzNks4RPE3tIUSwR1rHnysvLUSF__KcCbZz6GCZUr5ifyId0nMe9WjByfFr79YRilEMF8hA_k0QZAKX0Wx"/>
+</div>
+<div class="p-md space-y-sm">
+<span class="font-label-caps text-[10px] text-outline uppercase tracking-widest">Видео • YouTube</span>
+<h5 class="font-body-lg font-semibold text-on-surface line-clamp-2">Mastering Framer Motion Animations</h5>
+<div class="flex items-center justify-between pt-md">
+<span class="text-xs text-outline">45 мин</span>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">play_circle</span>
+</div>
+</div>
+</div>
+<!-- Material 3 -->
+<div class="group cursor-pointer border border-outline-variant rounded-xl bg-white overflow-hidden hover:border-primary transition-colors">
+<div class="h-32 bg-slate-100 overflow-hidden">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-110 group-hover:scale-100" data-alt="Minimalist design team workspace with sticky notes on a glass wall and a laptop on a wooden desk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfy_6kS9mQgNloVHDRKpjy4ppxPx_7z5QPywkY2bZuvjab7XFRwEuGG_wb-CdlAHNfx0PyQ88Fp35kqK60_DnFQvatrW4JXyUz5Ud18i2s-jq1WiSCsrWY0KXGbJHPaWLUt3GTpSnkuatndjsRnece5f7OXLynZ1wAiHgU_QTAWLvOxxv-xOK1Qn_GybLlBKDyjFkqyvdJeOGjL6CLo0nDxWY3lrtbjyvhZ5F0WIE4lENG4rQ2GApSrkqu4h_2D_cNeL2tGX0KO9F3"/>
+</div>
+<div class="p-md space-y-sm">
+<span class="font-label-caps text-[10px] text-outline uppercase tracking-widest">PDF • Whitepaper</span>
+<h5 class="font-body-lg font-semibold text-on-surface line-clamp-2">System Design Interview Guide v2.0</h5>
+<div class="flex items-center justify-between pt-md">
+<span class="text-xs text-outline">68 стр.</span>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">download</span>
+</div>
+</div>
+</div>
+<!-- Material 4 -->
+<div class="group cursor-pointer border border-outline-variant rounded-xl bg-white overflow-hidden hover:border-primary transition-colors">
+<div class="h-32 bg-slate-100 overflow-hidden">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-110 group-hover:scale-100" data-alt="Soft focus image of a person typing on a laptop with coffee cup in a bright cozy library" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzzcRjcnJJyhE9TuT216-TyNDKkyDYKTp1O2kf5KHzyNF7oOo_ixsy5N84s1avDGHLamJKo6mTR7xFbJ5rtdIpc72V9WR9VN8eVc4d3SPJR0QZYfUuA-CQMxAo_EYHsUPax0dZx-QhzDwgnUml8274-TPSaH65IIy2dS0P3iyd4uS_7b_0PEZ2Kk0awhHGdSAdBEwXUVlUP5ZlUtGme2FrWOSWLVIBYBC1vNiTZwhIIljD6WCMSveTEbM09GW1m-QC1kpYE1mJ5GLz"/>
+</div>
+<div class="p-md space-y-sm">
+<span class="font-label-caps text-[10px] text-outline uppercase tracking-widest">Курс • Coursera</span>
+<h5 class="font-body-lg font-semibold text-on-surface line-clamp-2">Introduction to Machine Learning</h5>
+<div class="flex items-center justify-between pt-md">
+<span class="text-xs text-outline">Не начато</span>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">add_circle</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Task Strips / Timeline View -->
+<section class="space-y-lg">
+<h3 class="font-headline-md text-headline-md text-on-surface">История активности</h3>
+<div class="space-y-xs">
+<!-- Task Strip 1 -->
+<div class="flex items-center justify-between p-md bg-white border-l-4 border-l-primary border-t border-r border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-lg">
+<span class="text-sm font-label-caps text-outline w-16">Вчера</span>
+<span class="font-body-md text-on-surface">Завершен модуль: "Server Actions in Next.js"</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="text-xs text-outline font-label-caps">+120 XP</span>
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- Task Strip 2 -->
+<div class="flex items-center justify-between p-md bg-white border-l-4 border-l-secondary border-t border-r border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-lg">
+<span class="text-sm font-label-caps text-outline w-16">22 Окт</span>
+<span class="font-body-md text-on-surface">Чтение: "Advanced CSS Patterns"</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="text-xs text-outline font-label-caps">+45 XP</span>
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- Task Strip 3 -->
+<div class="flex items-center justify-between p-md bg-white border-l-4 border-l-slate-200 border-t border-r border-b border-outline-variant hover:bg-surface-container-low transition-colors opacity-60">
+<div class="flex items-center gap-lg">
+<span class="text-sm font-label-caps text-outline w-16">20 Окт</span>
+<span class="font-body-md text-on-surface">Просмотрено: "Web Vitals in 2024"</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="text-xs text-outline font-label-caps">+30 XP</span>
+<span class="material-symbols-outlined text-outline text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar Section -->
+<nav class="fixed bottom-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-slate-200 flex justify-around items-center pt-3 pb-safe px-4 w-full h-16">
+<a class="flex flex-col items-center text-slate-400 group" href="#">
+<span class="material-symbols-outlined group-hover:text-blue-500 transition-colors">event_note</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Сегодня</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 group" href="#">
+<span class="material-symbols-outlined group-hover:text-blue-500 transition-colors">inbox</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Входящие</span>
+</a>
+<a class="flex flex-col items-center text-blue-600 font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Тренировки</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 group" href="#">
+<span class="material-symbols-outlined group-hover:text-blue-500 transition-colors">restaurant</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Питание</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 group" href="#">
+<span class="material-symbols-outlined group-hover:text-blue-500 transition-colors">more_horiz</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Еще</span>
+</a>
+</nav>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined">add</span>
+</button>
+</body></html>

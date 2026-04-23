@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #faf8ff;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#8a1c00",
+                        "inverse-primary": "#b9c3ff",
+                        "on-primary-fixed": "#001257",
+                        "secondary-container": "#6063ee",
+                        "on-secondary-fixed": "#07006c",
+                        "surface-variant": "#dae2fd",
+                        "tertiary": "#8d1c00",
+                        "on-tertiary-container": "#ffd1c6",
+                        "primary-fixed": "#dde1ff",
+                        "surface-container-highest": "#dae2fd",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#faf8ff",
+                        "secondary": "#4648d4",
+                        "primary-fixed-dim": "#b9c3ff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-primary-container": "#d4d9ff",
+                        "inverse-surface": "#283044",
+                        "error-container": "#ffdad6",
+                        "on-background": "#131b2e",
+                        "tertiary-fixed-dim": "#ffb4a2",
+                        "surface-container": "#eaedff",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "surface": "#faf8ff",
+                        "surface-tint": "#0046fa",
+                        "on-surface": "#131b2e",
+                        "primary": "#0035c5",
+                        "inverse-on-surface": "#eef0ff",
+                        "outline": "#747688",
+                        "on-surface-variant": "#434657",
+                        "background": "#faf8ff",
+                        "on-tertiary-fixed": "#3d0700",
+                        "surface-dim": "#d2d9f4",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#0033c0",
+                        "secondary-fixed": "#e1e0ff",
+                        "primary-container": "#0047ff",
+                        "outline-variant": "#c4c5da",
+                        "tertiary-fixed": "#ffdad2",
+                        "surface-container-high": "#e2e7ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#b82800",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f2f3ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "container-margin": "24px",
+                        "xl": "40px",
+                        "md": "16px",
+                        "unit": "4px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-xl": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-caps": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "0em", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.12em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-32">
+<!-- Top AppBar -->
+<header class="bg-white/80 backdrop-blur-xl border-b border-slate-200 docked full-width top-0 sticky z-50 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="professional portrait of a person with clear lighting and minimal background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9FHgSgwyJG2OndV8a4KaMlpn37fxoQI7eNP9vB8q_sZCFbW0R1EXroEphGq47_VGpcNiSdWGiExMfBWVD9xy24BI-VFniq1OAB7go3pTzLeSajXao8PkiT3Ealvxp9qTlvYpsMVUBml2NIbTT8HwwIxFpTH1R1Y8qsOm4YoihYc8HlNdfqqMDYq-Y-qDZmQjlxkKEO3zlm1HPvb7aq2ytGPuKcxplJupFZO4xGhbkXPK2CRjLrZWJBz1zMbowXfJpJGXdLQZSMI-M"/>
+</div>
+<span class="font-['Inter'] font-semibold tracking-tight text-slate-900 text-lg">Доброе утро</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-100 transition-colors text-slate-500">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+</button>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto px-6 py-8">
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Hero Stats: Progress Ring -->
+<section class="md:col-span-7 bg-surface-container-lowest border border-outline-variant p-lg rounded-xl flex flex-col items-center justify-center relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed-dim/20 blur-3xl rounded-full -mr-10 -mt-10"></div>
+<h2 class="w-full text-left font-headline-md text-on-surface mb-xl">Статистика дня</h2>
+<div class="relative flex items-center justify-center w-64 h-64">
+<!-- SVG Progress Circle -->
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-high" cx="128" cy="128" fill="transparent" r="110" stroke="currentColor" stroke-width="12"></circle>
+<circle class="text-primary" cx="128" cy="128" fill="transparent" r="110" stroke="currentColor" stroke-dasharray="691" stroke-dashoffset="200" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<div class="absolute flex flex-col items-center text-center">
+<span class="font-display-xl text-on-surface">1,640</span>
+<span class="font-label-caps text-outline uppercase">ккал съедено</span>
+<div class="h-px w-12 bg-outline-variant my-2"></div>
+<span class="font-headline-md text-primary">660</span>
+<span class="font-label-caps text-primary uppercase">Осталось</span>
+</div>
+</div>
+<div class="w-full grid grid-cols-3 gap-md mt-xl">
+<div class="text-center">
+<p class="font-label-caps text-outline mb-1">ЦЕЛЬ</p>
+<p class="font-headline-md">2,300</p>
+</div>
+<div class="text-center border-x border-outline-variant">
+<p class="font-label-caps text-outline mb-1">АКТИВНОСТЬ</p>
+<p class="font-headline-md text-tertiary">+340</p>
+</div>
+<div class="text-center">
+<p class="font-label-caps text-outline mb-1">ЧИСТЫЕ</p>
+<p class="font-headline-md">1,300</p>
+</div>
+</div>
+</section>
+<!-- Macro Bars -->
+<section class="md:col-span-5 bg-surface-container-lowest border border-outline-variant p-lg rounded-xl flex flex-col justify-between">
+<div>
+<h2 class="font-headline-md text-on-surface mb-lg">Макронутриенты</h2>
+<!-- Protein -->
+<div class="mb-lg">
+<div class="flex justify-between items-end mb-2">
+<span class="font-body-lg font-semibold">Белки</span>
+<span class="font-body-md text-outline">120г / 160г</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[75%] rounded-full"></div>
+</div>
+</div>
+<!-- Carbs -->
+<div class="mb-lg">
+<div class="flex justify-between items-end mb-2">
+<span class="font-body-lg font-semibold">Углеводы</span>
+<span class="font-body-md text-outline">185г / 240г</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[77%] rounded-full"></div>
+</div>
+</div>
+<!-- Fats -->
+<div class="mb-lg">
+<div class="flex justify-between items-end mb-2">
+<span class="font-body-lg font-semibold">Жиры</span>
+<span class="font-body-md text-outline">45г / 70г</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container w-[64%] rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="mt-xl p-md bg-surface-container rounded-lg border border-primary-fixed">
+<p class="font-body-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="tips_and_updates">tips_and_updates</span>
+                        Добавьте 40г белка для достижения дневной цели.
+                    </p>
+</div>
+</section>
+<!-- Meals List -->
+<section class="md:col-span-12">
+<div class="flex justify-between items-center mb-lg">
+<h2 class="font-headline-md text-on-surface">Приемы пищи сегодня</h2>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-lg py-md rounded-full font-semibold hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                        Добавить еду
+                    </button>
+</div>
+<div class="space-y-4">
+<!-- Breakfast -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl flex items-center justify-between hover:border-primary transition-colors group">
+<div class="flex items-center gap-lg">
+<div class="w-16 h-16 rounded-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="vibrant breakfast bowl with oatmeal fresh berries and nuts top down view natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAGihAFc_IYyT3sj9xuc5t41jv4Cgqi3JrkqJW2Gp5iyQ2nwkh-8nKlttCGJbi3bOQLyEZGcYCCAvL60xoY2xeazhgrDNXCWEu7G3sx4wEE2EaXZ-idvT5F0VHC-kdB2NxY1TueX0dBt4JBoNXIRQdiUXpSBQG6VS3sEWQ4mQqqyKzn2MODq-61K812rtALHpQCxpx1TM7Pr7toFAlpeK5Xku8DS5ZOsuXWPV1dgmbXIuxIpagMnpElRs1xMNG8eWdRw1a-w1LzOpc"/>
+</div>
+<div>
+<h3 class="font-body-lg font-bold">Завтрак</h3>
+<p class="text-outline text-sm">08:30 • Овсянка с ягодами</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-on-surface">420</p>
+<p class="font-label-caps text-outline uppercase">ккал</p>
+</div>
+</div>
+<!-- Lunch -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl flex items-center justify-between hover:border-primary transition-colors group">
+<div class="flex items-center gap-lg">
+<div class="w-16 h-16 rounded-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="healthy salmon salad with avocado and greens on a white plate bright clean aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvzXyPn5gJxzTkUP6pCwoe_Fo6C0HRJRIgakd4JghMYWaEjT96dCxc13dK9WZcJ4HlXvnwcsn0PvNpg_Fl8efk69CGVfe6LLn2wBvclOh_PYhR27pvWvvStXiWyzX_mGW0vY59g-NNHFlzvDb579dG9I0YBSOTGK3AVOcgWLF-fXDV-Kh96qKrYdI2FmBcjsL3InbV8kVtdFbomhXNr79MPd50NCmFw0OS-BH_0FyhRB8Z-hd85uAsrg63Kk7rtAQa98Br1tjcNSVb"/>
+</div>
+<div>
+<h3 class="font-body-lg font-bold">Обед</h3>
+<p class="text-outline text-sm">13:15 • Лосось и овощной салат</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-on-surface">680</p>
+<p class="font-label-caps text-outline uppercase">ккал</p>
+</div>
+</div>
+<!-- Snack -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl flex items-center justify-between hover:border-primary transition-colors group">
+<div class="flex items-center gap-lg">
+<div class="w-16 h-16 rounded-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="fresh green apple and a handful of almonds on a wooden surface warm natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKGQ2NcIwjp0YtC2KDzautr04C97N8ZigelXbsWDsDbXHWwITUERYQ5AUKfRa6I5Q3cvKNKQpnr5vH-WpfNOUcT7G3rMdYeC26F9exICUhye3rHNc0J9a_vz0JVioMWxBDfYnia_DehLp_4UTL2F9fN7RlDDBqJ9jV4DPur0ItLz_iVl9DMroUOn8iBlLRx5HzUjO8zkp1b_MdyRX8FsrGuT-CKD6S-gGMSKZgxQhteEr--HnN7bVVbVrOXph3D_rB0qCJKE_AciwG"/>
+</div>
+<div>
+<h3 class="font-body-lg font-bold">Перекус</h3>
+<p class="text-outline text-sm">16:00 • Яблоко и миндаль</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-on-surface">210</p>
+<p class="font-label-caps text-outline uppercase">ккал</p>
+</div>
+</div>
+<!-- Dinner -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl flex items-center justify-between hover:border-primary transition-colors group opacity-60">
+<div class="flex items-center gap-lg">
+<div class="w-16 h-16 rounded-lg overflow-hidden bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-outline" data-icon="restaurant">restaurant</span>
+</div>
+<div>
+<h3 class="font-body-lg font-bold">Ужин</h3>
+<p class="text-outline text-sm">Не добавлено</p>
+</div>
+</div>
+<button class="p-2 rounded-full border border-dashed border-outline-variant text-outline hover:text-primary hover:border-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-slate-200 flex justify-around items-center pt-3 pb-safe px-4">
+<!-- Tab: Сегодня -->
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Сегодня</span>
+</a>
+<!-- Tab: Входящие -->
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="inbox">inbox</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Входящие</span>
+</a>
+<!-- Tab: Тренировки -->
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Тренировки</span>
+</a>
+<!-- Tab: Питание (Active) -->
+<a class="flex flex-col items-center text-blue-600 font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Питание</span>
+</a>
+<!-- Tab: Еще -->
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Еще</span>
+</a>
+</nav>
+</body></html>

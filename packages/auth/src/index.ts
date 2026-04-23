@@ -13,3 +13,8 @@ export {
   GOOGLE_SCOPES,
 } from './google';
 export type { GoogleTokenResponse, GoogleUserInfo } from './google';
+
+export {
+  encryptToken,
+  decryptToken,
+} from './crypto';

@@ -2,52 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600&display=swap');
 
 /*
- * LifeOS Theme System
- * CSS custom properties for light/dark theme switching.
- * Tailwind uses these via the semantic color definitions in tailwind.config.js.
+ * LifeOS Theme System - Order vs Power
  */
 
 :root {
-  /* ── Light theme ── */
-  --surface: #ffffff;
-  --surface-secondary: #f8f9fa;
-  --surface-elevated: #ffffff;
-  --content: #1a1a2e;
-  --content-secondary: #4a4a6a;
-  --content-muted: #8b8ba0;
-  --border: #e9ecef;
-  --border-strong: #dee2e6;
-  --accent: #4c6ef5;
-  --accent-foreground: #ffffff;
-
-  /* ── Navigation ── */
-  --nav-bg: #ffffff;
-  --nav-border: #e9ecef;
-  --nav-active: #4c6ef5;
-  --nav-inactive: #8b8ba0;
+  /* ── Light theme (Clarity) ── */
+  --surface: #faf8ff;
+  --surface-dim: #d2d9f4;
+  --surface-bright: #faf8ff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f2f3ff;
+  --surface-container: #eaedff;
+  --surface-container-high: #e2e7ff;
+  --surface-container-highest: #dae2fd;
+  
+  --on-surface: #131b2e;
+  --on-surface-variant: #434657;
+  
+  --inverse-surface: #283044;
+  --inverse-on-surface: #eef0ff;
+  
+  --outline: #747688;
+  --outline-variant: #c4c5da;
+  
+  --primary: #0035c5;
+  --on-primary: #ffffff;
+  --primary-container: #0047ff;
+  --on-primary-container: #d4d9ff;
+  --primary-fixed: #dde1ff;
+  --on-primary-fixed: #001257;
+  
+  --secondary: #4648d4;
+  --on-secondary: #ffffff;
+  --secondary-container: #6063ee;
+  
+  --tertiary: #8d1c00;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #b82800;
+  
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
+  
+  /* Background mappings */
+  --background: #faf8ff;
+  --on-background: #131b2e;
 }
 
 .dark {
-  /* ── Dark theme ── */
+  /* ── Dark theme (Intensity/Glow) ── */
   --surface: #0f0f1a;
-  --surface-secondary: #1a1a2e;
-  --surface-elevated: #25253d;
-  --content: #e8e8f0;
-  --content-secondary: #a0a0b8;
-  --content-muted: #6b6b80;
-  --border: #2a2a40;
-  --border-strong: #3a3a55;
-  --accent: #748ffc;
-  --accent-foreground: #0f0f1a;
+  --surface-dim: #0a0a14;
+  --surface-bright: #1a1a2e;
+  --surface-container-lowest: #020617;
+  --surface-container-low: #0f172a;
+  --surface-container: #1e293b;
+  --surface-container-high: #334155;
+  --surface-container-highest: #475569;
+  
+  --on-surface: #f8fafc;
+  --on-surface-variant: #94a3b8;
+  
+  --inverse-surface: #f1f5f9;
+  --inverse-on-surface: #0f172a;
+  
+  --outline: #64748b;
+  --outline-variant: #334155;
+  
+  --primary: #3b82f6; /* Glowier blue for dark mode */
+  --on-primary: #ffffff;
+  --primary-container: #1d4ed8;
+  --on-primary-container: #bfdbfe;
+  --primary-fixed: #93c5fd;
+  --on-primary-fixed: #0f172a;
+  
+  --secondary: #8b5cf6;
+  --on-secondary: #ffffff;
+  --secondary-container: #6d28d9;
+  
+  --tertiary: #ef4444;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #b91c1c;
+  
+  --error: #f87171;
+  --on-error: #ffffff;
+  --error-container: #7f1d1d;
 
-  /* ── Navigation ── */
-  --nav-bg: #0f0f1a;
-  --nav-border: #2a2a40;
-  --nav-active: #748ffc;
-  --nav-inactive: #6b6b80;
+  /* Background mappings */
+  --background: #020617;
+  --on-background: #f8fafc;
 }
 
 /* ── Base reset ── */
@@ -65,9 +111,10 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--surface);
-  color: var(--content);
+  background-color: var(--background);
+  color: var(--on-background);
   transition: background-color 0.2s, color 0.2s;
+  min-height: 100dvh;
 }
 
 /* ── Safe area for mobile PWA ── */
@@ -76,9 +123,9 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* ── Scrollbar styling (dark mode aware) ── */
+/* ── Scrollbar styling ── */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -86,6 +133,6 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
-  border-radius: 3px;
+  background: var(--outline-variant);
+  border-radius: 10px;
 }

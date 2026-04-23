@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeOS Profile &amp; Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#8a1c00",
+                    "inverse-primary": "#b9c3ff",
+                    "on-primary-fixed": "#001257",
+                    "secondary-container": "#6063ee",
+                    "on-secondary-fixed": "#07006c",
+                    "surface-variant": "#dae2fd",
+                    "tertiary": "#8d1c00",
+                    "on-tertiary-container": "#ffd1c6",
+                    "primary-fixed": "#dde1ff",
+                    "surface-container-highest": "#dae2fd",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#faf8ff",
+                    "secondary": "#4648d4",
+                    "primary-fixed-dim": "#b9c3ff",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "on-primary-container": "#d4d9ff",
+                    "inverse-surface": "#283044",
+                    "error-container": "#ffdad6",
+                    "on-background": "#131b2e",
+                    "tertiary-fixed-dim": "#ffb4a2",
+                    "surface-container": "#eaedff",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "surface": "#faf8ff",
+                    "surface-tint": "#0046fa",
+                    "on-surface": "#131b2e",
+                    "primary": "#0035c5",
+                    "inverse-on-surface": "#eef0ff",
+                    "outline": "#747688",
+                    "on-surface-variant": "#434657",
+                    "background": "#faf8ff",
+                    "on-tertiary-fixed": "#3d0700",
+                    "surface-dim": "#d2d9f4",
+                    "on-secondary-container": "#fffbff",
+                    "on-primary-fixed-variant": "#0033c0",
+                    "secondary-fixed": "#e1e0ff",
+                    "primary-container": "#0047ff",
+                    "outline-variant": "#c4c5da",
+                    "tertiary-fixed": "#ffdad2",
+                    "surface-container-high": "#e2e7ff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#b82800",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f2f3ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "container-margin": "24px",
+                    "xl": "40px",
+                    "md": "16px",
+                    "unit": "4px",
+                    "xs": "4px",
+                    "gutter": "16px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-xl": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-caps": ["Space Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "0em", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.12em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary/20">
+<header class="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a professional man with clean-cut style, neutral background, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVAr6sVVbKPTONIT5BzSUdRU0KkNLdCJl1weMkKCcgGr52YsTdAh7r7kPIh6pgr_sU-XBBPuAwwCLyDM1lNH2ohBi-tLbuJmNCS5saiFOIM4BrQ9RWrD7nqdMgtmz1kP6uGmcLz7EO6cPX8usVIkfhW2WAOqrqeuv-6yP8XX6rFqawYC3fXASVZ7im2tAHSN0iOXL_o3TM77toE5u1AwKknlwHFJpJwkIzVsnZcXXJ4zL0ugHL2IHBMa8ZYGcrYNDoN4iA2gRd8xFv"/>
+</div>
+<h1 class="font-['Inter'] font-semibold tracking-tight text-lg text-slate-900 dark:text-slate-50">Профиль</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="calendar_today">calendar_today</span>
+</button>
+</header>
+<main class="max-w-[1440px] mx-auto px-6 py-xl mb-32">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+<section class="md:col-span-4 space-y-lg">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+<div class="flex flex-col items-center text-center">
+<div class="relative mb-md">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-primary ring-4 ring-primary/10">
+<img class="w-full h-full object-cover" data-alt="Professional studio portrait of a young man, soft highlights on face, minimal grey background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsCWqlW19MgSjk8VZuUAeUZhBCSL9pGlKerz2UUnxiyx5DQObhH7xTXrtKJQ4fUq-UNzF_KvvysfvOTMVzqf7R-DEL0wMHTNuJiglIvyT5CLnk9Al5aoZ2R0VeAYMtkaMrHrTRj7yBelXB2H06GrPuvvaNnSM11jit64mDt5hzxGPNrHCBvytw1VD3I-An-PiKnhKx250CuvCIOVcf-jFd7MVCou4X6YymoUCh8sppw55sv6Rf_ROVE4YWzWKEB5nDSLe4WhV1Gcg0"/>
+</div>
+<button class="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full shadow-lg">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+</button>
+</div>
+<h2 class="font-headline-md text-on-surface">Александр Волков</h2>
+<p class="font-body-md text-on-surface-variant mt-1">Premium LifeOS Member</p>
+<div class="mt-lg flex gap-sm">
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant text-label-caps rounded-full font-label-caps">PRO</span>
+<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant text-label-caps rounded-full font-label-caps">VERIFIED</span>
+</div>
+</div>
+<div class="mt-xl space-y-md border-t border-outline-variant pt-lg">
+<div class="flex justify-between items-center group cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="mail">mail</span>
+<span class="font-body-md">a.volkov@example.com</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="flex justify-between items-center group cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="phone">phone</span>
+<span class="font-body-md">+7 999 123 45 67</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-highest/30 border border-outline-variant rounded-xl p-lg">
+<h3 class="font-label-caps text-on-surface-variant mb-md">Статистика активности</h3>
+<div class="space-y-md">
+<div>
+<div class="flex justify-between text-label-caps mb-2">
+<span>Продуктивность</span>
+<span>88%</span>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary w-[88%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-label-caps mb-2">
+<span>Здоровье</span>
+<span>74%</span>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary w-[74%]"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="md:col-span-8 space-y-lg">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="dark_mode">dark_mode</span>
+<h3 class="font-headline-md text-[20px]">Внешний вид</h3>
+</div>
+<p class="text-on-surface-variant font-body-md">Тёмная тема</p>
+</div>
+<div class="mt-lg flex items-center justify-between">
+<span class="text-body-md">Выключено</span>
+<div class="w-12 h-6 bg-surface-container-highest rounded-full p-1 relative cursor-pointer border border-outline-variant">
+<div class="w-4 h-4 bg-primary rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="translate">translate</span>
+<h3 class="font-headline-md text-[20px]">Язык интерфейса</h3>
+</div>
+<p class="text-on-surface-variant font-body-md">Выберите предпочтительный язык</p>
+</div>
+<div class="mt-lg flex items-center gap-2">
+<button class="flex-1 py-2 bg-primary text-white rounded-lg font-body-md">Русский</button>
+<button class="flex-1 py-2 bg-surface-container-high text-on-surface rounded-lg font-body-md hover:bg-surface-container-highest transition-colors">English</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+<div class="p-lg border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="link">link</span>
+<h3 class="font-headline-md text-[20px]">Подключенные аккаунты</h3>
+</div>
+</div>
+<div class="divide-y divide-outline-variant">
+<div class="flex items-center justify-between p-md px-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 flex items-center justify-center bg-surface-container rounded-lg">
+<span class="material-symbols-outlined" data-icon="cloud">cloud</span>
+</div>
+<div>
+<p class="font-body-md font-semibold">Google Account</p>
+<p class="text-[12px] text-on-surface-variant">Синхронизация Календаря и Почты</p>
+</div>
+</div>
+<span class="text-primary text-label-caps">ПОДКЛЮЧЕНО</span>
+</div>
+<div class="flex items-center justify-between p-md px-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 flex items-center justify-center bg-surface-container rounded-lg">
+<span class="material-symbols-outlined" data-icon="apple">ios</span>
+</div>
+<div>
+<p class="font-body-md font-semibold">Apple Health</p>
+<p class="text-[12px] text-on-surface-variant">Биометрические данные и тренировки</p>
+</div>
+</div>
+<button class="px-4 py-1.5 border border-primary text-primary rounded-lg text-label-caps hover:bg-primary hover:text-white transition-all">ПОДКЛЮЧИТЬ</button>
+</div>
+<div class="flex items-center justify-between p-md px-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 flex items-center justify-center bg-surface-container rounded-lg">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</div>
+<div>
+<p class="font-body-md font-semibold">Health Sync</p>
+<p class="text-[12px] text-on-surface-variant">Общая статистика самочувствия</p>
+</div>
+</div>
+<span class="text-primary text-label-caps">ПОДКЛЮЧЕНО</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="psychology">psychology</span>
+<h3 class="font-headline-md text-[20px]">AI &amp; Голосовое управление</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="p-md rounded-xl bg-surface-container-low border border-dashed border-outline-variant">
+<div class="flex items-center justify-between mb-2">
+<span class="font-body-md font-semibold">Голосовой ассистент</span>
+<span class="px-2 py-0.5 bg-secondary-container text-white text-[10px] rounded-full">BETA</span>
+</div>
+<p class="text-[14px] text-on-surface-variant">Настройте параметры AI-советника и тембр голоса</p>
+<button class="mt-4 w-full py-2 bg-surface-container-high text-on-surface-variant rounded-lg text-[14px] opacity-50 cursor-not-allowed">Скоро появится</button>
+</div>
+<div class="p-md rounded-xl bg-surface-container-low border border-dashed border-outline-variant">
+<div class="flex items-center justify-between mb-2">
+<span class="font-body-md font-semibold">Контекстный анализ</span>
+<span class="px-2 py-0.5 bg-secondary-container text-white text-[10px] rounded-full">BETA</span>
+</div>
+<p class="text-[14px] text-on-surface-variant">AI изучает ваш контекст для умных напоминаний</p>
+<button class="mt-4 w-full py-2 bg-surface-container-high text-on-surface-variant rounded-lg text-[14px] opacity-50 cursor-not-allowed">Скоро появится</button>
+</div>
+</div>
+</div>
+<div class="flex flex-col md:flex-row gap-md">
+<button class="flex-1 bg-surface-container-lowest border border-outline-variant hover:border-primary py-lg rounded-xl flex flex-col items-center justify-center transition-all group">
+<span class="material-symbols-outlined text-primary mb-2 text-[32px] group-hover:scale-110 transition-transform" data-icon="file_download">file_download</span>
+<span class="font-body-md font-semibold text-on-surface">Экспорт данных</span>
+<span class="text-[12px] text-on-surface-variant">JSON, CSV, PDF</span>
+</button>
+<button class="flex-1 bg-error-container/20 border border-error/20 hover:bg-error hover:text-white py-lg rounded-xl flex flex-col items-center justify-center transition-all group">
+<span class="material-symbols-outlined text-error mb-2 text-[32px] group-hover:text-white transition-colors" data-icon="logout">logout</span>
+<span class="font-body-md font-semibold">Выйти из аккаунта</span>
+<span class="text-[12px] opacity-70">Сессия: 12д 4ч</span>
+</button>
+</div>
+</section>
+</div>
+</main>
+<nav class="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl fixed bottom-0 w-full z-50 border-t border-slate-200 dark:border-slate-800 flex justify-around items-center pt-3 pb-safe px-4 w-full">
+<a class="flex flex-col items-center text-slate-400 dark:text-slate-600 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Сегодня</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 dark:text-slate-600 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="inbox">inbox</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Входящие</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 dark:text-slate-600 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Тренировки</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 dark:text-slate-600 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Питание</span>
+</a>
+<a class="flex flex-col items-center text-blue-600 dark:text-blue-500 font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="more_horiz" style="font-variation-settings: 'FILL' 1;">more_horiz</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Еще</span>
+</a>
+</nav>
+</body></html>

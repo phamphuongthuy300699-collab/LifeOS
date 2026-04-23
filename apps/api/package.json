@@ -13,11 +13,19 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.0",
+    "@hono/zod-validator": "^0.3.0",
     "@lifeos/auth": "workspace:*",
     "@lifeos/config": "workspace:*",
     "@lifeos/db": "workspace:*",
+    "@lifeos/domain-calendar": "workspace:*",
+    "@lifeos/domain-notes": "workspace:*",
+    "@lifeos/domain-tasks": "workspace:*",
+    "@lifeos/integrations-google": "workspace:*",
     "@lifeos/shared": "workspace:*",
+    "bullmq": "^5.76.0",
+    "drizzle-orm": "^0.38.0",
     "hono": "^4.6.0",
+    "ioredis": "^5.10.1",
     "zod": "^3.24.0"
   },
   "devDependencies": {

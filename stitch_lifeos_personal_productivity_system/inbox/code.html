@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#8a1c00",
+                    "inverse-primary": "#b9c3ff",
+                    "on-primary-fixed": "#001257",
+                    "secondary-container": "#6063ee",
+                    "on-secondary-fixed": "#07006c",
+                    "surface-variant": "#dae2fd",
+                    "tertiary": "#8d1c00",
+                    "on-tertiary-container": "#ffd1c6",
+                    "primary-fixed": "#dde1ff",
+                    "surface-container-highest": "#dae2fd",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#faf8ff",
+                    "secondary": "#4648d4",
+                    "primary-fixed-dim": "#b9c3ff",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "on-primary-container": "#d4d9ff",
+                    "inverse-surface": "#283044",
+                    "error-container": "#ffdad6",
+                    "on-background": "#131b2e",
+                    "tertiary-fixed-dim": "#ffb4a2",
+                    "surface-container": "#eaedff",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "surface": "#faf8ff",
+                    "surface-tint": "#0046fa",
+                    "on-surface": "#131b2e",
+                    "primary": "#0035c5",
+                    "inverse-on-surface": "#eef0ff",
+                    "outline": "#747688",
+                    "on-surface-variant": "#434657",
+                    "background": "#faf8ff",
+                    "on-tertiary-fixed": "#3d0700",
+                    "surface-dim": "#d2d9f4",
+                    "on-secondary-container": "#fffbff",
+                    "on-primary-fixed-variant": "#0033c0",
+                    "secondary-fixed": "#e1e0ff",
+                    "primary-container": "#0047ff",
+                    "outline-variant": "#c4c5da",
+                    "tertiary-fixed": "#ffdad2",
+                    "surface-container-high": "#e2e7ff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#b82800",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f2f3ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "container-margin": "24px",
+                    "xl": "40px",
+                    "md": "16px",
+                    "unit": "4px",
+                    "xs": "4px",
+                    "gutter": "16px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-xl": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-caps": ["Space Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "0em", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.12em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            width: 24px;
+            height: 24px;
+        }
+        .backdrop-blur-xl { backdrop-filter: blur(20px); }
+        .glass-border { border: 1px solid rgba(255, 255, 255, 0.1); }
+        .tab-active { color: #0046fa; font-weight: 700; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md min-h-screen pb-24">
+<header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Close up professional portrait of a focused man in a minimalist workspace with soft natural lighting and clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZhW5QQB_LEMXJi93xzASFgBCw3BXqXhznVMvFYZnLCLrFaTh7dawFB3Tz-TZswASQ9lH0q8nsJDq5ejMM_1ogsKpaVDVUU6IEl0z2KGfqnX69XisD6wYyab6z0j3wOX0qGG7Y0fBu82VH1v3aayvS7kuEzMhfCjEVcP-tb1eSFl35pXEQ4WMjhv8yx92wJHYtCxnLqHf7vId7HhBtVt-77v9pIVIBBxAGly3Qd6WWmZaeM5R5KwSV4b2LC8G_30PxRVWNrx6q5mRr"/>
+</div>
+<h1 class="font-headline-md text-slate-900 tracking-tight">Входящие</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined text-slate-500">search</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined text-slate-500">calendar_today</span>
+</button>
+</div>
+</header>
+<main class="max-w-screen-xl mx-auto px-6 py-8">
+<section class="flex gap-3 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+<button class="px-5 py-2 rounded-full bg-primary text-white font-medium text-sm whitespace-nowrap shadow-lg shadow-primary/20">Все (12)</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-medium text-sm whitespace-nowrap hover:bg-surface-container-highest">Задачи</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-medium text-sm whitespace-nowrap hover:bg-surface-container-highest">Заметки</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-medium text-sm whitespace-nowrap hover:bg-surface-container-highest">События</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-medium text-sm whitespace-nowrap hover:bg-surface-container-highest">Почта</button>
+</section>
+<section class="space-y-4">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-caps text-outline uppercase tracking-widest text-[10px]">Сегодня — 24 Октября</span>
+<button class="flex items-center gap-1 text-primary text-sm font-semibold">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+                    Сортировка
+                </button>
+</div>
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center justify-between hover:border-primary transition-all duration-200">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2">
+<h3 class="font-semibold text-slate-900">Обновление проекта 'Nova'</h3>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+</div>
+<p class="text-sm text-on-surface-variant line-clamp-1">Артем прислал новые макеты для финального ревью перед запуском в понедельник.</p>
+</div>
+</div>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">archive</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<div class="ml-4 text-xs font-medium text-outline">10:42</div>
+</div>
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center justify-between hover:border-primary transition-all duration-200">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">task_alt</span>
+</div>
+<div class="flex-1">
+<h3 class="font-semibold text-slate-900">Подготовить отчет по Q3</h3>
+<p class="text-sm text-on-surface-variant">Нужно собрать метрики из Google Analytics и SalesForce.</p>
+</div>
+</div>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">schedule</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-error transition-colors">
+<span class="material-symbols-outlined">archive</span>
+</button>
+</div>
+<div class="ml-4 text-xs font-medium text-outline">09:15</div>
+</div>
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center justify-between hover:border-primary transition-all duration-200">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">event</span>
+</div>
+<div class="flex-1">
+<h3 class="font-semibold text-slate-900">Встреча с инвесторами</h3>
+<p class="text-sm text-on-surface-variant">Коворкинг "Sreda", переговорная А1</p>
+</div>
+</div>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">location_on</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-error transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="ml-4 text-xs font-medium text-outline">Завтра</div>
+</div>
+<div class="group bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center justify-between hover:border-primary transition-all duration-200">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">lightbulb</span>
+</div>
+<div class="flex-1">
+<h3 class="font-semibold text-slate-900">Идея для подкаста</h3>
+<p class="text-sm text-on-surface-variant line-clamp-1">Обсудить влияние минимализма на продуктивность в цифровой среде.</p>
+</div>
+</div>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<div class="ml-4 text-xs font-medium text-outline">Вчера</div>
+</div>
+</section>
+<section class="mt-12 bg-white rounded-3xl border border-slate-200 p-8 flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-slate-300 text-3xl">all_inbox</span>
+</div>
+<h2 class="font-headline-md text-slate-900 mb-2">Это все на сегодня</h2>
+<p class="text-on-surface-variant max-w-xs mb-8">Вы разобрали все важные уведомления. Время сфокусироваться на работе или отдохнуть.</p>
+<button class="bg-primary text-white font-semibold py-4 px-8 rounded-full shadow-lg shadow-primary/25 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                Добавить запись
+            </button>
+</section>
+</main>
+<div class="fixed bottom-24 right-6 z-40">
+<button class="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl shadow-primary/40 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-3xl" data-weight="fill">add</span>
+</button>
+</div>
+<nav class="fixed bottom-0 w-full z-50 bg-white/80 backdrop-blur-xl border-t border-slate-200 flex justify-around items-center pt-3 pb-safe px-4 w-full">
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-all" href="#">
+<span class="material-symbols-outlined">event_note</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Сегодня</span>
+</a>
+<a class="flex flex-col items-center text-blue-600 font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inbox</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Входящие</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-all" href="#">
+<span class="material-symbols-outlined">fitness_center</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Тренировки</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-all" href="#">
+<span class="material-symbols-outlined">restaurant</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Питание</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-all" href="#">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Еще</span>
+</a>
+</nav>
+</body></html>

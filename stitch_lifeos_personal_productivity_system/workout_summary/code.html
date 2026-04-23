@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#8a1c00",
+                    "inverse-primary": "#b9c3ff",
+                    "on-primary-fixed": "#001257",
+                    "secondary-container": "#6063ee",
+                    "on-secondary-fixed": "#07006c",
+                    "surface-variant": "#dae2fd",
+                    "tertiary": "#8d1c00",
+                    "on-tertiary-container": "#ffd1c6",
+                    "primary-fixed": "#dde1ff",
+                    "surface-container-highest": "#dae2fd",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#faf8ff",
+                    "secondary": "#4648d4",
+                    "primary-fixed-dim": "#b9c3ff",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "on-primary-container": "#d4d9ff",
+                    "inverse-surface": "#283044",
+                    "error-container": "#ffdad6",
+                    "on-background": "#131b2e",
+                    "tertiary-fixed-dim": "#ffb4a2",
+                    "surface-container": "#eaedff",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "surface": "#faf8ff",
+                    "surface-tint": "#0046fa",
+                    "on-surface": "#131b2e",
+                    "primary": "#0035c5",
+                    "inverse-on-surface": "#eef0ff",
+                    "outline": "#747688",
+                    "on-surface-variant": "#434657",
+                    "background": "#faf8ff",
+                    "on-tertiary-fixed": "#3d0700",
+                    "surface-dim": "#d2d9f4",
+                    "on-secondary-container": "#fffbff",
+                    "on-primary-fixed-variant": "#0033c0",
+                    "secondary-fixed": "#e1e0ff",
+                    "primary-container": "#0047ff",
+                    "outline-variant": "#c4c5da",
+                    "tertiary-fixed": "#ffdad2",
+                    "surface-container-high": "#e2e7ff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#b82800",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "secondary-fixed": "#e1e0ff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f2f3ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "container-margin": "24px",
+                    "xl": "40px",
+                    "md": "16px",
+                    "unit": "4px",
+                    "xs": "4px",
+                    "gutter": "16px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-xl": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-caps": ["Space Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "0em", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.12em", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .bg-glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .bento-card {
+            border: 1px solid #E2E8F0;
+            transition: all 0.2s ease;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #0035c5 0%, #4648d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-white/80 backdrop-blur-xl border-b border-slate-200 fixed top-0 w-full z-50 flex justify-between items-center px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Close-up portrait of a determined young female athlete with subtle perspiration, high-end studio lighting, minimalist background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm3F4wX3vxFfM9MucvGktPtBi1QCt_ZUS14TiDJbBO9ZESWG5lzmyru7lS9TZVWk7oDoZUgUgDCcBvdmw9AVADSD7ThJC0oMbBPL6l3x5_DxW7nY-bkfpwQAAvqx7P9itJ3J_8xdVPQwtki7VsixAZNgL2OUFKhyXM38ynSkYtia7mKYIOLCrRmLr8ST36_dj7iXSNkBqBZLu-BegVodvClCC1lL4c_OX0HUeBoIXulx6FvyK9J19DAwxgf5hW9Bt69Y0FW_OYHOHE"/>
+</div>
+<h1 class="text-lg font-bold text-slate-900 font-headline-md tracking-tight">Доброе утро</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined text-blue-600">calendar_today</span>
+</button>
+</header>
+<main class="pt-24 px-container-margin max-w-lg mx-auto">
+<!-- Hero Confirmation -->
+<section class="mb-xl text-center">
+<div class="inline-flex items-center justify-center w-20 h-20 bg-primary-container text-on-primary-container rounded-full mb-lg">
+<span class="material-symbols-outlined text-[40px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h2 class="font-headline-lg text-display-xl mb-xs tracking-tight">Тренировка завершена!</h2>
+<p class="text-on-surface-variant font-body-lg">Вы показали отличный результат сегодня.</p>
+</section>
+<!-- Bento Stats Grid -->
+<div class="grid grid-cols-2 gap-md mb-xl">
+<!-- Large Stat: Total Volume -->
+<div class="col-span-2 bento-card bg-surface-container-lowest p-lg rounded-xl flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-outline uppercase">Общий объем</span>
+<span class="material-symbols-outlined text-primary">fitness_center</span>
+</div>
+<div>
+<div class="flex items-baseline gap-xs">
+<span class="text-display-xl font-headline-lg gradient-text">12,450</span>
+<span class="text-body-lg font-headline-md text-on-surface-variant">кг</span>
+</div>
+<div class="flex items-center gap-xs text-secondary font-medium">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="text-xs">+12% к прошлой неделе</span>
+</div>
+</div>
+</div>
+<!-- Small Stat: Time -->
+<div class="bento-card bg-surface-container-lowest p-lg rounded-xl flex flex-col justify-between h-36">
+<span class="font-label-caps text-outline uppercase">Время</span>
+<div>
+<div class="flex items-baseline gap-xs">
+<span class="text-headline-lg">74</span>
+<span class="text-on-surface-variant">мин</span>
+</div>
+<span class="text-xs text-on-surface-variant">Интервалы отдыха: 90с</span>
+</div>
+</div>
+<!-- Small Stat: Exercises -->
+<div class="bento-card bg-surface-container-lowest p-lg rounded-xl flex flex-col justify-between h-36">
+<span class="font-label-caps text-outline uppercase">Упражнения</span>
+<div>
+<div class="flex items-baseline gap-xs">
+<span class="text-headline-lg">8</span>
+<span class="text-on-surface-variant">движений</span>
+</div>
+<span class="text-xs text-on-surface-variant">32 рабочих подхода</span>
+</div>
+</div>
+</div>
+<!-- Badges & Achievements -->
+<section class="mb-xl">
+<h3 class="font-label-caps text-outline uppercase mb-md tracking-widest">Достижения</h3>
+<div class="flex gap-md overflow-x-auto pb-md no-scrollbar">
+<div class="flex-shrink-0 w-32 bento-card bg-white p-md rounded-xl text-center">
+<div class="w-12 h-12 bg-tertiary-fixed text-tertiary rounded-full mx-auto mb-sm flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<p class="text-[10px] font-bold uppercase leading-tight">Personal Best</p>
+<p class="text-[10px] text-on-surface-variant">Присед 140кг</p>
+</div>
+<div class="flex-shrink-0 w-32 bento-card bg-white p-md rounded-xl text-center border-primary/20">
+<div class="w-12 h-12 bg-primary-fixed text-primary rounded-full mx-auto mb-sm flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<p class="text-[10px] font-bold uppercase leading-tight">Энергия</p>
+<p class="text-[10px] text-on-surface-variant">300+ ккал/час</p>
+</div>
+<div class="flex-shrink-0 w-32 bento-card bg-white p-md rounded-xl text-center">
+<div class="w-12 h-12 bg-secondary-fixed text-secondary rounded-full mx-auto mb-sm flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+</div>
+<p class="text-[10px] font-bold uppercase leading-tight">Страйк</p>
+<p class="text-[10px] text-on-surface-variant">5 дней подряд</p>
+</div>
+</div>
+</section>
+<!-- Contextual Action (Nutrition Link) -->
+<section class="mb-xl">
+<div class="relative overflow-hidden rounded-xl bg-slate-900 text-white p-lg flex items-center justify-between group">
+<div class="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity">
+<img alt="Healthy Meal" class="w-full h-full object-cover" data-alt="Vibrant healthy bowl with fresh avocado, salmon, and quinoa on a dark stone background with soft overhead lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANFqijv_qnY87xuA9vz4x20zfkpSaIQIp4HsojtneJz5SZkIvJ4OdgVnLROZP2J_6GpcyVDrKchfNUTYzNLD5NYAHA2Sj5IQg56GfP4nrmiBDmNq-NuCiVMb4U9A_98bpOGw5z0bJNchH_81p-RmMN1RCKQU7Px0U1BnyZfNs1bXi8ShldAN5n--uuBrQM8jqvbE_dVFf7BcwYk6Ej_sfl2ZdFeH0Vk2PEIS1YtfYt6-wKbNdP7CrfsGCcaJztYuEBxbkrePHeO5gU"/>
+</div>
+<div class="relative z-10">
+<h4 class="font-headline-md text-white mb-xs">Время восстановления</h4>
+<p class="text-sm text-slate-300 max-w-[200px]">Вашему телу нужно топливо. Добавьте прием пищи сейчас.</p>
+</div>
+<button class="relative z-10 h-12 px-lg bg-primary text-white rounded-full font-bold text-sm flex items-center gap-xs hover:scale-105 transition-transform">
+<span>Добавить</span>
+<span class="material-symbols-outlined text-sm">restaurant</span>
+</button>
+</div>
+</section>
+<!-- Secondary Actions -->
+<div class="flex gap-md mb-xl">
+<button class="flex-1 h-12 border border-outline-variant rounded-xl flex items-center justify-center gap-sm font-medium hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-blue-600">share</span>
+<span>Поделиться</span>
+</button>
+<button class="flex-1 h-12 border border-outline-variant rounded-xl flex items-center justify-center gap-sm font-medium hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-blue-600">download</span>
+<span>Сохранить</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-white/80 backdrop-blur-xl border-t border-slate-200 fixed bottom-0 w-full z-50 flex justify-around items-center pt-3 pb-8 px-4">
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="event_note">event_note</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Сегодня</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="inbox">inbox</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Входящие</span>
+</a>
+<a class="flex flex-col items-center text-blue-600 font-bold transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="fitness_center" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Тренировки</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="restaurant">restaurant</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Питание</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 hover:text-blue-500 transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="more_horiz">more_horiz</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Еще</span>
+</a>
+</nav>
+<!-- FAB for quick action - following "Contextual FAB" rule (Workout page FAB should be contextual) -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg shadow-blue-600/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 600;">add</span>
+</button>
+</body></html>

@@ -14,7 +14,12 @@
   "dependencies": {
     "@lifeos/config": "workspace:*",
     "@lifeos/db": "workspace:*",
-    "@lifeos/shared": "workspace:*"
+    "@lifeos/shared": "workspace:*",
+    "@lifeos/auth": "workspace:*",
+    "@lifeos/integrations-google": "workspace:*",
+    "drizzle-orm": "^0.38.0",
+    "bullmq": "^5.76.0",
+    "ioredis": "^5.10.1"
   },
   "devDependencies": {
     "@types/node": "22.0.0",
