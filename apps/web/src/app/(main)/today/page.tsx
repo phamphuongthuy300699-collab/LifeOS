@@ -4,6 +4,7 @@ import { getDictionary } from '@lifeos/i18n';
 import { useTodayData, useCompleteTask } from '@/shared/hooks/use-tasks';
 import { TaskCard } from '@/shared/components/task-card';
 import { Rocket, BrainCircuit, Activity, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 import { MailWidget } from './components/mail-widget';
 
@@ -122,7 +123,12 @@ export default function TodayPage() {
           </div>
           <div className="p-6">
             <h3 className="font-headline-md text-headline-md text-on-surface mb-2">Тренировка сегодня</h3>
-            <button className="w-full py-3 border border-primary text-primary rounded-full font-semibold hover:bg-primary hover:text-on-primary transition-all">Начать</button>
+            <Link
+              href="/workout"
+              className="block w-full py-3 border border-primary text-primary text-center rounded-full font-semibold hover:bg-primary hover:text-on-primary transition-all"
+            >
+              Начать
+            </Link>
           </div>
         </section>
         
