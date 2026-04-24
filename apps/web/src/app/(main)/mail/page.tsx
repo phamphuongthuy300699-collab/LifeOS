@@ -24,16 +24,19 @@ export default function MailInboxPage() {
   const [messages, setMessages] = useState<MailMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const fetchMail = async () => {
     try {
       setLoading(true);
+      setHasError(false);
       const res = await api.get<{ messages: MailMessage[] }>('/mail/threads');
       if (res.data.messages) {
         setMessages(res.data.messages);
       }
     } catch (err) {
       console.error('Failed to fetch mail', err);
+      setHasError(true);
     } finally {
       setLoading(false);
     }
@@ -81,6 +84,10 @@ export default function MailInboxPage() {
       {loading ? (
         <div className="py-12 flex justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : hasError ? (
+        <div className="text-center py-12 text-muted-foreground">
+          Не удалось загрузить почту. Проверьте подключение Gmail и API.
         </div>
       ) : messages.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">

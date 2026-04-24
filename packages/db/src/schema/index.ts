@@ -12,6 +12,7 @@ export * from './inbox.schema';
 export * from './tasks.schema';
 export * from './notes.schema';
 export * from './events.schema';
+export * from './reminders.schema';
 
 // Phase C — Mail (Sprint 3)
 export * from './mail.schema';

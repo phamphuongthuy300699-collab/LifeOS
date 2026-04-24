@@ -9,6 +9,7 @@ import { inboxRoutes } from './routes/inbox.routes';
 import { taskRoutes } from './routes/tasks.routes';
 import { noteRoutes } from './routes/notes.routes';
 import { eventRoutes } from './routes/events.routes';
+import { reminderRoutes } from './routes/reminders.routes';
 import { mailRoutes } from './routes/mail.routes';
 import { exerciseRoutes } from './routes/exercises.routes';
 import { workoutPlanRoutes } from './routes/workout-plans.routes';
@@ -44,6 +45,7 @@ export function createApp() {
   app.route('/tasks', taskRoutes);
   app.route('/notes', noteRoutes);
   app.route('/events', eventRoutes);
+  app.route('/reminders', reminderRoutes);
   app.route('/mail', mailRoutes);
   app.route('/exercises', exerciseRoutes);
   app.route('/workout-plans', workoutPlanRoutes);

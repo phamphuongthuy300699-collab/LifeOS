@@ -3,16 +3,27 @@ import { zValidator } from '@hono/zod-validator';
 import { db } from '../config/db';
 import { tasks } from '@lifeos/db';
 import { createTaskSchema, updateTaskSchema } from '@lifeos/domain-tasks';
-import { eq, desc } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
+import { resolveRequestContext } from './_request-context';
 
 export const taskRoutes = new Hono();
 
 // GET /tasks — list tasks
 taskRoutes.get('/', async (c) => {
-  // TODO: Add actual user filtering based on auth
+  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  if (!context) {
+    return c.json({ items: [] });
+  }
+
   const allTasks = await db
     .select()
     .from(tasks)
+    .where(
+      and(
+        eq(tasks.workspaceId, context.workspaceId),
+        eq(tasks.userId, context.userId),
+      ),
+    )
     .orderBy(desc(tasks.createdAt));
   
   return c.json({ items: allTasks });
@@ -20,11 +31,16 @@ taskRoutes.get('/', async (c) => {
 
 // POST /tasks — create a task
 taskRoutes.post('/', zValidator('json', createTaskSchema), async (c) => {
+  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  if (!context) {
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
+  }
+
   const data = c.req.valid('json');
 
   const [newTask] = await db.insert(tasks).values({
-    workspaceId: '00000000-0000-0000-0000-000000000000', // placeholder until auth is wired
-    userId: '00000000-0000-0000-0000-000000000000', // placeholder
+    workspaceId: context.workspaceId,
+    userId: context.userId,
     title: data.title,
     description: data.description,
     status: data.status,
@@ -44,8 +60,22 @@ taskRoutes.post('/', zValidator('json', createTaskSchema), async (c) => {
 
 // GET /tasks/:id — get single task
 taskRoutes.get('/:id', async (c) => {
+  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  if (!context) {
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
+  }
+
   const id = c.req.param('id');
-  const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+  const [task] = await db
+    .select()
+    .from(tasks)
+    .where(
+      and(
+        eq(tasks.id, id),
+        eq(tasks.workspaceId, context.workspaceId),
+        eq(tasks.userId, context.userId),
+      ),
+    );
   
   if (!task) return c.json({ code: 'NOT_FOUND', message: 'Task not found' }, 404);
   
@@ -54,6 +84,11 @@ taskRoutes.get('/:id', async (c) => {
 
 // PATCH /tasks/:id — update task
 taskRoutes.patch('/:id', zValidator('json', updateTaskSchema), async (c) => {
+  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  if (!context) {
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
+  }
+
   const id = c.req.param('id');
   const data = c.req.valid('json');
 
@@ -63,7 +98,15 @@ taskRoutes.patch('/:id', zValidator('json', updateTaskSchema), async (c) => {
     scheduledStartAt: data.scheduledStartAt ? new Date(data.scheduledStartAt) : data.scheduledStartAt === null ? null : undefined,
     scheduledEndAt: data.scheduledEndAt ? new Date(data.scheduledEndAt) : data.scheduledEndAt === null ? null : undefined,
     updatedAt: new Date(),
-  }).where(eq(tasks.id, id)).returning();
+  })
+    .where(
+      and(
+        eq(tasks.id, id),
+        eq(tasks.workspaceId, context.workspaceId),
+        eq(tasks.userId, context.userId),
+      ),
+    )
+    .returning();
 
   if (!updatedTask) return c.json({ code: 'NOT_FOUND', message: 'Task not found' }, 404);
 
@@ -72,13 +115,26 @@ taskRoutes.patch('/:id', zValidator('json', updateTaskSchema), async (c) => {
 
 // POST /tasks/:id/complete — mark task as done
 taskRoutes.post('/:id/complete', async (c) => {
+  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  if (!context) {
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
+  }
+
   const id = c.req.param('id');
   
   const [updatedTask] = await db.update(tasks).set({
     status: 'done',
     completedAt: new Date(),
     updatedAt: new Date(),
-  }).where(eq(tasks.id, id)).returning();
+  })
+    .where(
+      and(
+        eq(tasks.id, id),
+        eq(tasks.workspaceId, context.workspaceId),
+        eq(tasks.userId, context.userId),
+      ),
+    )
+    .returning();
 
   if (!updatedTask) return c.json({ code: 'NOT_FOUND', message: 'Task not found' }, 404);
 

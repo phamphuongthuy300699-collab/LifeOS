@@ -28,7 +28,7 @@ workoutSessionRoutes.post(
   '/',
   zValidator('json', createWorkoutSessionSchema),
   async (c) => {
-    const context = await resolveWorkoutContext(c.req.header('x-user-id'));
+    const context = await resolveWorkoutContext(c.req.raw);
     if (!context) {
       return c.json({ error: 'No workspace membership found' }, 403);
     }
@@ -127,7 +127,7 @@ workoutSessionRoutes.post(
  * Returns a session with exercises and sets.
  */
 workoutSessionRoutes.get('/:id', async (c) => {
-  const context = await resolveWorkoutContext(c.req.header('x-user-id'));
+  const context = await resolveWorkoutContext(c.req.raw);
   if (!context) {
     return c.json({ error: 'No workspace membership found' }, 403);
   }
@@ -221,7 +221,7 @@ workoutSessionRoutes.patch(
   '/:id',
   zValidator('json', updateWorkoutSessionSchema),
   async (c) => {
-    const context = await resolveWorkoutContext(c.req.header('x-user-id'));
+    const context = await resolveWorkoutContext(c.req.raw);
     if (!context) {
       return c.json({ error: 'No workspace membership found' }, 403);
     }
@@ -285,7 +285,7 @@ workoutSessionRoutes.post(
   '/:id/sets',
   zValidator('json', createWorkoutSetSchema),
   async (c) => {
-    const context = await resolveWorkoutContext(c.req.header('x-user-id'));
+    const context = await resolveWorkoutContext(c.req.raw);
     if (!context) {
       return c.json({ error: 'No workspace membership found' }, 403);
     }

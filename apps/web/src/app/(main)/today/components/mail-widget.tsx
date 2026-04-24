@@ -12,11 +12,13 @@ type MailWidgetMessage = {
 export function MailWidget() {
   const [unreadCount, setUnreadCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const fetchMail = async () => {
       try {
         setLoading(true);
+        setHasError(false);
         const res = await api.get<{ messages: MailWidgetMessage[] }>('/mail/threads');
         if (res.data.messages) {
           const unread = res.data.messages.filter((m) => m.isUnread).length;
@@ -24,6 +26,8 @@ export function MailWidget() {
         }
       } catch (err) {
         console.error('Failed to fetch mail widget data', err);
+        setUnreadCount(0);
+        setHasError(true);
       } finally {
         setLoading(false);
       }
@@ -38,9 +42,17 @@ export function MailWidget() {
       </div>
       <div className="flex-1 text-center md:text-left">
         <h3 className="font-headline-md text-headline-md text-on-surface">
-          {unreadCount !== null ? `${unreadCount} unread emails` : 'Loading Mail...'}
+          {loading
+            ? 'Загружаю почту...'
+            : unreadCount !== null
+              ? `${unreadCount} unread emails`
+              : 'Почта недоступна'}
         </h3>
-        <p className="text-on-surface-variant mt-1">Review your inbox and triage new messages.</p>
+        <p className="text-on-surface-variant mt-1">
+          {hasError
+            ? 'Проверьте подключение аккаунта и API.'
+            : 'Review your inbox and triage new messages.'}
+        </p>
       </div>
       <Link href="/mail" className="w-full md:w-auto">
         <button className="w-full bg-primary text-on-primary px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-shadow flex items-center justify-center gap-2">

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getDictionary } from '@lifeos/i18n';
+import { getDictionary } from '@/shared/lib/i18n';
 import {
   Activity,
   ArrowRight,
@@ -27,7 +27,7 @@ function formatPlanExercisesCount(plan: WorkoutPlan) {
 export default function WorkoutPage() {
   const dict = getDictionary('ru');
   const router = useRouter();
-  const { data, isLoading } = useWorkoutPlans();
+  const { data, isLoading, isError } = useWorkoutPlans();
   const startSessionMutation = useStartWorkoutSession();
   const bootstrapDemoMutation = useBootstrapWorkoutDemo();
 
@@ -65,6 +65,21 @@ export default function WorkoutPage() {
       <div className="px-6 py-8">
         <p className="text-on-surface-variant">{dict.common.loading}</p>
       </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-8">
+        <section className="rounded-xl border border-outline-variant bg-surface-container-low p-6">
+          <h1 className="mb-2 text-2xl font-semibold text-on-surface">
+            {dict.workout.title}
+          </h1>
+          <p className="text-on-surface-variant">
+            Не удалось загрузить планы тренировок. Проверь подключение к API и повтори попытку.
+          </p>
+        </section>
+      </main>
     );
   }
 

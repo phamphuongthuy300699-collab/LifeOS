@@ -1,4 +1,7 @@
-export const API_BASE = '/api/v1';
+const configuredApiBase =
+  typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL : undefined;
+
+export const API_BASE = (configuredApiBase?.trim() || '/api/v1').replace(/\/$/, '');
 
 export class ApiError extends Error {
   constructor(public code: string, message: string, public status: number) {
@@ -34,7 +37,8 @@ function buildDefaultHeaders(): Headers {
  * Generic fetch wrapper for calls to /api/v1
  */
 export async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const url = `${API_BASE}${endpoint}`;
+  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = `${API_BASE}${normalizedEndpoint}`;
   
   const headers = buildDefaultHeaders();
   const requestHeaders = new Headers(options?.headers);

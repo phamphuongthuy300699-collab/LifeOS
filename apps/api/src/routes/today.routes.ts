@@ -1,36 +1,13 @@
 import { Hono } from 'hono';
 import { db } from '../config/db';
-import { inboxItems, tasks, events, memberships, mailMessages } from '@lifeos/db';
+import { inboxItems, tasks, events, mailMessages } from '@lifeos/db';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
+import { resolveRequestContext } from './_request-context';
 
 export const todayRoutes = new Hono();
 
-async function resolveTodayContext(requestUserId?: string): Promise<{
-  userId: string;
-  workspaceId: string;
-} | null> {
-  if (requestUserId) {
-    const membership = await db.query.memberships.findFirst({
-      where: eq(memberships.userId, requestUserId),
-    });
-    if (membership) {
-      return { userId: requestUserId, workspaceId: membership.workspaceId };
-    }
-  }
-
-  const fallbackMembership = await db.query.memberships.findFirst();
-  if (!fallbackMembership) {
-    return null;
-  }
-
-  return {
-    userId: fallbackMembership.userId,
-    workspaceId: fallbackMembership.workspaceId,
-  };
-}
-
 todayRoutes.get('/', async (c) => {
-  const context = await resolveTodayContext(c.req.header('x-user-id'));
+  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
   if (!context) {
     return c.json({
       focusBlock: 'Приоритет: Настроить аккаунт',

@@ -20,7 +20,7 @@ workoutSetRoutes.patch(
   '/:id',
   zValidator('json', updateWorkoutSetSchema),
   async (c) => {
-    const context = await resolveWorkoutContext(c.req.header('x-user-id'));
+    const context = await resolveWorkoutContext(c.req.raw);
     if (!context) {
       return c.json({ error: 'No workspace membership found' }, 403);
     }

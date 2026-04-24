@@ -13,7 +13,7 @@ export const workoutPlanRoutes = new Hono();
  * Returns workout plans with ordered exercises.
  */
 workoutPlanRoutes.get('/', async (c) => {
-  const context = await resolveWorkoutContext(c.req.header('x-user-id'));
+  const context = await resolveWorkoutContext(c.req.raw);
   if (!context) {
     return c.json({ items: [] });
   }
@@ -100,7 +100,7 @@ workoutPlanRoutes.post(
   '/',
   zValidator('json', createWorkoutPlanSchema),
   async (c) => {
-    const context = await resolveWorkoutContext(c.req.header('x-user-id'));
+    const context = await resolveWorkoutContext(c.req.raw);
     if (!context) {
       return c.json({ error: 'No workspace membership found' }, 403);
     }

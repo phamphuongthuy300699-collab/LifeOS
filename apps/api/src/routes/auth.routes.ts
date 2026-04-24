@@ -12,6 +12,7 @@ import {
 import { db } from '../config/db';
 import { users, workspaces, memberships, externalAccounts } from '@lifeos/db';
 import { eq, and } from 'drizzle-orm';
+import { getCurrentUserProfile, resolveStrictRequestContext } from './_request-context';
 
 export const authRoutes = new Hono();
 
@@ -191,15 +192,15 @@ authRoutes.get('/google/callback', async (c) => {
 
 /**
  * GET /api/v1/auth/me
- * Get current user profile.
- * TODO: Requires auth middleware (Sprint 0 completion).
+ * Get current user profile from JWT or x-user-id header.
  */
-authRoutes.get('/me', (c) => {
-  // Placeholder — will use auth middleware to extract user
-  return c.json(
-    { code: 'NOT_IMPLEMENTED', message: 'Auth middleware pending' },
-    501,
-  );
+authRoutes.get('/me', async (c) => {
+  const context = await resolveStrictRequestContext(c.req.raw);
+  if (!context) {
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unauthorized' }, 401);
+  }
+
+  return getCurrentUserProfile(c, context.userId);
 });
 
 /**

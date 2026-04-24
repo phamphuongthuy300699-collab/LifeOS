@@ -1,6 +1,6 @@
 'use client';
 
-import { getDictionary } from '@lifeos/i18n';
+import { getDictionary } from '@/shared/lib/i18n';
 import { usePendingInboxItems } from '@/shared/hooks/use-inbox';
 import { InboxItemCard } from '@/shared/components/inbox-item-card';
 
@@ -12,7 +12,7 @@ export default function InboxPage() {
     <div className="px-4 pt-6">
       <h1 className="text-2xl font-bold text-content">{dict.inbox.title}</h1>
       
-      {isLoading && <p className="mt-4 text-content-muted">{dict.common.loading}</p>}
+      {isLoading && !data && <p className="mt-4 text-content-muted">{dict.common.loading}</p>}
       
       {error && <p className="mt-4 text-accent">{dict.common.error}</p>}
       

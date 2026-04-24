@@ -16,7 +16,7 @@ export const exerciseRoutes = new Hono();
  * Returns exercise library for current user/workspace.
  */
 exerciseRoutes.get('/', async (c) => {
-  const context = await resolveWorkoutContext(c.req.header('x-user-id'));
+  const context = await resolveWorkoutContext(c.req.raw);
   if (!context) {
     return c.json({ items: [] });
   }
@@ -39,7 +39,7 @@ exerciseRoutes.get('/', async (c) => {
  * Creates an exercise for the current user/workspace.
  */
 exerciseRoutes.post('/', zValidator('json', createExerciseSchema), async (c) => {
-  const context = await resolveWorkoutContext(c.req.header('x-user-id'));
+  const context = await resolveWorkoutContext(c.req.raw);
   if (!context) {
     return c.json({ error: 'No workspace membership found' }, 403);
   }
@@ -76,7 +76,7 @@ exerciseRoutes.patch(
   '/:id',
   zValidator('json', updateExerciseSchema),
   async (c) => {
-    const context = await resolveWorkoutContext(c.req.header('x-user-id'));
+    const context = await resolveWorkoutContext(c.req.raw);
     if (!context) {
       return c.json({ error: 'No workspace membership found' }, 403);
     }

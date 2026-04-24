@@ -1,6 +1,6 @@
 'use client';
 
-import { getDictionary } from '@lifeos/i18n';
+import { getDictionary } from '@/shared/lib/i18n';
 import { useTodayData, useCompleteTask } from '@/shared/hooks/use-tasks';
 import { TaskCard } from '@/shared/components/task-card';
 import { Rocket, BrainCircuit, Activity, ArrowRight } from 'lucide-react';
@@ -10,15 +10,28 @@ import { MailWidget } from './components/mail-widget';
 
 export default function TodayPage() {
   const dict = getDictionary('ru');
-  const { data, isLoading } = useTodayData();
+  const { data, isLoading, isError } = useTodayData();
   const completeMutation = useCompleteTask();
 
   const handleComplete = (id: string) => {
     completeMutation.mutate(id);
   };
 
-  if (isLoading) {
+  if (isLoading && !data) {
     return <div className="p-6 text-on-surface-variant">{dict.common.loading}</div>;
+  }
+
+  if (isError) {
+    return (
+      <main className="px-6 py-8">
+        <section className="rounded-xl border border-outline-variant bg-surface-container-low p-6">
+          <h2 className="text-xl font-semibold text-on-surface">Today временно недоступен</h2>
+          <p className="mt-2 text-sm text-on-surface-variant">
+            Не удалось загрузить данные. Проверь подключение к API или настройки авторизации.
+          </p>
+        </section>
+      </main>
+    );
   }
 
   return (
@@ -37,7 +50,7 @@ export default function TodayPage() {
               <div className="relative z-10">
                 <Rocket className="text-primary mb-3" size={24} />
                 <h3 className="font-body-lg text-body-lg font-semibold text-on-surface">Запуск квартального отчета</h3>
-                <p className="text-sm text-on-surface-variant mt-1">{data?.focusBlock || 'Загрузка...'}</p>
+                <p className="text-sm text-on-surface-variant mt-1">{data?.focusBlock || 'Фокус дня ещё не задан'}</p>
               </div>
               <div className="absolute -right-4 -bottom-4 opacity-5">
                 <Rocket size={120} />
