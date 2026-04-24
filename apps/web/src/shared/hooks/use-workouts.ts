@@ -147,10 +147,137 @@ const demoExercisesSeed = [
   },
 ] as const;
 
+const WORKOUT_MOCK_STORAGE_KEY = 'lifeos-workout-mock-v1';
+const DEFAULT_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000';
+const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
+
+type WorkoutMockState = {
+  exercises: Exercise[];
+  plans: WorkoutPlan[];
+  sessions: WorkoutSessionDetails[];
+};
+
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+function makeId(prefix: string): string {
+  return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2, 10)}`;
+}
+
+function emptyMockState(): WorkoutMockState {
+  return {
+    exercises: [],
+    plans: [],
+    sessions: [],
+  };
+}
+
+function readMockState(): WorkoutMockState {
+  if (typeof window === 'undefined') {
+    return emptyMockState();
+  }
+
+  const raw = window.localStorage.getItem(WORKOUT_MOCK_STORAGE_KEY);
+  if (!raw) {
+    return emptyMockState();
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as WorkoutMockState;
+    return {
+      exercises: Array.isArray(parsed.exercises) ? parsed.exercises : [],
+      plans: Array.isArray(parsed.plans) ? parsed.plans : [],
+      sessions: Array.isArray(parsed.sessions) ? parsed.sessions : [],
+    };
+  } catch {
+    return emptyMockState();
+  }
+}
+
+function writeMockState(state: WorkoutMockState): void {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(WORKOUT_MOCK_STORAGE_KEY, JSON.stringify(state));
+}
+
+function createMockExercise(
+  template: (typeof demoExercisesSeed)[number],
+): Exercise {
+  const timestamp = nowIso();
+  return {
+    id: makeId('exercise'),
+    workspaceId: DEFAULT_WORKSPACE_ID,
+    userId: DEFAULT_USER_ID,
+    name: template.name,
+    slug: template.slug,
+    descriptionShort: `Базовое упражнение: ${template.name}`,
+    descriptionMarkdown: `Контрольная техника для упражнения «${template.name}».`,
+    muscleGroupsJson: ['chest', 'triceps'],
+    equipmentJson: ['barbell'],
+    difficulty: 'intermediate',
+    defaultVideoUrl: null,
+    defaultRestSeconds: 90,
+    isCustom: true,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  };
+}
+
+function createMockPlan(exercises: Exercise[]): WorkoutPlan {
+  const timestamp = nowIso();
+  const mappedExercises: WorkoutPlanExercise[] = demoExercisesSeed.map(
+    (template, index) => {
+      const exercise = exercises.find((item) => item.slug === template.slug);
+      if (!exercise) {
+        throw new Error(`Exercise ${template.slug} missing in mock state`);
+      }
+
+      return {
+        id: makeId('plan_exercise'),
+        workoutPlanId: 'placeholder',
+        exerciseId: exercise.id,
+        orderIndex: index,
+        targetSets: template.targetSets,
+        targetReps: template.targetReps,
+        targetWeight: template.targetWeight,
+        targetRestSeconds: 90,
+        metadataJson: null,
+        createdAt: timestamp,
+        exercise,
+      };
+    },
+  );
+
+  const planId = makeId('plan');
+  return {
+    id: planId,
+    workspaceId: DEFAULT_WORKSPACE_ID,
+    userId: DEFAULT_USER_ID,
+    name: 'Грудь и Трицепс',
+    goal: 'Сила и гипертрофия верхней части тела',
+    description: 'Спринт 4 демо-план',
+    isActive: true,
+    scheduleHintJson: null,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    exercises: mappedExercises.map((item) => ({
+      ...item,
+      workoutPlanId: planId,
+    })),
+  };
+}
+
 export function useWorkoutPlans() {
   return useQuery({
     queryKey: ['workout-plans'],
-    queryFn: () => apiFetch<{ items: WorkoutPlan[] }>('/workout-plans'),
+    queryFn: async () => {
+      try {
+        return await apiFetch<{ items: WorkoutPlan[] }>('/workout-plans');
+      } catch {
+        const state = readMockState();
+        return { items: state.plans };
+      }
+    },
   });
 }
 
@@ -158,7 +285,18 @@ export function useExerciseById(exerciseId?: string) {
   return useQuery({
     queryKey: ['exercise', exerciseId],
     enabled: Boolean(exerciseId),
-    queryFn: () => apiFetch<Exercise>(`/exercises/${exerciseId}`),
+    queryFn: async () => {
+      try {
+        return await apiFetch<Exercise>(`/exercises/${exerciseId}`);
+      } catch {
+        const state = readMockState();
+        const exercise = state.exercises.find((item) => item.id === exerciseId);
+        if (!exercise) {
+          throw new Error('Exercise not found');
+        }
+        return exercise;
+      }
+    },
   });
 }
 
@@ -166,7 +304,18 @@ export function useWorkoutSession(sessionId?: string) {
   return useQuery({
     queryKey: ['workout-session', sessionId],
     enabled: Boolean(sessionId),
-    queryFn: () => apiFetch<WorkoutSessionDetails>(`/workout-sessions/${sessionId}`),
+    queryFn: async () => {
+      try {
+        return await apiFetch<WorkoutSessionDetails>(`/workout-sessions/${sessionId}`);
+      } catch {
+        const state = readMockState();
+        const session = state.sessions.find((item) => item.id === sessionId);
+        if (!session) {
+          throw new Error('Session not found');
+        }
+        return session;
+      }
+    },
   });
 }
 
@@ -174,11 +323,58 @@ export function useStartWorkoutSession() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: StartSessionInput) =>
-      apiFetch<WorkoutSessionDetails>('/workout-sessions', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      }),
+    mutationFn: async (payload: StartSessionInput) => {
+      try {
+        return await apiFetch<WorkoutSessionDetails>('/workout-sessions', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+      } catch {
+        const state = readMockState();
+        const plan = state.plans.find((item) => item.id === payload.workoutPlanId);
+        if (!plan) {
+          throw new Error('Workout plan not found');
+        }
+
+        const timestamp = nowIso();
+        const sessionId = makeId('session');
+
+        const session: WorkoutSessionDetails = {
+          id: sessionId,
+          workspaceId: plan.workspaceId,
+          userId: plan.userId,
+          workoutPlanId: plan.id,
+          startedAt: timestamp,
+          endedAt: null,
+          sessionStatus: 'active',
+          perceivedIntensity: null,
+          notes: null,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          exercises: plan.exercises.map((exercise) => ({
+            id: makeId('session_exercise'),
+            workoutSessionId: sessionId,
+            exerciseId: exercise.exerciseId,
+            orderIndex: exercise.orderIndex,
+            targetSchemeJson: {
+              targetSets: exercise.targetSets ?? 3,
+              targetReps: exercise.targetReps ?? '10',
+            },
+            previousResultJson: null,
+            createdAt: timestamp,
+            exercise: exercise.exercise,
+            sets: [],
+          })),
+        };
+
+        writeMockState({
+          ...state,
+          sessions: [session, ...state.sessions],
+        });
+
+        return session;
+      }
+    },
     onSuccess: (session) => {
       queryClient.invalidateQueries({ queryKey: ['workout-plans'] });
       queryClient.setQueryData(['workout-session', session.id], session);
@@ -190,11 +386,58 @@ export function useAddWorkoutSet(sessionId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: AddWorkoutSetInput) =>
-      apiFetch<WorkoutSet>(`/workout-sessions/${sessionId}/sets`, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      }),
+    mutationFn: async (payload: AddWorkoutSetInput) => {
+      try {
+        return await apiFetch<WorkoutSet>(`/workout-sessions/${sessionId}/sets`, {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+      } catch {
+        const state = readMockState();
+        const session = state.sessions.find((item) => item.id === sessionId);
+        if (!session) {
+          throw new Error('Session not found');
+        }
+
+        const sessionExercise = session.exercises.find(
+          (item) => item.id === payload.workoutSessionExerciseId,
+        );
+        if (!sessionExercise) {
+          throw new Error('Session exercise not found');
+        }
+
+        const timestamp = nowIso();
+        const nextSetNumber = sessionExercise.sets.length + 1;
+        const set: WorkoutSet = {
+          id: makeId('set'),
+          workoutSessionExerciseId: payload.workoutSessionExerciseId,
+          setNumber: nextSetNumber,
+          weightValue:
+            payload.weightValue !== undefined ? String(payload.weightValue) : null,
+          repsCount: payload.repsCount ?? null,
+          durationSeconds: payload.durationSeconds ?? null,
+          distanceMeters: payload.distanceMeters ?? null,
+          rpe: payload.rpe ?? null,
+          rir: payload.rir ?? null,
+          isWarmup: payload.isWarmup ?? false,
+          isCompleted: payload.isCompleted ?? false,
+          completedAt: payload.isCompleted ? timestamp : null,
+          createdAt: timestamp,
+        };
+
+        sessionExercise.sets = [...sessionExercise.sets, set];
+        session.updatedAt = timestamp;
+
+        writeMockState({
+          ...state,
+          sessions: state.sessions.map((item) =>
+            item.id === session.id ? session : item,
+          ),
+        });
+
+        return set;
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workout-session', sessionId] });
     },
@@ -205,11 +448,39 @@ export function useUpdateWorkoutSession(sessionId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: UpdateWorkoutSessionInput) =>
-      apiFetch<WorkoutSession>(`/workout-sessions/${sessionId}`, {
-        method: 'PATCH',
-        body: JSON.stringify(payload),
-      }),
+    mutationFn: async (payload: UpdateWorkoutSessionInput) => {
+      try {
+        return await apiFetch<WorkoutSession>(`/workout-sessions/${sessionId}`, {
+          method: 'PATCH',
+          body: JSON.stringify(payload),
+        });
+      } catch {
+        const state = readMockState();
+        const session = state.sessions.find((item) => item.id === sessionId);
+        if (!session) {
+          throw new Error('Session not found');
+        }
+
+        const updated: WorkoutSessionDetails = {
+          ...session,
+          ...payload,
+          endedAt:
+            payload.sessionStatus === 'completed' && !payload.endedAt
+              ? nowIso()
+              : payload.endedAt ?? session.endedAt,
+          updatedAt: nowIso(),
+        };
+
+        writeMockState({
+          ...state,
+          sessions: state.sessions.map((item) =>
+            item.id === sessionId ? updated : item,
+          ),
+        });
+
+        return updated;
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workout-session', sessionId] });
       queryClient.invalidateQueries({ queryKey: ['workout-plans'] });
@@ -226,63 +497,86 @@ export function useBootstrapWorkoutDemo() {
 
   return useMutation({
     mutationFn: async () => {
-      const existingExercises = await apiFetch<{ items: Exercise[] }>('/exercises');
-      const existingBySlug = new Map(
-        existingExercises.items.map((exercise) => [exercise.slug, exercise]),
-      );
+      try {
+        const existingExercises = await apiFetch<{ items: Exercise[] }>('/exercises');
+        const existingBySlug = new Map(
+          existingExercises.items.map((exercise) => [exercise.slug, exercise]),
+        );
 
-      const ensuredExercises: Exercise[] = [];
+        const ensuredExercises: Exercise[] = [];
 
-      for (const template of demoExercisesSeed) {
-        const existing = existingBySlug.get(template.slug);
-        if (existing) {
-          ensuredExercises.push(existing);
-          continue;
+        for (const template of demoExercisesSeed) {
+          const existing = existingBySlug.get(template.slug);
+          if (existing) {
+            ensuredExercises.push(existing);
+            continue;
+          }
+
+          const created = await apiFetch<Exercise>('/exercises', {
+            method: 'POST',
+            body: JSON.stringify({
+              name: template.name,
+              slug: template.slug,
+              descriptionShort: `Базовое упражнение: ${template.name}`,
+              muscleGroups: ['chest', 'triceps'],
+              equipment: ['barbell'],
+              difficulty: 'intermediate',
+              isCustom: true,
+            }),
+          });
+          ensuredExercises.push(created);
         }
 
-        const created = await apiFetch<Exercise>('/exercises', {
+        const exercisesPayload = demoExercisesSeed.map((template, index) => {
+          const exercise = ensuredExercises.find((item) => item.slug === template.slug);
+          if (!exercise) {
+            throw new Error(`Exercise ${template.slug} was not created`);
+          }
+
+          return {
+            exerciseId: exercise.id,
+            orderIndex: index,
+            targetSets: template.targetSets,
+            targetReps: template.targetReps,
+            targetWeight: template.targetWeight,
+            targetRestSeconds: 90,
+          };
+        });
+
+        return await apiFetch<WorkoutPlan>('/workout-plans', {
           method: 'POST',
           body: JSON.stringify({
-            name: template.name,
-            slug: template.slug,
-            descriptionShort: `Базовое упражнение: ${template.name}`,
-            muscleGroups: ['chest', 'triceps'],
-            equipment: ['barbell'],
-            difficulty: 'intermediate',
-            isCustom: true,
+            name: 'Грудь и Трицепс',
+            goal: 'Сила и гипертрофия верхней части тела',
+            description: 'Спринт 4 демо-план',
+            isActive: true,
+            exercises: exercisesPayload,
           }),
         });
-        ensuredExercises.push(created);
-      }
+      } catch {
+        const state = readMockState();
+        const existingBySlug = new Map(
+          state.exercises.map((exercise) => [exercise.slug, exercise]),
+        );
 
-      const exercisesPayload = demoExercisesSeed.map((template, index) => {
-        const exercise = ensuredExercises.find((item) => item.slug === template.slug);
-        if (!exercise) {
-          throw new Error(`Exercise ${template.slug} was not created`);
+        const ensuredExercises: Exercise[] = [...state.exercises];
+        for (const template of demoExercisesSeed) {
+          if (!existingBySlug.has(template.slug)) {
+            const created = createMockExercise(template);
+            ensuredExercises.push(created);
+            existingBySlug.set(template.slug, created);
+          }
         }
 
-        return {
-          exerciseId: exercise.id,
-          orderIndex: index,
-          targetSets: template.targetSets,
-          targetReps: template.targetReps,
-          targetWeight: template.targetWeight,
-          targetRestSeconds: 90,
-        };
-      });
+        const plan = createMockPlan(ensuredExercises);
+        writeMockState({
+          exercises: ensuredExercises,
+          plans: [plan, ...state.plans.filter((item) => item.id !== plan.id)],
+          sessions: state.sessions,
+        });
 
-      const plan = await apiFetch<WorkoutPlan>('/workout-plans', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: 'Грудь и Трицепс',
-          goal: 'Сила и гипертрофия верхней части тела',
-          description: 'Спринт 4 демо-план',
-          isActive: true,
-          exercises: exercisesPayload,
-        }),
-      });
-
-      return plan;
+        return plan;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workout-plans'] });

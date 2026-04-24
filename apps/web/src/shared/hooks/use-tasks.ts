@@ -24,13 +24,25 @@ export function useTasks() {
 export function useTodayData() {
   return useQuery({
     queryKey: ['today'],
-    queryFn: () => apiFetch<{
-      focusBlock: string;
-      pendingInboxCount: number;
-      topTasks: Task[];
-      events: any[];
-      emailsRequiringAction: any[];
-    }>('/today')
+    queryFn: async () => {
+      try {
+        return await apiFetch<{
+          focusBlock: string;
+          pendingInboxCount: number;
+          topTasks: Task[];
+          events: any[];
+          emailsRequiringAction: any[];
+        }>('/today');
+      } catch {
+        return {
+          focusBlock: 'Подключите API для синхронизации или продолжайте в демо-режиме',
+          pendingInboxCount: 0,
+          topTasks: [],
+          events: [],
+          emailsRequiringAction: [],
+        };
+      }
+    },
   });
 }
 
