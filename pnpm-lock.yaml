@@ -81,15 +81,6 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.10.0(react-hook-form@7.73.1(react@19.2.5))
-      '@lifeos/i18n':
-        specifier: workspace:*
-        version: link:../../packages/i18n
-      '@lifeos/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
-      '@lifeos/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@tanstack/react-query':
         specifier: ^5.62.0
         version: 5.99.2(react@19.2.5)
