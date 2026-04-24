@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useMemo } from 'react';
 import { useParams } from 'next/navigation';
-import { getDictionary } from '@lifeos/i18n';
+import { getDictionary } from '@/shared/lib/i18n';
 import { Activity, CheckCircle2, Dumbbell, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWorkoutSession } from '@/shared/hooks/use-workouts';

@@ -23,10 +23,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "tailwind-merge": "^2.6.0",
-    "lucide-react": "^0.468.0",
-    "@lifeos/shared": "workspace:*",
-    "@lifeos/i18n": "workspace:*",
-    "@lifeos/ui": "workspace:*"
+    "lucide-react": "^0.468.0"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

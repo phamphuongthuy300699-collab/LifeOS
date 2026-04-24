@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { getDictionary } from '@lifeos/i18n';
+import { getDictionary } from '@/shared/lib/i18n';
 import { CalendarDays, Inbox, Dumbbell, Utensils, MoreHorizontal } from 'lucide-react';
 
 export function BottomNav() {

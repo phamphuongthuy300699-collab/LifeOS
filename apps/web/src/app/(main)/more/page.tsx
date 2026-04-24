@@ -1,4 +1,4 @@
-import { getDictionary } from '@lifeos/i18n';
+import { getDictionary } from '@/shared/lib/i18n';
 import Link from 'next/link';
 import {
   BookOpen,

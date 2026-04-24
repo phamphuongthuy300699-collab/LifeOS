@@ -2,13 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
 
-  // Transpile monorepo packages
-  transpilePackages: [
-    '@lifeos/shared',
-    '@lifeos/i18n',
-    '@lifeos/ui',
-  ],
-
   // PWA headers
   async headers() {
     return [

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { getDictionary } from '@lifeos/i18n';
+import { getDictionary } from '@/shared/lib/i18n';
 import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Dumbbell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
