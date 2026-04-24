@@ -1,12 +1,22 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { and, asc, desc, eq, inArray } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  exercises,
+  inArray,
+  workoutPlanExercises,
+  workoutPlans,
+} from '@lifeos/db';
 import { db } from '../config/db';
 import { resolveWorkoutContext } from './_workout-context';
-import { exercises, workoutPlanExercises, workoutPlans } from '@lifeos/db';
 import { createWorkoutPlanSchema } from '@lifeos/domain-workouts';
 
 export const workoutPlanRoutes = new Hono();
+type WorkoutPlanInsert = typeof workoutPlans.$inferInsert;
+type WorkoutPlanExerciseInsert = typeof workoutPlanExercises.$inferInsert;
 
 /**
  * GET /api/v1/workout-plans
@@ -107,19 +117,20 @@ workoutPlanRoutes.post(
 
     const { workspaceId, userId } = context;
     const data = c.req.valid('json');
+    const planPayload = {
+      workspaceId,
+      userId,
+      name: data.name,
+      goal: data.goal,
+      description: data.description,
+      isActive: data.isActive,
+      scheduleHintJson: data.scheduleHintJson,
+    } as WorkoutPlanInsert;
 
     const createResult = await db.transaction(async (tx) => {
       const [plan] = await tx
         .insert(workoutPlans)
-        .values({
-          workspaceId,
-          userId,
-          name: data.name,
-          goal: data.goal,
-          description: data.description,
-          isActive: data.isActive,
-          scheduleHintJson: data.scheduleHintJson,
-        })
+        .values(planPayload)
         .returning();
 
       if (!plan) {
@@ -131,15 +142,18 @@ workoutPlanRoutes.post(
         createdPlanExercises = await tx
           .insert(workoutPlanExercises)
           .values(
-            data.exercises.map((exercise, index) => ({
-              workoutPlanId: plan.id,
-              exerciseId: exercise.exerciseId,
-              orderIndex: exercise.orderIndex ?? index,
-              targetSets: exercise.targetSets,
-              targetReps: exercise.targetReps,
-              targetWeight: exercise.targetWeight,
-              targetRestSeconds: exercise.targetRestSeconds,
-            })),
+            data.exercises.map(
+              (exercise, index) =>
+                ({
+                  workoutPlanId: plan.id,
+                  exerciseId: exercise.exerciseId,
+                  orderIndex: exercise.orderIndex ?? index,
+                  targetSets: exercise.targetSets,
+                  targetReps: exercise.targetReps,
+                  targetWeight: exercise.targetWeight,
+                  targetRestSeconds: exercise.targetRestSeconds,
+                }) as WorkoutPlanExerciseInsert,
+            ),
           )
           .returning();
       }

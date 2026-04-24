@@ -1,6 +1,5 @@
 import type { Context } from 'hono';
-import { and, eq } from 'drizzle-orm';
-import { memberships, users } from '@lifeos/db';
+import { and, eq, memberships, users } from '@lifeos/db';
 import { verifyToken } from '@lifeos/auth';
 import { db } from '../config/db';
 import { env } from '../config/env';
@@ -85,8 +84,8 @@ export async function resolveRequestContext(
   }
 
   return {
-    userId: fallbackMembership.userId,
-    workspaceId: fallbackMembership.workspaceId,
+    userId: String(fallbackMembership.userId),
+    workspaceId: String(fallbackMembership.workspaceId),
     authSource: 'fallback',
   };
 }

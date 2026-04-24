@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { and, eq } from 'drizzle-orm';
 import {
+  and,
+  eq,
   workoutSessionExercises,
   workoutSessions,
   workoutSets,
@@ -11,6 +12,8 @@ import { db } from '../config/db';
 import { resolveWorkoutContext } from './_workout-context';
 
 export const workoutSetRoutes = new Hono();
+type WorkoutSetInsert = typeof workoutSets.$inferInsert;
+type WorkoutSessionInsert = typeof workoutSessions.$inferInsert;
 
 /**
  * PATCH /api/v1/workout-sets/:id
@@ -84,53 +87,55 @@ workoutSetRoutes.patch(
 
     const [updatedSet] = await db
       .update(workoutSets)
-      .set({
-        weightValue:
-          data.weightValue === undefined
-            ? undefined
-            : data.weightValue === null
-              ? null
-              : data.weightValue.toString(),
-        repsCount:
-          data.repsCount === undefined
-            ? undefined
-            : data.repsCount === null
-              ? null
-              : data.repsCount,
-        durationSeconds:
-          data.durationSeconds === undefined
-            ? undefined
-            : data.durationSeconds === null
-              ? null
-              : data.durationSeconds,
-        distanceMeters:
-          data.distanceMeters === undefined
-            ? undefined
-            : data.distanceMeters === null
-              ? null
-              : data.distanceMeters,
-        rpe:
-          data.rpe === undefined
-            ? undefined
-            : data.rpe === null
-              ? null
-              : data.rpe,
-        rir:
-          data.rir === undefined
-            ? undefined
-            : data.rir === null
-              ? null
-              : data.rir,
-        isWarmup: data.isWarmup,
-        isCompleted: data.isCompleted,
-        completedAt: computedCompletedAt,
-      })
+      .set(
+        {
+          weightValue:
+            data.weightValue === undefined
+              ? undefined
+              : data.weightValue === null
+                ? null
+                : data.weightValue.toString(),
+          repsCount:
+            data.repsCount === undefined
+              ? undefined
+              : data.repsCount === null
+                ? null
+                : data.repsCount,
+          durationSeconds:
+            data.durationSeconds === undefined
+              ? undefined
+              : data.durationSeconds === null
+                ? null
+                : data.durationSeconds,
+          distanceMeters:
+            data.distanceMeters === undefined
+              ? undefined
+              : data.distanceMeters === null
+                ? null
+                : data.distanceMeters,
+          rpe:
+            data.rpe === undefined
+              ? undefined
+              : data.rpe === null
+                ? null
+                : data.rpe,
+          rir:
+            data.rir === undefined
+              ? undefined
+              : data.rir === null
+                ? null
+                : data.rir,
+          isWarmup: data.isWarmup,
+          isCompleted: data.isCompleted,
+          completedAt: computedCompletedAt,
+        } as Partial<WorkoutSetInsert>,
+      )
       .where(eq(workoutSets.id, ownedSet.setId))
       .returning();
 
     await db
       .update(workoutSessions)
-      .set({ updatedAt: new Date() })
+      .set({ updatedAt: new Date() } as Partial<WorkoutSessionInsert>)
       .where(eq(workoutSessions.id, ownedSet.sessionId));
 
     return c.json(updatedSet);

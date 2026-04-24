@@ -1,8 +1,12 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { and, asc, desc, eq, inArray } from 'drizzle-orm';
 import {
+  and,
+  asc,
+  desc,
+  eq,
   exercises,
+  inArray,
   workoutPlanExercises,
   workoutPlans,
   workoutSessionExercises,
@@ -19,6 +23,9 @@ import { db } from '../config/db';
 import { resolveWorkoutContext } from './_workout-context';
 
 export const workoutSessionRoutes = new Hono();
+type WorkoutSessionInsert = typeof workoutSessions.$inferInsert;
+type WorkoutSessionExerciseInsert = typeof workoutSessionExercises.$inferInsert;
+type WorkoutSetInsert = typeof workoutSets.$inferInsert;
 
 /**
  * POST /api/v1/workout-sessions
@@ -35,6 +42,15 @@ workoutSessionRoutes.post(
 
     const { workspaceId, userId } = context;
     const data = c.req.valid('json');
+    const sessionPayload = {
+      workspaceId,
+      userId,
+      workoutPlanId: data.workoutPlanId,
+      startedAt: data.startedAt ? new Date(data.startedAt) : new Date(),
+      sessionStatus: 'active',
+      notes: data.notes,
+      perceivedIntensity: data.perceivedIntensity,
+    } as WorkoutSessionInsert;
 
     let seedExercises: CreateWorkoutSessionExerciseDto[] = data.exercises;
 
@@ -78,15 +94,7 @@ workoutSessionRoutes.post(
     const createResult = await db.transaction(async (tx) => {
       const [session] = await tx
         .insert(workoutSessions)
-        .values({
-          workspaceId,
-          userId,
-          workoutPlanId: data.workoutPlanId,
-          startedAt: data.startedAt ? new Date(data.startedAt) : new Date(),
-          sessionStatus: 'active',
-          notes: data.notes,
-          perceivedIntensity: data.perceivedIntensity,
-        })
+        .values(sessionPayload)
         .returning();
 
       if (!session) {
@@ -98,13 +106,16 @@ workoutSessionRoutes.post(
         sessionExercises = await tx
           .insert(workoutSessionExercises)
           .values(
-            seedExercises.map((exercise, index) => ({
-              workoutSessionId: session.id,
-              exerciseId: exercise.exerciseId,
-              orderIndex: exercise.orderIndex ?? index,
-              targetSchemeJson: exercise.targetSchemeJson,
-              previousResultJson: exercise.previousResultJson,
-            })),
+            seedExercises.map(
+              (exercise, index) =>
+                ({
+                  workoutSessionId: session.id,
+                  exerciseId: exercise.exerciseId,
+                  orderIndex: exercise.orderIndex ?? index,
+                  targetSchemeJson: exercise.targetSchemeJson,
+                  previousResultJson: exercise.previousResultJson,
+                }) as WorkoutSessionExerciseInsert,
+            ),
           )
           .returning();
       }
@@ -247,19 +258,21 @@ workoutSessionRoutes.patch(
 
     const [updatedSession] = await db
       .update(workoutSessions)
-      .set({
-        endedAt:
-          data.endedAt === null
-            ? null
-            : data.endedAt
-              ? new Date(data.endedAt)
-              : autoEndedAt,
-        sessionStatus: data.sessionStatus,
-        notes: data.notes === null ? null : data.notes,
-        perceivedIntensity:
-          data.perceivedIntensity === null ? null : data.perceivedIntensity,
-        updatedAt: new Date(),
-      })
+      .set(
+        {
+          endedAt:
+            data.endedAt === null
+              ? null
+              : data.endedAt
+                ? new Date(data.endedAt)
+                : autoEndedAt,
+          sessionStatus: data.sessionStatus,
+          notes: data.notes === null ? null : data.notes,
+          perceivedIntensity:
+            data.perceivedIntensity === null ? null : data.perceivedIntensity,
+          updatedAt: new Date(),
+        } as Partial<WorkoutSessionInsert>,
+      )
       .where(
         and(
           eq(workoutSessions.id, sessionId),
@@ -363,25 +376,27 @@ workoutSessionRoutes.post(
 
     const [createdSet] = await db
       .insert(workoutSets)
-      .values({
-        workoutSessionExerciseId: data.workoutSessionExerciseId,
-        setNumber,
-        weightValue:
-          data.weightValue !== undefined ? data.weightValue.toString() : null,
-        repsCount: data.repsCount,
-        durationSeconds: data.durationSeconds,
-        distanceMeters: data.distanceMeters,
-        rpe: data.rpe,
-        rir: data.rir,
-        isWarmup: data.isWarmup,
-        isCompleted: data.isCompleted,
-        completedAt: data.isCompleted ? new Date() : null,
-      })
+      .values(
+        {
+          workoutSessionExerciseId: data.workoutSessionExerciseId,
+          setNumber,
+          weightValue:
+            data.weightValue !== undefined ? data.weightValue.toString() : null,
+          repsCount: data.repsCount,
+          durationSeconds: data.durationSeconds,
+          distanceMeters: data.distanceMeters,
+          rpe: data.rpe,
+          rir: data.rir,
+          isWarmup: data.isWarmup,
+          isCompleted: data.isCompleted,
+          completedAt: data.isCompleted ? new Date() : null,
+        } as WorkoutSetInsert,
+      )
       .returning();
 
     await db
       .update(workoutSessions)
-      .set({ updatedAt: new Date() })
+      .set({ updatedAt: new Date() } as Partial<WorkoutSessionInsert>)
       .where(eq(workoutSessions.id, sessionId));
 
     return c.json(createdSet, 201);

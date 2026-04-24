@@ -4,13 +4,6 @@ import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { healthRoutes } from './routes/health.routes';
 import { authRoutes } from './routes/auth.routes';
-import { todayRoutes } from './routes/today.routes';
-import { inboxRoutes } from './routes/inbox.routes';
-import { taskRoutes } from './routes/tasks.routes';
-import { noteRoutes } from './routes/notes.routes';
-import { eventRoutes } from './routes/events.routes';
-import { reminderRoutes } from './routes/reminders.routes';
-import { mailRoutes } from './routes/mail.routes';
 import { exerciseRoutes } from './routes/exercises.routes';
 import { workoutPlanRoutes } from './routes/workout-plans.routes';
 import { workoutSessionRoutes } from './routes/workout-sessions.routes';
@@ -38,15 +31,7 @@ export function createApp() {
   // ── Routes ──
   app.route('/', healthRoutes);
   app.route('/auth', authRoutes);
-
-  // ── Future routes (uncomment per sprint) ──
-  app.route('/today', todayRoutes);
-  app.route('/inbox-items', inboxRoutes);
-  app.route('/tasks', taskRoutes);
-  app.route('/notes', noteRoutes);
-  app.route('/events', eventRoutes);
-  app.route('/reminders', reminderRoutes);
-  app.route('/mail', mailRoutes);
+  // Sprint 4 production scope
   app.route('/exercises', exerciseRoutes);
   app.route('/workout-plans', workoutPlanRoutes);
   app.route('/workout-sessions', workoutSessionRoutes);

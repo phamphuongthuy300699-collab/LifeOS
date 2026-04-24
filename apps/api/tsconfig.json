@@ -4,5 +4,17 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": ["src"]
+  "include": [
+    "src/index.ts",
+    "src/app.ts",
+    "src/config/**/*.ts",
+    "src/routes/health.routes.ts",
+    "src/routes/auth.routes.ts",
+    "src/routes/_request-context.ts",
+    "src/routes/_workout-context.ts",
+    "src/routes/exercises.routes.ts",
+    "src/routes/workout-plans.routes.ts",
+    "src/routes/workout-sessions.routes.ts",
+    "src/routes/workout-sets.routes.ts"
+  ]
 }

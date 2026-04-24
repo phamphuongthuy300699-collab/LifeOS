@@ -33,3 +33,4 @@ drizzle/meta/
 
 # Misc
 *.tsbuildinfo
+.vercel
