@@ -2,6 +2,7 @@ const configuredApiBase =
   typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL : undefined;
 
 export const API_BASE = (configuredApiBase?.trim() || '/api/v1').replace(/\/$/, '');
+const API_FETCH_TIMEOUT_MS = 8000;
 
 export class ApiError extends Error {
   constructor(public code: string, message: string, public status: number) {
@@ -48,10 +49,34 @@ export async function apiFetch<T>(endpoint: string, options?: RequestInit): Prom
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  const timeoutController = new AbortController();
+  const externalSignal = options?.signal;
+
+  if (externalSignal) {
+    externalSignal.addEventListener('abort', () => timeoutController.abort(), {
+      once: true,
+    });
+  }
+
+  const timeoutId = setTimeout(() => {
+    timeoutController.abort();
+  }, API_FETCH_TIMEOUT_MS);
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+      signal: timeoutController.signal,
+    });
+  } catch (error) {
+    if ((error as Error).name === 'AbortError') {
+      throw new ApiError('TIMEOUT', 'Request timeout', 408);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     let errorCode = 'UNKNOWN_ERROR';
