@@ -133,7 +133,7 @@ export default function ActiveWorkoutPage() {
               Упражнение {activeExerciseIndex + 1} из {exercises.length}
             </p>
             <Link
-              href="#"
+              href={`/workout/exercises/${activeExercise.exerciseId}/technique?sessionId=${sessionId}`}
               className="text-xs font-semibold uppercase tracking-wider text-primary"
             >
               {dict.workout.technique}

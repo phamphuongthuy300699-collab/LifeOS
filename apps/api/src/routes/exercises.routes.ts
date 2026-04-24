@@ -35,6 +35,37 @@ exerciseRoutes.get('/', async (c) => {
 });
 
 /**
+ * GET /api/v1/exercises/:id
+ * Returns one exercise from current user/workspace library.
+ */
+exerciseRoutes.get('/:id', async (c) => {
+  const context = await resolveWorkoutContext(c.req.raw);
+  if (!context) {
+    return c.json({ error: 'No workspace membership found' }, 403);
+  }
+
+  const { workspaceId, userId } = context;
+  const exerciseId = c.req.param('id');
+
+  const [exercise] = await db
+    .select()
+    .from(exercises)
+    .where(
+      and(
+        eq(exercises.id, exerciseId),
+        eq(exercises.workspaceId, workspaceId),
+        eq(exercises.userId, userId),
+      ),
+    );
+
+  if (!exercise) {
+    return c.json({ error: 'Exercise not found' }, 404);
+  }
+
+  return c.json(exercise);
+});
+
+/**
  * POST /api/v1/exercises
  * Creates an exercise for the current user/workspace.
  */

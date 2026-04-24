@@ -154,6 +154,14 @@ export function useWorkoutPlans() {
   });
 }
 
+export function useExerciseById(exerciseId?: string) {
+  return useQuery({
+    queryKey: ['exercise', exerciseId],
+    enabled: Boolean(exerciseId),
+    queryFn: () => apiFetch<Exercise>(`/exercises/${exerciseId}`),
+  });
+}
+
 export function useWorkoutSession(sessionId?: string) {
   return useQuery({
     queryKey: ['workout-session', sessionId],
