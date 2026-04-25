@@ -184,7 +184,7 @@ export default function WorkoutSummaryPage() {
       </section>
 
       <section className="flex flex-wrap gap-3">
-        <Link href="/nutrition">
+        <Link href="/nutrition?mealType=post_workout">
           <Button className="rounded-full">{dict.nutrition.addMeal}</Button>
         </Link>
         <Link href="/workout">

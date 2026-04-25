@@ -21,7 +21,7 @@ export * from './mail.schema';
 export * from './workouts.schema';
 
 // Phase E — Nutrition (Sprint 5)
-// export * from './nutrition.schema';
+export * from './nutrition.schema';
 
 // Phase F — Growth (Sprints 6-7)
 // export * from './learning.schema';

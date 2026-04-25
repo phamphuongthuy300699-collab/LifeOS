@@ -8,6 +8,7 @@ import { exerciseRoutes } from './routes/exercises.routes';
 import { workoutPlanRoutes } from './routes/workout-plans.routes';
 import { workoutSessionRoutes } from './routes/workout-sessions.routes';
 import { workoutSetRoutes } from './routes/workout-sets.routes';
+import { nutritionRoutes } from './routes/nutrition.routes';
 
 /**
  * Create the Hono application with all middleware and routes.
@@ -24,7 +25,7 @@ export function createApp() {
       origin: (origin) => origin, // Allow configured origins in production
       credentials: true,
       allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowHeaders: ['Content-Type', 'Authorization'],
+      allowHeaders: ['Content-Type', 'Authorization', 'x-user-id'],
     }),
   );
 
@@ -36,7 +37,7 @@ export function createApp() {
   app.route('/workout-plans', workoutPlanRoutes);
   app.route('/workout-sessions', workoutSessionRoutes);
   app.route('/workout-sets', workoutSetRoutes);
-  // app.route('/nutrition', nutritionRoutes);
+  app.route('/', nutritionRoutes);
   // app.route('/learning', learningRoutes);
   // app.route('/contacts', contactRoutes);
   // app.route('/projects', projectRoutes);

@@ -18,6 +18,7 @@
     "@lifeos/config": "workspace:*",
     "@lifeos/db": "workspace:*",
     "@lifeos/domain-calendar": "workspace:*",
+    "@lifeos/domain-nutrition": "workspace:*",
     "@lifeos/domain-notes": "workspace:*",
     "@lifeos/domain-tasks": "workspace:*",
     "@lifeos/domain-workouts": "workspace:*",
