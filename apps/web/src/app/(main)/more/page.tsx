@@ -7,6 +7,7 @@ import {
   Wallet,
   Download,
   Settings,
+  LogIn,
 } from 'lucide-react';
 
 const menuItems = [
@@ -25,6 +26,14 @@ export default function MorePage() {
     <div className="px-4 pt-6">
       <h1 className="text-2xl font-bold text-content">{dict.nav.more}</h1>
       <div className="mt-6 space-y-1">
+        <a
+          href="/api/v1/auth/google"
+          className="flex items-center gap-4 rounded-xl px-4 py-3 
+                     text-content transition-colors hover:bg-surface-secondary"
+        >
+          <LogIn size={20} className="text-content-muted" />
+          <span className="text-sm font-medium">{dict.auth.signInWithGoogle}</span>
+        </a>
         {menuItems.map(({ key, href, icon: Icon }) => (
           <Link
             key={key}
