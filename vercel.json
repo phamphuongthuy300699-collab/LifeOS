@@ -1,10 +1,16 @@
 {
+  "version": 2,
   "installCommand": "pnpm install --no-frozen-lockfile",
-  "buildCommand": "echo \"API deploy via Vercel function entrypoint\"",
-  "functions": {
-    "api/v1/[...path].ts": {
-      "runtime": "@vercel/node@3.2.24",
-      "maxDuration": 30
+  "builds": [
+    {
+      "src": "api/[...path].ts",
+      "use": "@vercel/node"
     }
-  }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/[...path].ts"
+    }
+  ]
 }

@@ -1,11 +1,11 @@
 import { handle } from '@hono/node-server/vercel';
-import { Hono } from 'hono';
+import type { Hono } from 'hono';
 
 let cached: ReturnType<typeof handle> | null = null;
 
 async function getHandler() {
   if (cached) return cached;
-  const mod = await import('../apps/api/src/app');
+  const mod = await import('../apps/api/src/app.js');
   const app = mod.createApp() as Hono;
   cached = handle(app);
   return cached;
