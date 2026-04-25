@@ -43,6 +43,13 @@
       "when": 1777122933526,
       "tag": "0005_bright_spiral",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1777123815230,
+      "tag": "0006_pretty_starbolt",
+      "breakpoints": true
     }
   ]
 }

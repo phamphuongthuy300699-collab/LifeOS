@@ -121,6 +121,7 @@ workoutPlanRoutes.post(
       workspaceId,
       userId,
       name: data.name,
+      slug: data.slug,
       goal: data.goal,
       description: data.description,
       isActive: data.isActive,
@@ -150,8 +151,17 @@ workoutPlanRoutes.post(
                   orderIndex: exercise.orderIndex ?? index,
                   targetSets: exercise.targetSets,
                   targetReps: exercise.targetReps,
+                  targetRepsMin: exercise.targetRepsMin,
+                  targetRepsMax: exercise.targetRepsMax,
                   targetWeight: exercise.targetWeight,
+                  targetWeightValue:
+                    exercise.targetWeightValue !== undefined &&
+                    exercise.targetWeightValue !== null
+                      ? String(exercise.targetWeightValue)
+                      : null,
+                  targetWeightUnit: exercise.targetWeightUnit,
                   targetRestSeconds: exercise.targetRestSeconds,
+                  notes: exercise.notes,
                 }) as WorkoutPlanExerciseInsert,
             ),
           )

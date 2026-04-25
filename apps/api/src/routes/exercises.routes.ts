@@ -85,9 +85,15 @@ exerciseRoutes.post('/', zValidator('json', createExerciseSchema), async (c) => 
     descriptionShort: data.descriptionShort,
     descriptionMarkdown: data.descriptionMarkdown,
     muscleGroupsJson: data.muscleGroups,
+    primaryMuscleGroupsJson: data.primaryMuscleGroups,
+    secondaryMuscleGroupsJson: data.secondaryMuscleGroups,
+    movementPattern: data.movementPattern,
+    instructionsJson: data.instructions,
+    commonMistakesJson: data.commonMistakes,
     equipmentJson: data.equipment,
     difficulty: data.difficulty,
     defaultVideoUrl: data.defaultVideoUrl,
+    videoJson: data.video,
     defaultRestSeconds: data.defaultRestSeconds,
     isCustom: data.isCustom,
   } as ExerciseInsert;
@@ -123,9 +129,15 @@ exerciseRoutes.patch(
       data.descriptionShort !== undefined ||
       data.descriptionMarkdown !== undefined ||
       data.muscleGroups !== undefined ||
+      data.primaryMuscleGroups !== undefined ||
+      data.secondaryMuscleGroups !== undefined ||
+      data.movementPattern !== undefined ||
+      data.instructions !== undefined ||
+      data.commonMistakes !== undefined ||
       data.equipment !== undefined ||
       data.difficulty !== undefined ||
       data.defaultVideoUrl !== undefined ||
+      data.video !== undefined ||
       data.defaultRestSeconds !== undefined ||
       data.isCustom !== undefined;
 
@@ -138,9 +150,15 @@ exerciseRoutes.patch(
       descriptionShort: data.descriptionShort,
       descriptionMarkdown: data.descriptionMarkdown,
       muscleGroupsJson: data.muscleGroups,
+      primaryMuscleGroupsJson: data.primaryMuscleGroups,
+      secondaryMuscleGroupsJson: data.secondaryMuscleGroups,
+      movementPattern: data.movementPattern,
+      instructionsJson: data.instructions,
+      commonMistakesJson: data.commonMistakes,
       equipmentJson: data.equipment,
       difficulty: data.difficulty,
       defaultVideoUrl: data.defaultVideoUrl,
+      videoJson: data.video,
       defaultRestSeconds: data.defaultRestSeconds,
       isCustom: data.isCustom,
       updatedAt: new Date(),

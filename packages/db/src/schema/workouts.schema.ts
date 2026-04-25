@@ -41,6 +41,18 @@ export const exercises = pgTable(
     descriptionShort: text('description_short'),
     descriptionMarkdown: text('description_markdown'),
     muscleGroupsJson: jsonb('muscle_groups_json').$type<string[]>(),
+    primaryMuscleGroupsJson: jsonb('primary_muscle_groups_json').$type<string[]>(),
+    secondaryMuscleGroupsJson: jsonb('secondary_muscle_groups_json').$type<
+      string[]
+    >(),
+    movementPattern: varchar('movement_pattern', { length: 120 }),
+    instructionsJson: jsonb('instructions_json').$type<string[]>(),
+    commonMistakesJson: jsonb('common_mistakes_json').$type<string[]>(),
+    videoJson: jsonb('video_json').$type<{
+      url: string | null;
+      source: string | null;
+      title: string | null;
+    }>(),
     equipmentJson: jsonb('equipment_json').$type<string[]>(),
     difficulty: difficultyEnum('difficulty').default('intermediate'),
     defaultVideoUrl: text('default_video_url'),
@@ -80,6 +92,7 @@ export const workoutPlans = pgTable(
       .references(() => users.id, { onDelete: 'cascade' }),
 
     name: varchar('name', { length: 300 }).notNull(),
+    slug: varchar('slug', { length: 220 }),
     goal: text('goal'),
     description: text('description'),
     isActive: boolean('is_active').notNull().default(true),
@@ -98,6 +111,11 @@ export const workoutPlans = pgTable(
       table.userId,
       table.isActive,
     ),
+    wsUserSlugUnique: uniqueIndex('uidx_workout_plans_ws_user_slug').on(
+      table.workspaceId,
+      table.userId,
+      table.slug,
+    ),
   }),
 );
 
@@ -114,8 +132,13 @@ export const workoutPlanExercises = pgTable(
     orderIndex: integer('order_index').notNull().default(0),
     targetSets: integer('target_sets'),
     targetReps: varchar('target_reps', { length: 100 }),
+    targetRepsMin: integer('target_reps_min'),
+    targetRepsMax: integer('target_reps_max'),
     targetWeight: varchar('target_weight', { length: 100 }),
+    targetWeightValue: numeric('target_weight_value', { precision: 8, scale: 2 }),
+    targetWeightUnit: varchar('target_weight_unit', { length: 16 }),
     targetRestSeconds: integer('target_rest_seconds'),
+    notes: text('notes'),
     metadataJson: jsonb('metadata_json').$type<Record<string, unknown>>(),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()

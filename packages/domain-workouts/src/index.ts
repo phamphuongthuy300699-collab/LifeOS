@@ -38,3 +38,6 @@ export type {
   CreateWorkoutSetDto,
   UpdateWorkoutSetDto,
 } from './dto/workout-session.dto';
+
+export { workoutSeedSchema } from './dto/workout-seed.dto';
+export type { WorkoutSeed } from './dto/workout-seed.dto';
