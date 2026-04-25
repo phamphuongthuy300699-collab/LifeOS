@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "private": true,
   "description": "LifeOS REST API — Hono + TypeScript",
-  "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",

@@ -16,7 +16,6 @@ import {
   users,
   workspaces,
 } from '@lifeos/db';
-import { sql } from 'drizzle-orm';
 import { db } from '../config/db';
 import { env } from '../config/env';
 import { getCurrentUserProfile, resolveStrictRequestContext } from './_request-context';
@@ -199,22 +198,24 @@ authRoutes.get('/google/callback', async (c) => {
       return c.json({ code: 'INTERNAL_ERROR', message: 'Failed to create external account' }, 500);
     }
 
-    await db.execute(sql`
-      update external_accounts
-      set
-        email = ${userInfo.email},
-        scopes_json = ${JSON.stringify(scopes)}::jsonb,
-        access_token_encrypted = ${encryptedAccessToken},
-        refresh_token_encrypted = ${encryptedRefreshToken ?? null},
-        token_expires_at = ${expiresAt.toISOString()}::timestamptz,
-        sync_enabled = true,
-        metadata_json = ${JSON.stringify({
-          googleName: userInfo.name,
-          picture: userInfo.picture,
-        })}::jsonb,
-        updated_at = now()
-      where id = ${createdExternal.id}
-    `);
+    await db
+      .update(externalAccounts)
+      .set(
+        {
+          email: userInfo.email,
+          scopesJson: scopes,
+          accessTokenEncrypted: encryptedAccessToken,
+          refreshTokenEncrypted: encryptedRefreshToken ?? null,
+          tokenExpiresAt: expiresAt,
+          syncEnabled: true,
+          metadataJson: {
+            googleName: userInfo.name,
+            picture: userInfo.picture,
+          },
+          updatedAt: new Date(),
+        } as any,
+      )
+      .where(eq(externalAccounts.id, createdExternal.id));
   } else {
     const metadata = {
       ...(existingExternalAccount.metadataJson ?? {}),
@@ -223,20 +224,23 @@ authRoutes.get('/google/callback', async (c) => {
       scopesUpgradedAt: new Date().toISOString(),
     };
 
-    await db.execute(sql`
-      update external_accounts
-      set
-        user_id = ${linkedUserId},
-        email = ${userInfo.email},
-        scopes_json = ${JSON.stringify(scopes)}::jsonb,
-        access_token_encrypted = ${encryptedAccessToken},
-        refresh_token_encrypted = coalesce(${encryptedRefreshToken ?? null}, refresh_token_encrypted),
-        token_expires_at = ${expiresAt.toISOString()}::timestamptz,
-        sync_enabled = true,
-        metadata_json = ${JSON.stringify(metadata)}::jsonb,
-        updated_at = now()
-      where id = ${existingExternalAccount.id}
-    `);
+    await db
+      .update(externalAccounts)
+      .set(
+        {
+          userId: linkedUserId,
+          email: userInfo.email,
+          scopesJson: scopes,
+          accessTokenEncrypted: encryptedAccessToken,
+          refreshTokenEncrypted:
+            encryptedRefreshToken ?? existingExternalAccount.refreshTokenEncrypted,
+          tokenExpiresAt: expiresAt,
+          syncEnabled: true,
+          metadataJson: metadata,
+          updatedAt: new Date(),
+        } as any,
+      )
+      .where(eq(externalAccounts.id, existingExternalAccount.id));
   }
 
   const accessToken = await signAccessToken(
