@@ -5,6 +5,9 @@ import { useTodayData, useCompleteTask } from '@/shared/hooks/use-tasks';
 import { TaskCard } from '@/shared/components/task-card';
 import { Rocket, BrainCircuit, Activity, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { useLearningTracks } from '@/shared/hooks/use-learning';
+import { useProjects } from '@/shared/hooks/use-projects';
+import { useContacts } from '@/shared/hooks/use-contacts';
 
 import { MailWidget } from './components/mail-widget';
 
@@ -12,6 +15,50 @@ export default function TodayPage() {
   const dict = getDictionary('ru');
   const { data, isLoading, isError } = useTodayData();
   const completeMutation = useCompleteTask();
+  const { data: learningData } = useLearningTracks();
+  const { data: projectData } = useProjects();
+  const { data: contactData } = useContacts();
+
+  const eveningSuggestion = (() => {
+    const projects = projectData?.items ?? [];
+    if (projects.length > 0) {
+      return {
+        title: 'Вечерний проектный контекст',
+        text:
+          projects[0]?.currentNextAction ||
+          'Откройте проект и обновите next action на завтра.',
+        href: '/projects',
+        cta: 'Открыть проекты',
+      };
+    }
+
+    const learning = learningData?.items ?? [];
+    if (learning.length > 0) {
+      return {
+        title: 'Вечернее обучение',
+        text: learning[0]?.goal || 'Продвиньте активный трек минимум на 30 минут.',
+        href: '/learning',
+        cta: 'Начать обучение',
+      };
+    }
+
+    const contacts = contactData?.items ?? [];
+    if (contacts.length > 0) {
+      return {
+        title: 'Вечерние контакты',
+        text: 'Обновите заметку по ключевому контакту и зафиксируйте следующий шаг.',
+        href: '/contacts',
+        cta: 'Открыть контакты',
+      };
+    }
+
+    return {
+      title: 'Вечерний досуг',
+      text: 'Добавьте первый учебный трек или проект, чтобы получать персональные рекомендации.',
+      href: '/more',
+      cta: 'Открыть разделы',
+    };
+  })();
 
   const handleComplete = (id: string) => {
     completeMutation.mutate(id);
@@ -148,11 +195,14 @@ export default function TodayPage() {
         {/* Evening Suggestion */}
         <section className="bg-inverse-surface text-inverse-on-surface rounded-xl p-6 relative overflow-hidden mt-auto">
           <div className="relative z-10">
-            <h3 className="font-headline-md text-headline-md mb-2">Вечерний досуг</h3>
-            <p className="text-outline-variant text-sm mb-4">Осталось 30 минут на обучение по UI-анимациям.</p>
-            <button className="flex items-center gap-2 text-inverse-primary font-semibold text-sm">
-              Начать обучение <ArrowRight size={16} />
-            </button>
+            <h3 className="font-headline-md text-headline-md mb-2">{eveningSuggestion.title}</h3>
+            <p className="text-outline-variant text-sm mb-4">{eveningSuggestion.text}</p>
+            <Link
+              href={eveningSuggestion.href}
+              className="inline-flex items-center gap-2 text-inverse-primary font-semibold text-sm"
+            >
+              {eveningSuggestion.cta} <ArrowRight size={16} />
+            </Link>
           </div>
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-primary/20 blur-3xl rounded-full"></div>
         </section>

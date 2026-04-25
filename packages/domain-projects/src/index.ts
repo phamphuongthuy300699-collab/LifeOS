@@ -1,7 +1,11 @@
-/**
- * @lifeos/domain-projects
- * Projects domain
- *
- * Exports will be added as the domain is implemented.
- */
-export {};
+export {
+  createProjectSchema,
+  updateProjectSchema,
+  createProjectMilestoneSchema,
+} from './dto/project.dto';
+
+export type {
+  CreateProjectDto,
+  UpdateProjectDto,
+  CreateProjectMilestoneDto,
+} from './dto/project.dto';

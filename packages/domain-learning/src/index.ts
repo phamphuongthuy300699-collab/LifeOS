@@ -1,7 +1,13 @@
-/**
- * @lifeos/domain-learning
- * Learning management domain
- *
- * Exports will be added as the domain is implemented.
- */
-export {};
+export {
+  createLearningTrackSchema,
+  updateLearningTrackSchema,
+  createLearningMaterialSchema,
+  createLearningSessionSchema,
+} from './dto/learning.dto';
+
+export type {
+  CreateLearningTrackDto,
+  UpdateLearningTrackDto,
+  CreateLearningMaterialDto,
+  CreateLearningSessionDto,
+} from './dto/learning.dto';

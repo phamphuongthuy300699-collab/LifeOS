@@ -24,9 +24,9 @@ export * from './workouts.schema';
 export * from './nutrition.schema';
 
 // Phase F — Growth (Sprints 6-7)
-// export * from './learning.schema';
-// export * from './contacts.schema';
-// export * from './projects.schema';
+export * from './learning.schema';
+export * from './contacts.schema';
+export * from './projects.schema';
 // export * from './finance.schema';
 
 // Phase G — AI/Speech (Sprint 8)

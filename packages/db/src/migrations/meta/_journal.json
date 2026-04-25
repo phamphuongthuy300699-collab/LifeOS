@@ -36,6 +36,13 @@
       "when": 1777121403190,
       "tag": "0004_sudden_masked_marvel",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1777122933526,
+      "tag": "0005_bright_spiral",
+      "breakpoints": true
     }
   ]
 }

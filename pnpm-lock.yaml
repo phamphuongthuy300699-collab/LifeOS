@@ -41,12 +41,21 @@ importers:
       '@lifeos/domain-calendar':
         specifier: workspace:*
         version: link:../../packages/domain-calendar
+      '@lifeos/domain-contacts':
+        specifier: workspace:*
+        version: link:../../packages/domain-contacts
+      '@lifeos/domain-learning':
+        specifier: workspace:*
+        version: link:../../packages/domain-learning
       '@lifeos/domain-notes':
         specifier: workspace:*
         version: link:../../packages/domain-notes
       '@lifeos/domain-nutrition':
         specifier: workspace:*
         version: link:../../packages/domain-nutrition
+      '@lifeos/domain-projects':
+        specifier: workspace:*
+        version: link:../../packages/domain-projects
       '@lifeos/domain-tasks':
         specifier: workspace:*
         version: link:../../packages/domain-tasks
@@ -271,6 +280,9 @@ importers:
       '@lifeos/shared':
         specifier: workspace:*
         version: link:../shared
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       typescript:
         specifier: ^5.7.0
@@ -320,6 +332,9 @@ importers:
       '@lifeos/shared':
         specifier: workspace:*
         version: link:../shared
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       typescript:
         specifier: ^5.7.0
@@ -378,6 +393,9 @@ importers:
       '@lifeos/shared':
         specifier: workspace:*
         version: link:../shared
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       typescript:
         specifier: ^5.7.0
