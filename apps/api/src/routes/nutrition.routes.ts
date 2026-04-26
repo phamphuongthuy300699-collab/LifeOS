@@ -404,55 +404,114 @@ nutritionRoutes.patch(
  */
 nutritionRoutes.patch(
   '/nutrition-goals/current',
-  zValidator('json', updateCurrentNutritionGoalSchema),
   async (c) => {
-    const context = await resolveNutritionContext(c.req.raw);
-    if (!context) {
-      return c.json({ error: 'No workspace membership found' }, 403);
-    }
+    const startedAt = Date.now();
+    console.info('[nutrition-goals.current.patch] request started');
 
-    const { workspaceId, userId } = context;
-    const data = c.req.valid('json');
-    const effectiveFrom = data.effectiveFrom ? new Date(data.effectiveFrom) : new Date();
-
-    const [createdGoal] = await db.transaction(async (tx) => {
-      const existingGoals = await tx
-        .select()
-        .from(nutritionGoals)
-        .where(
-          and(
-            eq(nutritionGoals.workspaceId, workspaceId),
-            eq(nutritionGoals.userId, userId),
-          ),
-        )
-        .orderBy(desc(nutritionGoals.effectiveFrom));
-
-      const currentGoal = existingGoals.find((goal) => !goal.effectiveTo);
-      if (currentGoal) {
-        await tx
-          .update(nutritionGoals)
-          .set({
-            effectiveTo: effectiveFrom,
-            updatedAt: new Date(),
-          } as Partial<NutritionGoalInsert>)
-          .where(eq(nutritionGoals.id, currentGoal.id));
+    try {
+      const context = await resolveNutritionContext(c.req.raw);
+      if (!context) {
+        console.info('[nutrition-goals.current.patch] context missing');
+        return c.json({ error: 'No workspace membership found' }, 403);
       }
 
-      return tx
-        .insert(nutritionGoals)
-        .values({
-          workspaceId,
-          userId,
-          caloriesTarget:
-            data.caloriesTarget === undefined ? undefined : data.caloriesTarget,
-          proteinTargetG: toNumericString(data.proteinTargetG),
-          fatTargetG: toNumericString(data.fatTargetG),
-          carbsTargetG: toNumericString(data.carbsTargetG),
-          effectiveFrom,
-        } as NutritionGoalInsert)
-        .returning();
-    });
+      const { workspaceId, userId } = context;
+      const payload = await c.req.json().catch(() => ({}));
+      const parsedPayload = updateCurrentNutritionGoalSchema.safeParse(payload);
+      if (!parsedPayload.success) {
+        console.info('[nutrition-goals.current.patch] invalid payload', {
+          issues: parsedPayload.error.issues,
+          elapsedMs: Date.now() - startedAt,
+        });
+        return c.json(
+          {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid nutrition goal payload',
+            details: parsedPayload.error.issues,
+          },
+          400,
+        );
+      }
+      const data = parsedPayload.data;
+      const effectiveFrom = data.effectiveFrom ? new Date(data.effectiveFrom) : new Date();
+      console.info('[nutrition-goals.current.patch] context resolved', {
+        userId,
+        workspaceId,
+        payload: data,
+      });
 
-    return c.json(createdGoal);
+      const [createdGoal] = await db.transaction(async (tx) => {
+        const existingGoals = await tx
+          .select()
+          .from(nutritionGoals)
+          .where(
+            and(
+              eq(nutritionGoals.workspaceId, workspaceId),
+              eq(nutritionGoals.userId, userId),
+            ),
+          )
+          .orderBy(desc(nutritionGoals.effectiveFrom));
+
+        console.info('[nutrition-goals.current.patch] existing goals loaded', {
+          count: existingGoals.length,
+        });
+
+        const currentGoal = existingGoals.find((goal) => !goal.effectiveTo);
+        console.info('[nutrition-goals.current.patch] current goal lookup', {
+          found: Boolean(currentGoal),
+          currentGoalId: currentGoal?.id ?? null,
+        });
+        if (currentGoal) {
+          await tx
+            .update(nutritionGoals)
+            .set({
+              effectiveTo: effectiveFrom,
+              updatedAt: new Date(),
+            } as Partial<NutritionGoalInsert>)
+            .where(eq(nutritionGoals.id, currentGoal.id));
+          console.info('[nutrition-goals.current.patch] old goal closed', {
+            closedGoalId: currentGoal.id,
+          });
+        }
+
+        const [newGoal] = await tx
+          .insert(nutritionGoals)
+          .values({
+            workspaceId,
+            userId,
+            caloriesTarget:
+              data.caloriesTarget === undefined ? undefined : data.caloriesTarget,
+            proteinTargetG: toNumericString(data.proteinTargetG),
+            fatTargetG: toNumericString(data.fatTargetG),
+            carbsTargetG: toNumericString(data.carbsTargetG),
+            effectiveFrom,
+          } as NutritionGoalInsert)
+          .returning();
+        console.info('[nutrition-goals.current.patch] new goal inserted', {
+          goalId: newGoal?.id ?? null,
+        });
+
+        return [newGoal] as const;
+      });
+
+      console.info('[nutrition-goals.current.patch] response sent', {
+        status: 200,
+        elapsedMs: Date.now() - startedAt,
+      });
+      return c.json(createdGoal);
+    } catch (error) {
+      console.error('[nutrition-goals.current.patch] failed', {
+        elapsedMs: Date.now() - startedAt,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      return c.json(
+        {
+          code: 'NUTRITION_GOAL_UPDATE_FAILED',
+          message: 'Failed to update nutrition goal',
+        },
+        500,
+      );
+    }
   },
 );

@@ -19,7 +19,8 @@ export const IS_DEMO_MODE = demoModeFlag === 'true';
 export const SHOW_AUTH_DEBUG =
   authDebugFlag === 'true' ||
   (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production');
-const API_FETCH_TIMEOUT_MS = 8000;
+const API_FETCH_TIMEOUT_GET_MS = 10000;
+const API_FETCH_TIMEOUT_MUTATION_MS = 25000;
 const ACCESS_TOKEN_KEY = 'lifeos-access-token';
 const REFRESH_TOKEN_KEY = 'lifeos-refresh-token';
 const USER_ID_KEY = 'lifeos-user-id';
@@ -77,6 +78,10 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+type ApiFetchOptions = RequestInit & {
+  timeoutMs?: number;
+};
+
 export function getAuthStorage(): AuthStorage {
   if (typeof window === 'undefined') {
     return {
@@ -126,6 +131,19 @@ export function shouldUseDemoFallback(): boolean {
   return IS_DEMO_MODE;
 }
 
+function resolveTimeoutMs(method: string | undefined, explicitTimeout: number | undefined): number {
+  if (explicitTimeout && explicitTimeout > 0) {
+    return explicitTimeout;
+  }
+
+  const normalizedMethod = (method ?? 'GET').toUpperCase();
+  if (normalizedMethod === 'GET' || normalizedMethod === 'HEAD') {
+    return API_FETCH_TIMEOUT_GET_MS;
+  }
+
+  return API_FETCH_TIMEOUT_MUTATION_MS;
+}
+
 function buildDefaultHeaders(): Headers {
   const headers = new Headers();
 
@@ -147,9 +165,10 @@ function buildDefaultHeaders(): Headers {
 /**
  * Generic fetch wrapper for calls to /api/v1
  */
-export async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): Promise<T> {
   const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   const url = `${API_BASE}${normalizedEndpoint}`;
+  const timeoutMs = resolveTimeoutMs(options?.method, options?.timeoutMs);
   
   const headers = buildDefaultHeaders();
   const requestHeaders = new Headers(options?.headers);
@@ -170,7 +189,7 @@ export async function apiFetch<T>(endpoint: string, options?: RequestInit): Prom
 
   const timeoutId = setTimeout(() => {
     timeoutController.abort();
-  }, API_FETCH_TIMEOUT_MS);
+  }, timeoutMs);
 
   let response: Response;
   try {
@@ -216,14 +235,14 @@ export async function apiFetch<T>(endpoint: string, options?: RequestInit): Prom
 }
 
 export const api = {
-  async get<T>(endpoint: string, options?: Omit<RequestInit, 'method'>): Promise<ApiResponse<T>> {
+  async get<T>(endpoint: string, options?: Omit<ApiFetchOptions, 'method'>): Promise<ApiResponse<T>> {
     const data = await apiFetch<T>(endpoint, { ...options, method: 'GET' });
     return { data };
   },
   async post<T>(
     endpoint: string,
     body?: unknown,
-    options?: Omit<RequestInit, 'method' | 'body'>,
+    options?: Omit<ApiFetchOptions, 'method' | 'body'>,
   ): Promise<ApiResponse<T>> {
     const data = await apiFetch<T>(endpoint, {
       ...options,
@@ -235,7 +254,7 @@ export const api = {
   async patch<T>(
     endpoint: string,
     body?: unknown,
-    options?: Omit<RequestInit, 'method' | 'body'>,
+    options?: Omit<ApiFetchOptions, 'method' | 'body'>,
   ): Promise<ApiResponse<T>> {
     const data = await apiFetch<T>(endpoint, {
       ...options,

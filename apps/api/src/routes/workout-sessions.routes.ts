@@ -33,103 +33,170 @@ type WorkoutSetInsert = typeof workoutSets.$inferInsert;
  */
 workoutSessionRoutes.post(
   '/',
-  zValidator('json', createWorkoutSessionSchema),
   async (c) => {
-    const context = await resolveWorkoutContext(c.req.raw);
-    if (!context) {
-      return c.json({ error: 'No workspace membership found' }, 403);
-    }
+    const startedAt = Date.now();
+    console.info('[workout-sessions.create] request started');
 
-    const { workspaceId, userId } = context;
-    const data = c.req.valid('json');
-    const sessionPayload = {
-      workspaceId,
-      userId,
-      workoutPlanId: data.workoutPlanId,
-      startedAt: data.startedAt ? new Date(data.startedAt) : new Date(),
-      sessionStatus: 'active',
-      notes: data.notes,
-      perceivedIntensity: data.perceivedIntensity,
-    } as WorkoutSessionInsert;
-
-    let seedExercises: CreateWorkoutSessionExerciseDto[] = data.exercises;
-
-    if (data.workoutPlanId) {
-      const [plan] = await db
-        .select()
-        .from(workoutPlans)
-        .where(
-          and(
-            eq(workoutPlans.id, data.workoutPlanId),
-            eq(workoutPlans.workspaceId, workspaceId),
-            eq(workoutPlans.userId, userId),
-          ),
-        )
-        .limit(1);
-
-      if (!plan) {
-        return c.json({ error: 'Workout plan not found' }, 404);
+    try {
+      const context = await resolveWorkoutContext(c.req.raw);
+      if (!context) {
+        console.info('[workout-sessions.create] context missing');
+        return c.json({ error: 'No workspace membership found' }, 403);
       }
 
-      if (seedExercises.length === 0) {
-        const planExercises = await db
-          .select()
-          .from(workoutPlanExercises)
-          .where(eq(workoutPlanExercises.workoutPlanId, data.workoutPlanId))
-          .orderBy(asc(workoutPlanExercises.orderIndex));
-
-        seedExercises = planExercises.map((item) => ({
-          exerciseId: item.exerciseId,
-          orderIndex: item.orderIndex,
-          targetSchemeJson: {
-            targetSets: item.targetSets,
-            targetReps: item.targetReps,
-            targetWeight: item.targetWeight,
-            targetRestSeconds: item.targetRestSeconds,
+      const { workspaceId, userId } = context;
+      const payload = await c.req.json().catch(() => ({}));
+      const parsedPayload = createWorkoutSessionSchema.safeParse(payload);
+      if (!parsedPayload.success) {
+        console.info('[workout-sessions.create] invalid payload', {
+          issues: parsedPayload.error.issues,
+          elapsedMs: Date.now() - startedAt,
+        });
+        return c.json(
+          {
+            code: 'VALIDATION_ERROR',
+            message: 'Invalid workout session payload',
+            details: parsedPayload.error.issues,
           },
-        }));
+          400,
+        );
       }
-    }
+      const data = parsedPayload.data;
+      console.info('[workout-sessions.create] context resolved', {
+        userId,
+        workspaceId,
+        workoutPlanId: data.workoutPlanId ?? null,
+      });
 
-    const createResult = await db.transaction(async (tx) => {
-      const [session] = await tx
-        .insert(workoutSessions)
-        .values(sessionPayload)
-        .returning();
+      const sessionPayload = {
+        workspaceId,
+        userId,
+        workoutPlanId: data.workoutPlanId,
+        startedAt: data.startedAt ? new Date(data.startedAt) : new Date(),
+        sessionStatus: 'active',
+        notes: data.notes,
+        perceivedIntensity: data.perceivedIntensity,
+      } as WorkoutSessionInsert;
 
-      if (!session) {
-        throw new Error('Failed to create workout session');
-      }
+      let seedExercises: CreateWorkoutSessionExerciseDto[] = data.exercises;
 
-      let sessionExercises: (typeof workoutSessionExercises.$inferSelect)[] = [];
-      if (seedExercises.length > 0) {
-        sessionExercises = await tx
-          .insert(workoutSessionExercises)
-          .values(
-            seedExercises.map(
-              (exercise, index) =>
-                ({
-                  workoutSessionId: session.id,
-                  exerciseId: exercise.exerciseId,
-                  orderIndex: exercise.orderIndex ?? index,
-                  targetSchemeJson: exercise.targetSchemeJson,
-                  previousResultJson: exercise.previousResultJson,
-                }) as WorkoutSessionExerciseInsert,
+      if (data.workoutPlanId) {
+        const [plan] = await db
+          .select()
+          .from(workoutPlans)
+          .where(
+            and(
+              eq(workoutPlans.id, data.workoutPlanId),
+              eq(workoutPlans.workspaceId, workspaceId),
+              eq(workoutPlans.userId, userId),
             ),
           )
-          .returning();
+          .limit(1);
+
+        console.info('[workout-sessions.create] plan lookup', {
+          workoutPlanId: data.workoutPlanId,
+          planFound: Boolean(plan),
+        });
+
+        if (!plan) {
+          console.info('[workout-sessions.create] response sent', {
+            status: 404,
+            elapsedMs: Date.now() - startedAt,
+          });
+          return c.json({ error: 'Workout plan not found' }, 404);
+        }
+
+        if (seedExercises.length === 0) {
+          const planExercises = await db
+            .select()
+            .from(workoutPlanExercises)
+            .where(eq(workoutPlanExercises.workoutPlanId, data.workoutPlanId))
+            .orderBy(asc(workoutPlanExercises.orderIndex));
+
+          console.info('[workout-sessions.create] plan exercises loaded', {
+            count: planExercises.length,
+          });
+
+          seedExercises = planExercises.map((item) => ({
+            exerciseId: item.exerciseId,
+            orderIndex: item.orderIndex,
+            targetSchemeJson: {
+              targetSets: item.targetSets,
+              targetReps: item.targetReps,
+              targetWeight: item.targetWeight,
+              targetRestSeconds: item.targetRestSeconds,
+            },
+          }));
+        } else {
+          console.info('[workout-sessions.create] seed exercises from payload', {
+            count: seedExercises.length,
+          });
+        }
       }
 
-      return { session, sessionExercises };
-    });
+      const createResult = await db.transaction(async (tx) => {
+        const [session] = await tx
+          .insert(workoutSessions)
+          .values(sessionPayload)
+          .returning();
 
-    return c.json(
-      {
-        ...createResult.session,
-        exercises: createResult.sessionExercises,
-      },
-      201,
-    );
+        if (!session) {
+          throw new Error('Failed to create workout session');
+        }
+        console.info('[workout-sessions.create] session inserted', {
+          sessionId: session.id,
+        });
+
+        let sessionExercises: (typeof workoutSessionExercises.$inferSelect)[] = [];
+        if (seedExercises.length > 0) {
+          sessionExercises = await tx
+            .insert(workoutSessionExercises)
+            .values(
+              seedExercises.map(
+                (exercise, index) =>
+                  ({
+                    workoutSessionId: session.id,
+                    exerciseId: exercise.exerciseId,
+                    orderIndex: exercise.orderIndex ?? index,
+                    targetSchemeJson: exercise.targetSchemeJson,
+                    previousResultJson: exercise.previousResultJson,
+                  }) as WorkoutSessionExerciseInsert,
+              ),
+            )
+            .returning();
+          console.info('[workout-sessions.create] session exercises inserted', {
+            count: sessionExercises.length,
+          });
+        }
+
+        return { session, sessionExercises };
+      });
+
+      console.info('[workout-sessions.create] response sent', {
+        status: 201,
+        elapsedMs: Date.now() - startedAt,
+      });
+      return c.json(
+        {
+          ...createResult.session,
+          exercises: createResult.sessionExercises,
+        },
+        201,
+      );
+    } catch (error) {
+      console.error('[workout-sessions.create] failed', {
+        elapsedMs: Date.now() - startedAt,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      return c.json(
+        {
+          code: 'WORKOUT_SESSION_CREATE_FAILED',
+          message: 'Failed to start workout session',
+        },
+        500,
+      );
+    }
   },
 );
 
