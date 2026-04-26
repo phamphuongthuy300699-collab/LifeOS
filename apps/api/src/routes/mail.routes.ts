@@ -231,51 +231,99 @@ mailRoutes.get('/messages/:id', async (c) => {
  * Creates/updates triage state for a message.
  */
 mailRoutes.patch('/messages/:id/action-state', async (c) => {
-  const userId = c.get('userId');
-  const workspaceId = c.get('workspaceId');
-  const messageId = c.req.param('id');
-  const body = await c.req.json().catch(() => ({}));
-  const triageStatus = body?.triageStatus;
+  const startedAt = Date.now();
+  console.info('[mail.action-state] request started');
 
-  if (!isMailTriageStatus(triageStatus)) {
-    return c.json({ error: 'Invalid triageStatus' }, 400);
-  }
+  try {
+    const userId = c.get('userId');
+    const workspaceId = c.get('workspaceId');
+    const messageId = c.req.param('id');
+    const body = await c.req.json().catch(() => ({}));
+    const triageStatus = body?.triageStatus;
 
-  const message = await db.query.mailMessages.findFirst({
-    where: and(eq(mailMessages.id, messageId), eq(mailMessages.userId, userId)),
-  });
+    console.info('[mail.action-state] context resolved', {
+      userId,
+      workspaceId,
+      messageId,
+      triageStatus: triageStatus ?? null,
+    });
 
-  if (!message) {
-    return c.json({ error: 'Message not found' }, 404);
-  }
-
-  const existing = await db.query.mailActionStates.findFirst({
-    where: and(
-      eq(mailActionStates.userId, userId),
-      eq(mailActionStates.mailMessageId, messageId),
-    ),
-  });
-
-  let state;
-  if (existing) {
-    [state] = await db
-      .update(mailActionStates)
-      .set({ triageStatus, updatedAt: new Date() })
-      .where(eq(mailActionStates.id, existing.id))
-      .returning();
-  } else {
-    [state] = await db
-      .insert(mailActionStates)
-      .values({
-        workspaceId,
-        userId,
-        mailMessageId: messageId,
+    if (!isMailTriageStatus(triageStatus)) {
+      console.info('[mail.action-state] invalid triage status', {
         triageStatus,
-      })
-      .returning();
-  }
+        elapsedMs: Date.now() - startedAt,
+      });
+      return c.json({ error: 'Invalid triageStatus' }, 400);
+    }
 
-  return c.json({ state });
+    const message = await db.query.mailMessages.findFirst({
+      where: and(eq(mailMessages.id, messageId), eq(mailMessages.userId, userId)),
+    });
+    console.info('[mail.action-state] message lookup', {
+      messageFound: Boolean(message),
+    });
+
+    if (!message) {
+      console.info('[mail.action-state] response sent', {
+        status: 404,
+        elapsedMs: Date.now() - startedAt,
+      });
+      return c.json({ error: 'Message not found' }, 404);
+    }
+
+    const existing = await db.query.mailActionStates.findFirst({
+      where: and(
+        eq(mailActionStates.userId, userId),
+        eq(mailActionStates.mailMessageId, messageId),
+      ),
+    });
+    console.info('[mail.action-state] existing state lookup', {
+      found: Boolean(existing),
+      stateId: existing?.id ?? null,
+    });
+
+    let state;
+    if (existing) {
+      console.info('[mail.action-state] update started', { stateId: existing.id });
+      [state] = await db
+        .update(mailActionStates)
+        .set({ triageStatus, updatedAt: new Date() })
+        .where(eq(mailActionStates.id, existing.id))
+        .returning();
+      console.info('[mail.action-state] update finished', { stateId: state?.id ?? null });
+    } else {
+      console.info('[mail.action-state] insert started');
+      [state] = await db
+        .insert(mailActionStates)
+        .values({
+          workspaceId,
+          userId,
+          mailMessageId: messageId,
+          triageStatus,
+        })
+        .returning();
+      console.info('[mail.action-state] insert finished', { stateId: state?.id ?? null });
+    }
+
+    console.info('[mail.action-state] response sent', {
+      status: 200,
+      elapsedMs: Date.now() - startedAt,
+    });
+    return c.json({ state });
+  } catch (error) {
+    console.error('[mail.action-state] failed', {
+      elapsedMs: Date.now() - startedAt,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return c.json(
+      {
+        code: 'MAIL_ACTION_STATE_FAILED',
+        message: 'Failed to update mail action state',
+      },
+      500,
+    );
+  }
 });
 
 /**

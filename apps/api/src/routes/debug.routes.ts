@@ -154,3 +154,68 @@ debugRoutes.get('/current-user-stats', async (c) => {
     },
   });
 });
+
+/**
+ * GET /api/v1/debug/health-write
+ * Lightweight write-read-delete check for current user/workspace.
+ */
+debugRoutes.get('/health-write', async (c) => {
+  const context = await resolveStrictRequestContext(c.req.raw);
+  if (!context) {
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unauthorized' }, 401);
+  }
+
+  const startedAt = Date.now();
+  const { userId, workspaceId } = context;
+
+  try {
+    const transactionResult = await db.transaction(async (tx) => {
+      const [insertedGoal] = await tx
+        .insert(nutritionGoals)
+        .values({
+          workspaceId,
+          userId,
+          caloriesTarget: 1,
+          proteinTargetG: '1',
+          fatTargetG: '1',
+          carbsTargetG: '1',
+          effectiveFrom: new Date(),
+        } as any)
+        .returning({
+          id: nutritionGoals.id,
+        });
+
+      const [readBack] = await tx
+        .select({ id: nutritionGoals.id })
+        .from(nutritionGoals)
+        .where(eq(nutritionGoals.id, insertedGoal.id))
+        .limit(1);
+
+      await tx.delete(nutritionGoals).where(eq(nutritionGoals.id, insertedGoal.id));
+
+      return {
+        insertedId: insertedGoal.id,
+        readBackFound: Boolean(readBack),
+      };
+    });
+
+    return c.json({
+      status: 'ok',
+      userId,
+      workspaceId,
+      elapsedMs: Date.now() - startedAt,
+      ...transactionResult,
+    });
+  } catch (error) {
+    return c.json(
+      {
+        status: 'error',
+        userId,
+        workspaceId,
+        elapsedMs: Date.now() - startedAt,
+        message: error instanceof Error ? error.message : String(error),
+      },
+      500,
+    );
+  }
+});
