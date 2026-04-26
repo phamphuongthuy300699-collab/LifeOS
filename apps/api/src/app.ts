@@ -7,6 +7,7 @@ import { authRoutes } from './routes/auth.routes';
 import { todayRoutes } from './routes/today.routes';
 import { inboxRoutes } from './routes/inbox.routes';
 import { mailRoutes } from './routes/mail.routes';
+import { debugRoutes } from './routes/debug.routes';
 import { exerciseRoutes } from './routes/exercises.routes';
 import { workoutPlanRoutes } from './routes/workout-plans.routes';
 import { workoutSessionRoutes } from './routes/workout-sessions.routes';
@@ -41,6 +42,7 @@ export function createApp() {
   app.route('/today', todayRoutes);
   app.route('/inbox-items', inboxRoutes);
   app.route('/mail', mailRoutes);
+  app.route('/debug', debugRoutes);
   // Sprint 4 production scope
   app.route('/exercises', exerciseRoutes);
   app.route('/workout-plans', workoutPlanRoutes);

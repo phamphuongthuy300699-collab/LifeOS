@@ -25,6 +25,8 @@ export default function MailInboxPage() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [syncSuccess, setSyncSuccess] = useState<string | null>(null);
 
   const fetchMail = async () => {
     try {
@@ -49,11 +51,26 @@ export default function MailInboxPage() {
   const handleSync = async () => {
     try {
       setSyncing(true);
-      await api.post('/mail/sync', {});
-      // Usually we'd poll or use websockets, but for MVP we just show a toast and refresh shortly
-      setTimeout(() => fetchMail(), 3000);
+      setSyncError(null);
+      setSyncSuccess(null);
+      const res = await api.post<{
+        importedCount?: number;
+        updatedCount?: number;
+        threadsCount?: number;
+        messagesCount?: number;
+      }>('/mail/sync', {});
+      const imported = res.data.importedCount ?? 0;
+      const updated = res.data.updatedCount ?? 0;
+      const total = res.data.messagesCount ?? 0;
+      setSyncSuccess(
+        `Синхронизация завершена: импортировано ${imported}, обновлено ${updated}, всего писем ${total}.`,
+      );
+      await fetchMail();
     } catch (err) {
       console.error('Sync failed', err);
+      const message =
+        err instanceof Error ? err.message : 'Не удалось синхронизировать Gmail.';
+      setSyncError(message);
     } finally {
       setSyncing(false);
     }
@@ -80,6 +97,18 @@ export default function MailInboxPage() {
           Sync Gmail
         </Button>
       </div>
+
+      {syncSuccess ? (
+        <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          {syncSuccess}
+        </div>
+      ) : null}
+
+      {syncError ? (
+        <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          Sync error: {syncError}
+        </div>
+      ) : null}
 
       {loading ? (
         <div className="py-12 flex justify-center">

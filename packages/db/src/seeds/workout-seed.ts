@@ -11,16 +11,22 @@ import {
 } from '../index';
 import { workoutSeedSchema } from '@lifeos/domain-workouts';
 
-function getArg(name: string): string | undefined {
-  const prefix = `--${name}=`;
-  const value = process.argv.find((arg: string) => arg.startsWith(prefix));
-  return value ? value.slice(prefix.length) : undefined;
+function getArg(names: string | string[]): string | undefined {
+  const list = Array.isArray(names) ? names : [names];
+  for (const name of list) {
+    const prefix = `--${name}=`;
+    const value = process.argv.find((arg: string) => arg.startsWith(prefix));
+    if (value) {
+      return value.slice(prefix.length);
+    }
+  }
+  return undefined;
 }
 
 async function resolveContext(db: ReturnType<typeof createDb>) {
-  const workspaceIdArg = getArg('workspace-id');
-  const userIdArg = getArg('user-id');
-  const workspaceSlugArg = getArg('workspace-slug');
+  const workspaceIdArg = getArg(['workspace-id', 'workspaceId']);
+  const userIdArg = getArg(['user-id', 'userId']);
+  const workspaceSlugArg = getArg(['workspace-slug', 'workspaceSlug']);
 
   if (workspaceIdArg && userIdArg) {
     return { workspaceId: workspaceIdArg, userId: userIdArg };
@@ -46,7 +52,7 @@ async function resolveContext(db: ReturnType<typeof createDb>) {
 
   if (!membership) {
     throw new Error(
-      'No membership found. Pass --workspace-id and --user-id (or --workspace-slug and --user-id).',
+      'No membership found. Pass --workspaceId and --userId (or --workspaceSlug and --userId).',
     );
   }
 

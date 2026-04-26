@@ -16,6 +16,7 @@
     "db:generate": "turbo run db:generate --filter=@lifeos/db",
     "db:migrate": "turbo run db:migrate --filter=@lifeos/db",
     "db:seed": "turbo run db:seed --filter=@lifeos/db",
+    "db:seed:workouts": "pnpm --filter @lifeos/db db:seed:workouts",
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
