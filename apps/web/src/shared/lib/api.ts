@@ -19,8 +19,8 @@ export const IS_DEMO_MODE = demoModeFlag === 'true';
 export const SHOW_AUTH_DEBUG =
   authDebugFlag === 'true' ||
   (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production');
-const API_FETCH_TIMEOUT_GET_MS = 10000;
-const API_FETCH_TIMEOUT_MUTATION_MS = 25000;
+const DEFAULT_READ_TIMEOUT_MS = 10000;
+const DEFAULT_WRITE_TIMEOUT_MS = 30000;
 const ACCESS_TOKEN_KEY = 'lifeos-access-token';
 const REFRESH_TOKEN_KEY = 'lifeos-refresh-token';
 const USER_ID_KEY = 'lifeos-user-id';
@@ -132,16 +132,14 @@ export function shouldUseDemoFallback(): boolean {
 }
 
 function resolveTimeoutMs(method: string | undefined, explicitTimeout: number | undefined): number {
-  if (explicitTimeout && explicitTimeout > 0) {
-    return explicitTimeout;
-  }
+  if (explicitTimeout && explicitTimeout > 0) return explicitTimeout;
 
   const normalizedMethod = (method ?? 'GET').toUpperCase();
-  if (normalizedMethod === 'GET' || normalizedMethod === 'HEAD') {
-    return API_FETCH_TIMEOUT_GET_MS;
+  if (normalizedMethod === 'GET') {
+    return DEFAULT_READ_TIMEOUT_MS;
   }
 
-  return API_FETCH_TIMEOUT_MUTATION_MS;
+  return DEFAULT_WRITE_TIMEOUT_MS;
 }
 
 function buildDefaultHeaders(): Headers {
