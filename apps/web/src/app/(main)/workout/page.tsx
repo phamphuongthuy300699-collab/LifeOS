@@ -48,6 +48,7 @@ export default function WorkoutPage() {
     () => plans.find((plan) => plan.id === selectedPlanId) ?? null,
     [plans, selectedPlanId],
   );
+  const firstExerciseId = selectedPlan?.exercises?.[0]?.exerciseId ?? null;
 
   const handleStartWorkout = async () => {
     if (!selectedPlan) return;
@@ -180,6 +181,15 @@ export default function WorkoutPage() {
             {startSessionMutation.isPending ? 'Запуск...' : dict.workout.startWorkout}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
+          {firstExerciseId ? (
+            <button
+              type="button"
+              onClick={() => router.push(`/workout/exercises/${firstExerciseId}/technique`)}
+              className="mt-3 w-full rounded-full border border-outline-variant px-4 py-2 text-sm font-medium text-on-surface hover:bg-surface-secondary"
+            >
+              Открыть технику первого упражнения
+            </button>
+          ) : null}
           {startSessionError ? (
             <p className="mt-3 text-sm text-red-300">{startSessionError}</p>
           ) : null}
@@ -266,14 +276,23 @@ export default function WorkoutPage() {
             <Activity className="h-4 w-4" />
             После завершения автоматически откроется Workout Summary с CTA в питание.
           </div>
-          <Button
-            variant="outline"
-            onClick={handleBootstrapDemo}
-            disabled={bootstrapDemoMutation.isPending}
-            className="rounded-full"
-          >
-            Обновить демо-данные
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => router.push('/nutrition?mealType=post_workout')}
+              className="rounded-full"
+            >
+              Перейти в питание
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleBootstrapDemo}
+              disabled={bootstrapDemoMutation.isPending}
+              className="rounded-full"
+            >
+              Обновить демо-данные
+            </Button>
+          </div>
         </div>
       </section>
     </main>

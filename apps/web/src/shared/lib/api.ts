@@ -4,6 +4,8 @@ const demoModeFlag =
   typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_DEMO_MODE : undefined;
 const devHeaderAuthFlag =
   typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_ENABLE_DEV_HEADER_AUTH : undefined;
+const authDebugFlag =
+  typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_SHOW_AUTH_DEBUG : undefined;
 
 const normalizedConfiguredApiBase = (configuredApiBase?.trim() || '/api/v1').replace(/\/$/, '');
 
@@ -14,6 +16,9 @@ const normalizedConfiguredApiBase = (configuredApiBase?.trim() || '/api/v1').rep
 export const API_BASE =
   typeof window === 'undefined' ? normalizedConfiguredApiBase : '/api/v1';
 export const IS_DEMO_MODE = demoModeFlag === 'true';
+export const SHOW_AUTH_DEBUG =
+  authDebugFlag === 'true' ||
+  (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production');
 const API_FETCH_TIMEOUT_MS = 8000;
 const ACCESS_TOKEN_KEY = 'lifeos-access-token';
 const REFRESH_TOKEN_KEY = 'lifeos-refresh-token';

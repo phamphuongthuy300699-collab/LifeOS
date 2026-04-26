@@ -1,15 +1,24 @@
 'use client';
 
-import { getDictionary } from '@/shared/lib/i18n';
-import { useTodayData, useCompleteTask } from '@/shared/hooks/use-tasks';
-import { TaskCard } from '@/shared/components/task-card';
-import { Rocket, BrainCircuit, Activity, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { ArrowRight, BrainCircuit, CalendarDays, CheckCircle2, Flame, Inbox, Rocket } from 'lucide-react';
+import { getDictionary } from '@/shared/lib/i18n';
+import { TaskCard } from '@/shared/components/task-card';
+import { useTodayData, useCompleteTask } from '@/shared/hooks/use-tasks';
 import { useLearningTracks } from '@/shared/hooks/use-learning';
 import { useProjects } from '@/shared/hooks/use-projects';
 import { useContacts } from '@/shared/hooks/use-contacts';
+import { useWorkoutPlans } from '@/shared/hooks/use-workouts';
+import { useDailyNutrition } from '@/shared/hooks/use-nutrition';
 
 import { MailWidget } from './components/mail-widget';
+
+function formatEventTime(value: string | null | undefined): string {
+  if (!value) return '—';
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return '—';
+  return parsed.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+}
 
 export default function TodayPage() {
   const dict = getDictionary('ru');
@@ -18,6 +27,10 @@ export default function TodayPage() {
   const { data: learningData } = useLearningTracks();
   const { data: projectData } = useProjects();
   const { data: contactData } = useContacts();
+  const { data: workoutPlansData } = useWorkoutPlans();
+  const { data: nutritionData } = useDailyNutrition();
+
+  const workoutPlan = workoutPlansData?.items?.[0] ?? null;
 
   const eveningSuggestion = (() => {
     const projects = projectData?.items ?? [];
@@ -53,7 +66,7 @@ export default function TodayPage() {
     }
 
     return {
-      title: 'Вечерний досуг',
+      title: 'Вечерний фокус',
       text: 'Добавьте первый учебный трек или проект, чтобы получать персональные рекомендации.',
       href: '/more',
       cta: 'Открыть разделы',
@@ -81,133 +94,154 @@ export default function TodayPage() {
     );
   }
 
+  const pendingTasksCount = data?.topTasks?.length ?? 0;
+  const todayEventsCount = data?.events?.length ?? 0;
+  const unreadMailCount = data?.emailsRequiringAction?.length ?? 0;
+
   return (
-    <main className="grid grid-cols-1 md:grid-cols-12 gap-gutter px-6 py-8">
-      {/* Bento Grid Column Left */}
-      <div className="md:col-span-8 flex flex-col gap-xl">
-        
-        {/* Focus Section */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-headline-md text-headline-md text-on-surface">{dict.today.focusBlock}</h2>
-            <span className="font-label-caps text-label-caps text-primary tracking-widest uppercase">Приоритеты</span>
+    <main className="grid grid-cols-1 gap-gutter px-6 py-8 md:grid-cols-12">
+      <div className="flex flex-col gap-xl md:col-span-8">
+        <section className="rounded-xl border border-outline-variant bg-surface p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary">{dict.today.focusBlock}</p>
+              <h2 className="mt-2 text-2xl font-semibold text-on-surface">{data?.focusBlock || 'Фокус дня ещё не задан'}</h2>
+              <p className="mt-2 text-sm text-on-surface-variant">Сконцентрируйтесь на главной задаче до обеда, потом переключайтесь на обработку входящих.</p>
+            </div>
+            <div className="hidden h-12 w-12 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed md:flex">
+              <Rocket size={20} />
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-surface-container p-6 border border-outline-variant rounded-xl flex flex-col justify-between min-h-[160px] relative overflow-hidden">
-              <div className="relative z-10">
-                <Rocket className="text-primary mb-3" size={24} />
-                <h3 className="font-body-lg text-body-lg font-semibold text-on-surface">Запуск квартального отчета</h3>
-                <p className="text-sm text-on-surface-variant mt-1">{data?.focusBlock || 'Фокус дня ещё не задан'}</p>
+
+          <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
+            <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Задачи
               </div>
-              <div className="absolute -right-4 -bottom-4 opacity-5">
-                <Rocket size={120} />
+              <p className="mt-2 text-2xl font-semibold text-on-surface">{pendingTasksCount}</p>
+            </article>
+            <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant">
+                <CalendarDays className="h-3.5 w-3.5" />
+                События
               </div>
-            </div>
-            <div className="bg-surface-container p-6 border border-outline-variant rounded-xl flex flex-col justify-between min-h-[160px] relative overflow-hidden">
-              <div className="relative z-10">
-                <BrainCircuit className="text-primary mb-3" size={24} />
-                <h3 className="font-body-lg text-body-lg font-semibold text-on-surface">Глубокая работа</h3>
-                <p className="text-sm text-on-surface-variant mt-1">Проектирование MVP</p>
+              <p className="mt-2 text-2xl font-semibold text-on-surface">{todayEventsCount}</p>
+            </article>
+            <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant">
+                <Inbox className="h-3.5 w-3.5" />
+                Mail
               </div>
-              <div className="absolute -right-4 -bottom-4 opacity-5">
-                <BrainCircuit size={120} />
+              <p className="mt-2 text-2xl font-semibold text-on-surface">{unreadMailCount}</p>
+            </article>
+            <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant">
+                <BrainCircuit className="h-3.5 w-3.5" />
+                Workout
               </div>
-            </div>
+              <p className="mt-2 truncate text-sm font-semibold text-on-surface">{workoutPlan?.name || 'План не выбран'}</p>
+            </article>
+            <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant">
+                <Flame className="h-3.5 w-3.5" />
+                Ккал
+              </div>
+              <p className="mt-2 text-2xl font-semibold text-on-surface">{Math.round(nutritionData?.totals.calories ?? 0)}</p>
+            </article>
           </div>
         </section>
 
-        {/* Tasks & Events Split */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
-          {/* Tasks Section */}
-          <section className="bg-surface border border-outline-variant rounded-xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-headline-md text-headline-md text-on-surface">Задачи</h2>
-              <button className="text-primary text-sm font-semibold">Все</button>
-            </div>
-            <ul className="flex flex-col gap-0 border-b-0">
-              {data?.topTasks && data.topTasks.length > 0 ? (
-                data.topTasks.map(task => (
-                  <li key={task.id} className="py-4 border-b border-outline-variant last:border-0 flex flex-col">
-                     {/* Wrapping the existing TaskCard to adapt to the new list style */}
-                     <TaskCard task={task} onComplete={handleComplete} />
-                  </li>
-                ))
-              ) : (
-                <div className="text-center py-4 text-sm text-on-surface-variant">Нет задач</div>
-              )}
+        <section className="rounded-xl border border-outline-variant bg-surface p-6">
+          <div className="mb-5 flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-on-surface">{dict.today.topTasks}</h3>
+            <Link href="/projects" className="text-sm font-semibold text-primary">
+              Все задачи
+            </Link>
+          </div>
+          {data?.topTasks && data.topTasks.length > 0 ? (
+            <ul className="space-y-3">
+              {data.topTasks.map((task) => (
+                <li key={task.id}>
+                  <TaskCard task={task} onComplete={handleComplete} />
+                </li>
+              ))}
             </ul>
-          </section>
+          ) : (
+            <p className="text-sm text-on-surface-variant">Сегодня нет активных задач. Добавьте первую через быстрый плюс.</p>
+          )}
+        </section>
 
-          {/* Upcoming Events (Sprint 2 placeholder) */}
-          <section className="bg-surface border border-outline-variant rounded-xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-headline-md text-headline-md text-on-surface">События</h2>
-              <span className="bg-primary-fixed text-on-primary-fixed text-[10px] font-bold px-2 py-1 rounded uppercase">Сегодня</span>
+        <section className="rounded-xl border border-outline-variant bg-surface p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-on-surface">{dict.today.events}</h3>
+            <span className="text-xs uppercase tracking-wider text-on-surface-variant">Календарь</span>
+          </div>
+          {data?.events && data.events.length > 0 ? (
+            <div className="space-y-2">
+              {data.events.map((event: any) => (
+                <article
+                  key={event.id}
+                  className="flex items-center justify-between rounded-lg border border-outline-variant bg-surface-container-low p-3"
+                >
+                  <div>
+                    <p className="font-medium text-on-surface">{event.title || 'Событие'}</p>
+                    <p className="text-xs text-on-surface-variant">{event.location || 'Без локации'}</p>
+                  </div>
+                  <p className="text-sm font-semibold text-primary">{formatEventTime(event.startAt)}</p>
+                </article>
+              ))}
             </div>
-            <div className="flex flex-col gap-4">
-               {data?.events && data.events.length > 0 ? (
-                  data.events.map((evt: any) => (
-                    <div key={evt.id} className="flex gap-4 p-3 rounded-lg hover:bg-surface-container transition-colors">
-                      <div className="text-center min-w-[48px]">
-                        <p className="text-primary font-bold">14:00</p>
-                        <p className="text-[10px] text-on-surface-variant font-bold uppercase">мск</p>
-                      </div>
-                      <div className="border-l-2 border-primary pl-4">
-                        <h4 className="font-semibold text-on-surface">{evt.title}</h4>
-                      </div>
-                    </div>
-                  ))
-               ) : (
-                  <div className="text-center py-4 text-sm text-on-surface-variant">Нет событий</div>
-               )}
-            </div>
-          </section>
-        </div>
+          ) : (
+            <p className="text-sm text-on-surface-variant">На сегодня событий в календаре нет.</p>
+          )}
+        </section>
 
-        {/* Emails / Inbox Summary */}
         <MailWidget />
-
       </div>
 
-      {/* Sidebar Column Right */}
-      <aside className="md:col-span-4 flex flex-col gap-xl">
-        {/* Workout Card Stub */}
-        <section className="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm">
-          <div className="h-40 bg-surface-dim relative border-b border-outline-variant">
-             <div className="absolute inset-0 flex items-center justify-center">
-                <Activity size={48} className="text-outline-variant" />
-             </div>
-             <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                <span className="bg-primary text-on-primary text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest">Интенсив</span>
-             </div>
-          </div>
-          <div className="p-6">
-            <h3 className="font-headline-md text-headline-md text-on-surface mb-2">Тренировка сегодня</h3>
-            <Link
-              href="/workout"
-              className="block w-full py-3 border border-primary text-primary text-center rounded-full font-semibold hover:bg-primary hover:text-on-primary transition-all"
-            >
-              Начать
-            </Link>
-          </div>
+      <aside className="flex flex-col gap-xl md:col-span-4">
+        <section className="rounded-xl border border-outline-variant bg-surface p-6">
+          <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Workout today</p>
+          <h3 className="mt-2 text-xl font-semibold text-on-surface">{workoutPlan?.name || 'Подберите план'}</h3>
+          <p className="mt-2 text-sm text-on-surface-variant">{workoutPlan?.goal || 'Откройте тренировку, чтобы выбрать план на сегодня.'}</p>
+          <Link
+            href="/workout"
+            className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-on-primary"
+          >
+            Открыть тренировку
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </section>
-        
-        {/* Evening Suggestion */}
-        <section className="bg-inverse-surface text-inverse-on-surface rounded-xl p-6 relative overflow-hidden mt-auto">
-          <div className="relative z-10">
-            <h3 className="font-headline-md text-headline-md mb-2">{eveningSuggestion.title}</h3>
-            <p className="text-outline-variant text-sm mb-4">{eveningSuggestion.text}</p>
-            <Link
-              href={eveningSuggestion.href}
-              className="inline-flex items-center gap-2 text-inverse-primary font-semibold text-sm"
-            >
-              {eveningSuggestion.cta} <ArrowRight size={16} />
-            </Link>
+
+        <section className="rounded-xl border border-outline-variant bg-surface p-6">
+          <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Nutrition summary</p>
+          <h3 className="mt-2 text-xl font-semibold text-on-surface">Питание сегодня</h3>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+            <p className="rounded-lg bg-surface-container-low px-3 py-2 text-on-surface">Ккал: {Math.round(nutritionData?.totals.calories ?? 0)}</p>
+            <p className="rounded-lg bg-surface-container-low px-3 py-2 text-on-surface">Б: {Math.round(nutritionData?.totals.protein ?? 0)} г</p>
+            <p className="rounded-lg bg-surface-container-low px-3 py-2 text-on-surface">Ж: {Math.round(nutritionData?.totals.fat ?? 0)} г</p>
+            <p className="rounded-lg bg-surface-container-low px-3 py-2 text-on-surface">У: {Math.round(nutritionData?.totals.carbs ?? 0)} г</p>
           </div>
-          <div className="absolute -right-8 -top-8 w-32 h-32 bg-primary/20 blur-3xl rounded-full"></div>
+          <Link
+            href="/nutrition"
+            className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-on-primary"
+          >
+            Открыть питание
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </section>
+
+        <section className="relative overflow-hidden rounded-xl bg-inverse-surface p-6 text-inverse-on-surface">
+          <h3 className="text-xl font-semibold">{eveningSuggestion.title}</h3>
+          <p className="mt-2 text-sm text-outline-variant">{eveningSuggestion.text}</p>
+          <Link href={eveningSuggestion.href} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-inverse-primary">
+            {eveningSuggestion.cta}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-primary/25 blur-3xl" />
         </section>
       </aside>
-
     </main>
   );
 }

@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { api } from '@/shared/lib/api';
+import { ApiError, api, describeApiError } from '@/shared/lib/api';
 import { Button } from '@/components/ui/button';
-import { Loader2, Mail, CheckCircle, Clock } from 'lucide-react';
+import { CheckCircle, Clock, Inbox, Loader2, Mail } from 'lucide-react';
 
 type MailActionState = {
   triageStatus: string;
@@ -20,32 +20,82 @@ type MailMessage = {
   actionStates?: MailActionState[];
 };
 
+type MailFilter = 'all' | 'new' | 'needs_action' | 'done' | 'snoozed' | 'converted_to_task';
+
+const FILTERS: Array<{ key: MailFilter; label: string }> = [
+  { key: 'all', label: 'Все' },
+  { key: 'new', label: 'Новые' },
+  { key: 'needs_action', label: 'К действию' },
+  { key: 'done', label: 'Done' },
+  { key: 'snoozed', label: 'Snoozed' },
+  { key: 'converted_to_task', label: 'В задачи' },
+];
+
+function getTriageStatus(message: MailMessage): string {
+  return message.actionStates?.[0]?.triageStatus || 'new';
+}
+
+function getStatusLabel(status: string): string {
+  switch (status) {
+    case 'done':
+      return 'Done';
+    case 'snoozed':
+      return 'Snoozed';
+    case 'converted_to_task':
+      return 'Task';
+    case 'needs_action':
+      return 'Action';
+    case 'waiting':
+      return 'Waiting';
+    default:
+      return 'New';
+  }
+}
+
+function getStatusClass(status: string): string {
+  switch (status) {
+    case 'done':
+      return 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300';
+    case 'snoozed':
+      return 'border-amber-500/40 bg-amber-500/10 text-amber-300';
+    case 'converted_to_task':
+      return 'border-sky-500/40 bg-sky-500/10 text-sky-300';
+    case 'needs_action':
+      return 'border-violet-500/40 bg-violet-500/10 text-violet-300';
+    default:
+      return 'border-outline-variant bg-surface-container-low text-on-surface-variant';
+  }
+}
+
 export default function MailInboxPage() {
   const [messages, setMessages] = useState<MailMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<MailFilter>('all');
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [syncSuccess, setSyncSuccess] = useState<string | null>(null);
 
   const fetchMail = async () => {
     try {
       setLoading(true);
-      setHasError(false);
+      setLoadError(null);
       const res = await api.get<{ messages: MailMessage[] }>('/mail/threads');
-      if (res.data.messages) {
-        setMessages(res.data.messages);
-      }
+      setMessages(res.data.messages ?? []);
     } catch (err) {
-      console.error('Failed to fetch mail', err);
-      setHasError(true);
+      const { userMessage, debugMessage } = describeApiError(err, '/mail/threads');
+      console.error('Failed to fetch mail', debugMessage);
+      if (err instanceof ApiError) {
+        console.error('Failed to fetch mail payload', err.details);
+      }
+      setLoadError(userMessage);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchMail();
+    void fetchMail();
   }, []);
 
   const handleSync = async () => {
@@ -67,91 +117,158 @@ export default function MailInboxPage() {
       );
       await fetchMail();
     } catch (err) {
-      console.error('Sync failed', err);
-      const message =
-        err instanceof Error ? err.message : 'Не удалось синхронизировать Gmail.';
-      setSyncError(message);
+      const { userMessage, debugMessage } = describeApiError(err, '/mail/sync');
+      console.error('Sync failed', debugMessage);
+      if (err instanceof ApiError) {
+        console.error('Sync failed payload', err.details);
+      }
+      setSyncError(userMessage);
     } finally {
       setSyncing(false);
     }
   };
 
-  const getTriageIcon = (status: string) => {
-    switch(status) {
-      case 'done': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'converted_to_task': return <CheckCircle className="w-4 h-4 text-blue-500" />;
-      case 'snoozed': return <Clock className="w-4 h-4 text-orange-500" />;
-      default: return null;
-    }
-  };
+  const filteredMessages = useMemo(() => {
+    if (activeFilter === 'all') return messages;
+    return messages.filter((message) => getTriageStatus(message) === activeFilter);
+  }, [activeFilter, messages]);
+
+  const unreadCount = messages.filter((message) => message.isUnread).length;
+  const needsActionCount = messages.filter(
+    (message) => getTriageStatus(message) === 'needs_action' || getTriageStatus(message) === 'new',
+  ).length;
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Mail className="w-6 h-6" />
-          Mail Triage
-        </h1>
-        <Button onClick={handleSync} disabled={syncing}>
-          {syncing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-          Sync Gmail
-        </Button>
-      </div>
-
-      {syncSuccess ? (
-        <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
-          {syncSuccess}
+    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
+      <section className="rounded-xl border border-outline-variant bg-surface p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="flex items-center gap-2 text-2xl font-semibold text-on-surface">
+              <Mail className="h-6 w-6 text-primary" />
+              Mail Triage
+            </h1>
+            <p className="mt-1 text-sm text-on-surface-variant">
+              Разберите входящие письма: done, snooze или превратите в задачу.
+            </p>
+          </div>
+          <Button onClick={handleSync} disabled={syncing} className="rounded-full">
+            {syncing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            Sync Gmail
+          </Button>
         </div>
-      ) : null}
 
-      {syncError ? (
-        <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          Sync error: {syncError}
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
+            <p className="text-xs uppercase tracking-wider text-on-surface-variant">Всего писем</p>
+            <p className="mt-1 text-xl font-semibold text-on-surface">{messages.length}</p>
+          </article>
+          <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
+            <p className="text-xs uppercase tracking-wider text-on-surface-variant">Unread</p>
+            <p className="mt-1 text-xl font-semibold text-on-surface">{unreadCount}</p>
+          </article>
+          <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
+            <p className="text-xs uppercase tracking-wider text-on-surface-variant">Требуют действий</p>
+            <p className="mt-1 text-xl font-semibold text-on-surface">{needsActionCount}</p>
+          </article>
         </div>
-      ) : null}
+
+        {syncSuccess ? (
+          <div className="mt-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+            {syncSuccess}
+          </div>
+        ) : null}
+
+        {syncError ? (
+          <div className="mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            Sync error: {syncError}
+          </div>
+        ) : null}
+
+        {loadError ? (
+          <div className="mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            Ошибка загрузки почты: {loadError}
+          </div>
+        ) : null}
+      </section>
+
+      <section className="flex flex-wrap gap-2">
+        {FILTERS.map((filter) => {
+          const isActive = activeFilter === filter.key;
+          return (
+            <button
+              key={filter.key}
+              type="button"
+              onClick={() => setActiveFilter(filter.key)}
+              className={`rounded-full border px-4 py-2 text-sm transition ${
+                isActive
+                  ? 'border-primary bg-primary text-on-primary'
+                  : 'border-outline-variant bg-surface text-on-surface hover:border-primary/50'
+              }`}
+            >
+              {filter.label}
+            </button>
+          );
+        })}
+      </section>
 
       {loading ? (
-        <div className="py-12 flex justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        <div className="py-12 text-center">
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-on-surface-variant" />
         </div>
-      ) : hasError ? (
-        <div className="text-center py-12 text-muted-foreground">
-          Не удалось загрузить почту. Проверьте подключение Gmail и API.
-        </div>
-      ) : messages.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          No recent emails found. Try syncing.
-        </div>
+      ) : filteredMessages.length === 0 ? (
+        <section className="rounded-xl border border-outline-variant bg-surface p-8 text-center">
+          <Inbox className="mx-auto h-8 w-8 text-on-surface-variant" />
+          <p className="mt-3 text-sm text-on-surface-variant">
+            В этом фильтре пока нет писем. Запустите синхронизацию или переключите вкладку.
+          </p>
+        </section>
       ) : (
-        <div className="flex flex-col gap-3">
-          {messages.map((msg) => {
-            const triageState = msg.actionStates?.[0]?.triageStatus || 'new';
-            const isRead = !msg.isUnread;
+        <section className="space-y-3">
+          {filteredMessages.map((message) => {
+            const status = getTriageStatus(message);
+            const isUnread = message.isUnread;
 
             return (
-              <Link key={msg.id} href={`/mail/${msg.id}`}>
-                <div className={`p-4 rounded-xl border transition-colors hover:border-primary/50 cursor-pointer flex flex-col gap-2 ${isRead ? 'bg-card opacity-80' : 'bg-card font-medium shadow-sm'}`}>
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="flex-1 truncate">
-                      <span className="text-sm text-muted-foreground">{msg.fromJson?.name || msg.fromJson?.email}</span>
-                      <h3 className="text-base truncate mt-1">{msg.subject || '(No Subject)'}</h3>
+              <Link key={message.id} href={`/mail/${message.id}`}>
+                <article className="rounded-xl border border-outline-variant bg-surface p-4 transition hover:border-primary/50 hover:bg-surface-container-low">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        {isUnread ? <span className="h-2 w-2 rounded-full bg-primary" /> : null}
+                        <p className="truncate text-sm text-on-surface-variant">
+                          {message.fromJson?.name || message.fromJson?.email || 'Unknown sender'}
+                        </p>
+                      </div>
+                      <h3 className={`mt-1 truncate text-base ${isUnread ? 'font-semibold text-on-surface' : 'text-on-surface'}`}>
+                        {message.subject || '(No subject)'}
+                      </h3>
+                      <p className="mt-1 line-clamp-2 text-sm text-on-surface-variant">
+                        {message.snippet || 'Без превью письма'}
+                      </p>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(msg.sentAt).toLocaleDateString()}
+
+                    <div className="flex items-center gap-2 sm:flex-col sm:items-end">
+                      <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusClass(status)}`}>
+                        {getStatusLabel(status)}
                       </span>
-                      {getTriageIcon(triageState)}
+                      <span className="text-xs text-on-surface-variant">
+                        {new Date(message.sentAt).toLocaleString('ru-RU', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                      {status === 'done' ? <CheckCircle className="h-4 w-4 text-emerald-300" /> : null}
+                      {status === 'snoozed' ? <Clock className="h-4 w-4 text-amber-300" /> : null}
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {msg.snippet}
-                  </p>
-                </div>
+                </article>
               </Link>
             );
           })}
-        </div>
+        </section>
       )}
-    </div>
+    </main>
   );
 }

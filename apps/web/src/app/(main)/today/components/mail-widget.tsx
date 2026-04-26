@@ -45,18 +45,18 @@ export function MailWidget() {
           {loading
             ? 'Загружаю почту...'
             : unreadCount !== null
-              ? `${unreadCount} unread emails`
+              ? `Писем к разбору: ${unreadCount}`
               : 'Почта недоступна'}
         </h3>
         <p className="text-on-surface-variant mt-1">
           {hasError
             ? 'Проверьте подключение аккаунта и API.'
-            : 'Review your inbox and triage new messages.'}
+            : 'Перейдите во входящие и разберите новые письма.'}
         </p>
       </div>
       <Link href="/mail" className="w-full md:w-auto">
         <button className="w-full bg-primary text-on-primary px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-shadow flex items-center justify-center gap-2">
-          Open Mail <ArrowRight size={18} />
+          Открыть triage <ArrowRight size={18} />
         </button>
       </Link>
     </section>

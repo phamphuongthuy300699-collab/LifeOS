@@ -180,6 +180,12 @@ export default function NutritionPage() {
               {dict.nutrition.carbs}: {Math.round(data?.targets.carbs ?? 0)} г
             </p>
           </div>
+          <div className="mt-4 rounded-lg border border-outline-variant bg-surface-container-low p-3 text-sm text-on-surface-variant">
+            <p>Приемов пищи сегодня: {todayMeals.length}</p>
+            <p className="mt-1">
+              Осталось ккал: {data?.remaining.calories == null ? '—' : Math.round(data.remaining.calories)}
+            </p>
+          </div>
         </article>
       </section>
 

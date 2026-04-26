@@ -14,6 +14,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { useAuth } from '@/providers/auth-provider';
+import { SHOW_AUTH_DEBUG } from '@/shared/lib/api';
 
 const menuItems = [
   { key: 'learning' as const, href: '/learning', icon: BookOpen },
@@ -46,7 +47,7 @@ export default function MorePage() {
 
       <section className="mt-4 rounded-xl border border-outline-variant bg-surface p-4">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-content-muted">
-          Auth Debug
+          Аккаунт
         </h2>
         <div className="mt-3 space-y-1 text-sm text-content">
           <p>
@@ -54,14 +55,8 @@ export default function MorePage() {
               ? `Вы вошли как ${user?.email ?? user?.id ?? 'пользователь'}`
               : 'Вы не авторизованы'}
           </p>
-          <p>Статус: {status}</p>
-          <p>Email: {user?.email ?? '—'}</p>
-          <p>User ID: {user?.id ?? '—'}</p>
-          <p>Workspace ID: {workspaceId ?? '—'}</p>
-          <p>Gmail connected: {gmailConnected ? 'yes' : 'no'}</p>
-          <p>API base: {apiBaseUrl}</p>
-          <p>Demo mode: {isDemoMode ? 'true' : 'false'}</p>
-          {error ? <p className="text-red-500">Auth error: {error}</p> : null}
+          <p>Почта Gmail: {gmailConnected ? 'подключена' : 'не подключена'}</p>
+          {error ? <p className="text-red-500">Ошибка: {error}</p> : null}
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -93,6 +88,24 @@ export default function MorePage() {
           )}
         </div>
       </section>
+
+      {SHOW_AUTH_DEBUG ? (
+        <section className="mt-3 rounded-xl border border-outline-variant bg-surface p-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-content-muted">
+            Auth Debug
+          </h2>
+          <div className="mt-3 space-y-1 text-sm text-content">
+            <p>Статус: {status}</p>
+            <p>Email: {user?.email ?? '—'}</p>
+            <p>User ID: {user?.id ?? '—'}</p>
+            <p>Workspace ID: {workspaceId ?? '—'}</p>
+            <p>Gmail connected: {gmailConnected ? 'yes' : 'no'}</p>
+            <p>API base: {apiBaseUrl}</p>
+            <p>Demo mode: {isDemoMode ? 'true' : 'false'}</p>
+            {error ? <p className="text-red-500">Auth error: {error}</p> : null}
+          </div>
+        </section>
+      ) : null}
 
       <div className="mt-6 space-y-1">
         {menuItems.map(({ key, href, icon: Icon }) => (
