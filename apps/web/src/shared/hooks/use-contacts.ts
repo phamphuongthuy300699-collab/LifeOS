@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '../lib/api';
+import { apiFetch, shouldUseDemoFallback } from '../lib/api';
 
 export type Contact = {
   id: string;
@@ -49,7 +49,8 @@ export function useContacts() {
     queryFn: async () => {
       try {
         return await apiFetch<{ items: Contact[] }>('/contacts');
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         return { items: readMock() };
       }
     },
@@ -66,7 +67,8 @@ export function useCreateContact() {
           method: 'POST',
           body: JSON.stringify(payload),
         });
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const created: Contact = {
           id: makeId(),
           displayName: payload.displayName,

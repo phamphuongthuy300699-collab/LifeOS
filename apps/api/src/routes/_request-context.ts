@@ -1,5 +1,5 @@
 import type { Context } from 'hono';
-import { and, eq, memberships, users } from '@lifeos/db';
+import { and, eq, externalAccounts, memberships, users } from '@lifeos/db';
 import { verifyToken } from '@lifeos/auth';
 import { db } from '../config/db';
 import { env } from '../config/env';
@@ -12,6 +12,7 @@ export type RequestContext = {
 
 type ResolveOptions = {
   allowFallback?: boolean;
+  allowHeaderAuth?: boolean;
 };
 
 function extractBearerToken(authHeader: string | undefined): string | null {
@@ -41,7 +42,8 @@ export async function resolveRequestContext(
   request: Request,
   options: ResolveOptions = {},
 ): Promise<RequestContext | null> {
-  const allowFallback = options.allowFallback ?? true;
+  const allowFallback = options.allowFallback ?? false;
+  const allowHeaderAuth = options.allowHeaderAuth ?? env.NODE_ENV !== 'production';
 
   const token = extractBearerToken(request.headers.get('authorization') ?? undefined);
   if (token) {
@@ -65,7 +67,7 @@ export async function resolveRequestContext(
   }
 
   const requestedUserId = request.headers.get('x-user-id') ?? undefined;
-  if (requestedUserId) {
+  if (allowHeaderAuth && requestedUserId) {
     const membership = await resolveMembershipByUserId(requestedUserId);
     if (membership) {
       return {
@@ -93,10 +95,17 @@ export async function resolveRequestContext(
 export async function resolveStrictRequestContext(
   request: Request,
 ): Promise<RequestContext | null> {
-  return resolveRequestContext(request, { allowFallback: false });
+  return resolveRequestContext(request, {
+    allowFallback: false,
+    allowHeaderAuth: false,
+  });
 }
 
-export async function getCurrentUserProfile(c: Context, userId: string) {
+export async function getCurrentUserProfile(
+  c: Context,
+  userId: string,
+  workspaceId?: string,
+) {
   const user = await db.query.users.findFirst({
     where: eq(users.id, userId),
   });
@@ -104,6 +113,13 @@ export async function getCurrentUserProfile(c: Context, userId: string) {
   if (!user) {
     return c.json({ code: 'NOT_FOUND', message: 'User not found' }, 404);
   }
+
+  const googleAccount = await db.query.externalAccounts.findFirst({
+    where: and(
+      eq(externalAccounts.userId, userId),
+      eq(externalAccounts.provider, 'google'),
+    ),
+  });
 
   return c.json({
     user: {
@@ -117,6 +133,13 @@ export async function getCurrentUserProfile(c: Context, userId: string) {
       onboardingState: user.onboardingState,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+    },
+    workspaceId: workspaceId ?? null,
+    integrations: {
+      google: {
+        connected: Boolean(googleAccount),
+        syncEnabled: Boolean(googleAccount?.syncEnabled),
+      },
     },
   });
 }

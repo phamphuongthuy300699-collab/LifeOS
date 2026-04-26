@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '../lib/api';
+import { apiFetch, shouldUseDemoFallback } from '../lib/api';
 
 export type Project = {
   id: string;
@@ -49,7 +49,8 @@ export function useProjects() {
     queryFn: async () => {
       try {
         return await apiFetch<{ items: Project[] }>('/projects');
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         return { items: readMock() };
       }
     },
@@ -66,7 +67,8 @@ export function useCreateProject() {
           method: 'POST',
           body: JSON.stringify(payload),
         });
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const created: Project = {
           id: makeId(),
           name: payload.name,

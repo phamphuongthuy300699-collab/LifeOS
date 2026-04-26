@@ -1,4 +1,4 @@
-import { resolveRequestContext } from './_request-context';
+import { resolveStrictRequestContext } from './_request-context';
 
 export type WorkoutRouteContext = {
   userId: string;
@@ -6,11 +6,10 @@ export type WorkoutRouteContext = {
 };
 
 /**
- * Resolves user/workspace context from x-user-id (preferred) or first membership.
- * This supports single-user MVP flows while auth is still incremental.
+ * Resolves user/workspace context from strict JWT auth.
  */
 export async function resolveWorkoutContext(request: Request): Promise<WorkoutRouteContext | null> {
-  const context = await resolveRequestContext(request, { allowFallback: true });
+  const context = await resolveStrictRequestContext(request);
   if (!context) return null;
 
   return {

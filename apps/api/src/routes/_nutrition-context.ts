@@ -1,4 +1,4 @@
-import { resolveRequestContext } from './_request-context';
+import { resolveStrictRequestContext } from './_request-context';
 
 export type NutritionRouteContext = {
   userId: string;
@@ -6,13 +6,12 @@ export type NutritionRouteContext = {
 };
 
 /**
- * Resolves user/workspace context for nutrition endpoints.
- * Single-user MVP behavior: allow fallback membership.
+ * Resolves user/workspace context for nutrition endpoints from strict JWT auth.
  */
 export async function resolveNutritionContext(
   request: Request,
 ): Promise<NutritionRouteContext | null> {
-  const context = await resolveRequestContext(request, { allowFallback: true });
+  const context = await resolveStrictRequestContext(request);
   if (!context) return null;
 
   return {

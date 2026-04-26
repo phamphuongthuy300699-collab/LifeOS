@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '../lib/api';
+import { apiFetch, shouldUseDemoFallback } from '../lib/api';
 
 // --- Types (Placeholder for actual shared DTOs) ---
 export interface InboxItem {
@@ -53,7 +53,8 @@ export function usePendingInboxItems() {
     queryFn: async () => {
       try {
         return await apiFetch<{ items: InboxItem[] }>('/inbox-items');
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         return { items: readMockInboxItems() };
       }
     },
@@ -70,7 +71,8 @@ export function useCreateInboxItem() {
           method: 'POST',
           body: JSON.stringify(data),
         });
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const item: InboxItem = {
           id: makeMockInboxId(),
           rawText: data.rawText,

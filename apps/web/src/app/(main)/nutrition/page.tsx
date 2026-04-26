@@ -29,7 +29,7 @@ function toNumberOrUndefined(value: string): number | undefined {
 export default function NutritionPage() {
   const dict = getDictionary('ru');
 
-  const { data, isLoading } = useDailyNutrition();
+  const { data, isLoading, isError } = useDailyNutrition();
   const setGoalMutation = useSetCurrentNutritionGoal();
   const addQuickMealMutation = useAddQuickMeal();
 
@@ -95,6 +95,19 @@ export default function NutritionPage() {
     return (
       <main className="px-6 py-8">
         <p className="text-on-surface-variant">{dict.common.loading}</p>
+      </main>
+    );
+  }
+
+  if (isError) {
+    return (
+      <main className="px-6 py-8">
+        <section className="rounded-xl border border-outline-variant bg-surface-container-low p-6">
+          <h2 className="text-xl font-semibold text-on-surface">Nutrition временно недоступен</h2>
+          <p className="mt-2 text-sm text-on-surface-variant">
+            Не удалось загрузить данные питания. Проверь подключение к API или авторизацию.
+          </p>
+        </section>
       </main>
     );
   }

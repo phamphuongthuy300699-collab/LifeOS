@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '../lib/api';
+import { apiFetch, shouldUseDemoFallback } from '../lib/api';
 
 export type Exercise = {
   id: string;
@@ -273,7 +273,8 @@ export function useWorkoutPlans() {
     queryFn: async () => {
       try {
         return await apiFetch<{ items: WorkoutPlan[] }>('/workout-plans');
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const state = readMockState();
         return { items: state.plans };
       }
@@ -288,7 +289,8 @@ export function useExerciseById(exerciseId?: string) {
     queryFn: async () => {
       try {
         return await apiFetch<Exercise>(`/exercises/${exerciseId}`);
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const state = readMockState();
         const exercise = state.exercises.find((item) => item.id === exerciseId);
         if (!exercise) {
@@ -307,7 +309,8 @@ export function useWorkoutSession(sessionId?: string) {
     queryFn: async () => {
       try {
         return await apiFetch<WorkoutSessionDetails>(`/workout-sessions/${sessionId}`);
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const state = readMockState();
         const session = state.sessions.find((item) => item.id === sessionId);
         if (!session) {
@@ -329,7 +332,8 @@ export function useStartWorkoutSession() {
           method: 'POST',
           body: JSON.stringify(payload),
         });
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const state = readMockState();
         const plan = state.plans.find((item) => item.id === payload.workoutPlanId);
         if (!plan) {
@@ -392,7 +396,8 @@ export function useAddWorkoutSet(sessionId: string) {
           method: 'POST',
           body: JSON.stringify(payload),
         });
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const state = readMockState();
         const session = state.sessions.find((item) => item.id === sessionId);
         if (!session) {
@@ -454,7 +459,8 @@ export function useUpdateWorkoutSession(sessionId: string) {
           method: 'PATCH',
           body: JSON.stringify(payload),
         });
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const state = readMockState();
         const session = state.sessions.find((item) => item.id === sessionId);
         if (!session) {
@@ -553,7 +559,8 @@ export function useBootstrapWorkoutDemo() {
             exercises: exercisesPayload,
           }),
         });
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const state = readMockState();
         const existingBySlug = new Map(
           state.exercises.map((exercise) => [exercise.slug, exercise]),

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '../lib/api';
+import { apiFetch, shouldUseDemoFallback } from '../lib/api';
 
 export type LearningTrack = {
   id: string;
@@ -46,7 +46,8 @@ export function useLearningTracks() {
     queryFn: async () => {
       try {
         return await apiFetch<{ items: LearningTrack[] }>('/learning/tracks');
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         return { items: readMockTracks() };
       }
     },
@@ -63,7 +64,8 @@ export function useCreateLearningTrack() {
           method: 'POST',
           body: JSON.stringify(payload),
         });
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const item: LearningTrack = {
           id: makeId('track'),
           name: payload.name,

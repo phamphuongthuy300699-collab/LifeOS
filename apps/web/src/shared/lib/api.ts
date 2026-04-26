@@ -1,8 +1,24 @@
 const configuredApiBase =
   typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL : undefined;
+const demoModeFlag =
+  typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_DEMO_MODE : undefined;
+const devHeaderAuthFlag =
+  typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_ENABLE_DEV_HEADER_AUTH : undefined;
 
 export const API_BASE = (configuredApiBase?.trim() || '/api/v1').replace(/\/$/, '');
+export const IS_DEMO_MODE = demoModeFlag === 'true';
 const API_FETCH_TIMEOUT_MS = 8000;
+const ACCESS_TOKEN_KEY = 'lifeos-access-token';
+const REFRESH_TOKEN_KEY = 'lifeos-refresh-token';
+const USER_ID_KEY = 'lifeos-user-id';
+const WORKSPACE_ID_KEY = 'lifeos-workspace-id';
+
+export type AuthStorage = {
+  accessToken: string | null;
+  refreshToken: string | null;
+  userId: string | null;
+  workspaceId: string | null;
+};
 
 export class ApiError extends Error {
   constructor(public code: string, message: string, public status: number) {
@@ -14,20 +30,67 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export function getAuthStorage(): AuthStorage {
+  if (typeof window === 'undefined') {
+    return {
+      accessToken: null,
+      refreshToken: null,
+      userId: null,
+      workspaceId: null,
+    };
+  }
+  return {
+    accessToken: localStorage.getItem(ACCESS_TOKEN_KEY),
+    refreshToken: localStorage.getItem(REFRESH_TOKEN_KEY),
+    userId: localStorage.getItem(USER_ID_KEY),
+    workspaceId: localStorage.getItem(WORKSPACE_ID_KEY),
+  };
+}
+
+export function setAuthStorage(payload: Partial<AuthStorage>): void {
+  if (typeof window === 'undefined') return;
+  if (payload.accessToken !== undefined) {
+    if (payload.accessToken) localStorage.setItem(ACCESS_TOKEN_KEY, payload.accessToken);
+    else localStorage.removeItem(ACCESS_TOKEN_KEY);
+  }
+  if (payload.refreshToken !== undefined) {
+    if (payload.refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, payload.refreshToken);
+    else localStorage.removeItem(REFRESH_TOKEN_KEY);
+  }
+  if (payload.userId !== undefined) {
+    if (payload.userId) localStorage.setItem(USER_ID_KEY, payload.userId);
+    else localStorage.removeItem(USER_ID_KEY);
+  }
+  if (payload.workspaceId !== undefined) {
+    if (payload.workspaceId) localStorage.setItem(WORKSPACE_ID_KEY, payload.workspaceId);
+    else localStorage.removeItem(WORKSPACE_ID_KEY);
+  }
+}
+
+export function clearAuthStorage(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
+  localStorage.removeItem(USER_ID_KEY);
+  localStorage.removeItem(WORKSPACE_ID_KEY);
+}
+
+export function shouldUseDemoFallback(): boolean {
+  return IS_DEMO_MODE;
+}
+
 function buildDefaultHeaders(): Headers {
   const headers = new Headers();
 
-  // Temporary compatibility with API mail middleware.
   if (typeof window !== 'undefined') {
-    const userId = localStorage.getItem('lifeos-user-id');
-    const accessToken = localStorage.getItem('lifeos-access-token');
-
-    if (userId) {
-      headers.set('x-user-id', userId);
-    }
+    const { userId, accessToken } = getAuthStorage();
 
     if (accessToken) {
       headers.set('Authorization', `Bearer ${accessToken}`);
+    }
+
+    if (devHeaderAuthFlag === 'true' && userId) {
+      headers.set('x-user-id', userId);
     }
   }
 

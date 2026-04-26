@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '../lib/api';
+import { apiFetch, shouldUseDemoFallback } from '../lib/api';
 
 export type MealType =
   | 'breakfast'
@@ -246,7 +246,8 @@ export function useDailyNutrition() {
             normalizeMeal(item as Record<string, unknown>),
           ),
         } satisfies DailyNutritionData;
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         return buildDailyFromState(readMockState());
       }
     },
@@ -263,7 +264,8 @@ export function useSetCurrentNutritionGoal() {
           method: 'PATCH',
           body: JSON.stringify(payload),
         });
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const state = readMockState();
         const now = nowIso();
         const nextGoal: NutritionGoal = {
@@ -318,7 +320,8 @@ export function useAddQuickMeal() {
         });
 
         return meal;
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         const state = readMockState();
         const mealId = makeId('meal');
         const createdAt = nowIso();

@@ -266,7 +266,7 @@ authRoutes.get('/google/callback', async (c) => {
 
 /**
  * GET /api/v1/auth/me
- * Get current user profile from JWT or x-user-id header.
+ * Get current user profile from JWT.
  */
 authRoutes.get('/me', async (c) => {
   const context = await resolveStrictRequestContext(c.req.raw);
@@ -274,7 +274,7 @@ authRoutes.get('/me', async (c) => {
     return c.json({ code: 'UNAUTHORIZED', message: 'Unauthorized' }, 401);
   }
 
-  return getCurrentUserProfile(c, context.userId);
+  return getCurrentUserProfile(c, context.userId, context.workspaceId);
 });
 
 /**

@@ -5,13 +5,13 @@ import {
   mailMessages,
   mailActionStates,
   externalAccounts,
-  memberships,
   tasks,
 } from '@lifeos/db';
 import { eq, and, desc } from 'drizzle-orm';
 import { Queue } from 'bullmq';
 import { decryptToken } from '@lifeos/auth';
 import { getMessageBody } from '@lifeos/integrations-google';
+import { resolveStrictRequestContext } from './_request-context';
 
 type MailRouteEnv = {
   Variables: {
@@ -49,34 +49,12 @@ const mailSyncQueue = new Queue('mail-sync', { connection });
 export const mailRoutes = new Hono<MailRouteEnv>();
 
 mailRoutes.use('*', async (c, next) => {
-  // Prefer explicit user header (for internal/testing calls).
-  let userId = c.req.header('x-user-id');
-
-  // Fallback for single-user MVP: use the first connected Google account.
-  if (!userId) {
-    const connectedGoogleAccount = await db.query.externalAccounts.findFirst({
-      where: and(
-        eq(externalAccounts.provider, 'google'),
-        eq(externalAccounts.syncEnabled, true),
-      ),
-    });
-    userId = connectedGoogleAccount?.userId;
-  }
-
-  if (!userId) {
+  const context = await resolveStrictRequestContext(c.req.raw);
+  if (!context) {
     return c.json({ error: 'Unauthorized' }, 401);
   }
-
-  const membership = await db.query.memberships.findFirst({
-    where: eq(memberships.userId, userId),
-  });
-
-  if (!membership) {
-    return c.json({ error: 'No workspace membership found' }, 403);
-  }
-
-  c.set('userId', userId);
-  c.set('workspaceId', membership.workspaceId);
+  c.set('userId', context.userId);
+  c.set('workspaceId', context.workspaceId);
   await next();
 });
 

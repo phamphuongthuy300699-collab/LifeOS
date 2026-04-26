@@ -4,15 +4,15 @@ import { db } from '../config/db';
 import { tasks } from '@lifeos/db';
 import { createTaskSchema, updateTaskSchema } from '@lifeos/domain-tasks';
 import { and, desc, eq } from 'drizzle-orm';
-import { resolveRequestContext } from './_request-context';
+import { resolveStrictRequestContext } from './_request-context';
 
 export const taskRoutes = new Hono();
 
 // GET /tasks — list tasks
 taskRoutes.get('/', async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
-    return c.json({ items: [] });
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unauthorized' }, 401);
   }
 
   const allTasks = await db
@@ -31,7 +31,7 @@ taskRoutes.get('/', async (c) => {
 
 // POST /tasks — create a task
 taskRoutes.post('/', zValidator('json', createTaskSchema), async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
     return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
   }
@@ -60,7 +60,7 @@ taskRoutes.post('/', zValidator('json', createTaskSchema), async (c) => {
 
 // GET /tasks/:id — get single task
 taskRoutes.get('/:id', async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
     return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
   }
@@ -84,7 +84,7 @@ taskRoutes.get('/:id', async (c) => {
 
 // PATCH /tasks/:id — update task
 taskRoutes.patch('/:id', zValidator('json', updateTaskSchema), async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
     return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
   }
@@ -115,7 +115,7 @@ taskRoutes.patch('/:id', zValidator('json', updateTaskSchema), async (c) => {
 
 // POST /tasks/:id/complete — mark task as done
 taskRoutes.post('/:id/complete', async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
     return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
   }

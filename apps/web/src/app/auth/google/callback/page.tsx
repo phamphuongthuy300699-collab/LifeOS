@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiFetch, clearAuthStorage, setAuthStorage } from '@/shared/lib/api';
+import { emitAuthChanged } from '@/providers/auth-provider';
 
 type CallbackState = 'processing' | 'done' | 'error';
 
@@ -27,31 +29,44 @@ export default function GoogleAuthCallbackPage() {
   }, [state]);
 
   useEffect(() => {
-    try {
-      const { accessToken, refreshToken, userId, workspaceId } = parseHash(
-        window.location.hash,
-      );
+    const finishGoogleAuth = async () => {
+      try {
+        const { accessToken, refreshToken, userId, workspaceId } = parseHash(
+          window.location.hash,
+        );
 
-      if (!accessToken || !userId) {
+        if (!accessToken || !userId) {
+          setState('error');
+          return;
+        }
+
+        setAuthStorage({
+          accessToken,
+          refreshToken,
+          userId,
+          workspaceId,
+        });
+
+        const authMe = await apiFetch<{
+          user: { id: string };
+          workspaceId: string | null;
+        }>('/auth/me');
+
+        setAuthStorage({
+          userId: authMe.user.id,
+          workspaceId: authMe.workspaceId,
+        });
+
+        setState('done');
+        emitAuthChanged();
+        window.history.replaceState({}, document.title, '/auth/google/callback');
+        router.replace('/today');
+      } catch {
+        clearAuthStorage();
         setState('error');
-        return;
       }
-
-      localStorage.setItem('lifeos-access-token', accessToken);
-      localStorage.setItem('lifeos-user-id', userId);
-      if (refreshToken) {
-        localStorage.setItem('lifeos-refresh-token', refreshToken);
-      }
-      if (workspaceId) {
-        localStorage.setItem('lifeos-workspace-id', workspaceId);
-      }
-
-      setState('done');
-      window.history.replaceState({}, document.title, '/auth/google/callback');
-      router.replace('/today');
-    } catch {
-      setState('error');
-    }
+    };
+    void finishGoogleAuth();
   }, [router]);
 
   return (

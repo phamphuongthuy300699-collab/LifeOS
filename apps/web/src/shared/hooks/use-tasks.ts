@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '../lib/api';
+import { apiFetch, shouldUseDemoFallback } from '../lib/api';
 
 // --- Types ---
 export interface Task {
@@ -33,7 +33,8 @@ export function useTodayData() {
           events: any[];
           emailsRequiringAction: any[];
         }>('/today');
-      } catch {
+      } catch (error) {
+        if (!shouldUseDemoFallback()) throw error;
         return {
           focusBlock: 'Подключите API для синхронизации или продолжайте в демо-режиме',
           pendingInboxCount: 0,

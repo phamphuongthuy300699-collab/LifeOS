@@ -2,20 +2,14 @@ import { Hono } from 'hono';
 import { db } from '../config/db';
 import { inboxItems, tasks, events, mailMessages } from '@lifeos/db';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
-import { resolveRequestContext } from './_request-context';
+import { resolveStrictRequestContext } from './_request-context';
 
 export const todayRoutes = new Hono();
 
 todayRoutes.get('/', async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
-    return c.json({
-      focusBlock: 'Приоритет: Настроить аккаунт',
-      pendingInboxCount: 0,
-      topTasks: [],
-      events: [],
-      emailsRequiringAction: [],
-    });
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unauthorized' }, 401);
   }
 
   const { workspaceId, userId } = context;
