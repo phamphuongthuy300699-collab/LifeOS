@@ -5,7 +5,14 @@ const demoModeFlag =
 const devHeaderAuthFlag =
   typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_ENABLE_DEV_HEADER_AUTH : undefined;
 
-export const API_BASE = (configuredApiBase?.trim() || '/api/v1').replace(/\/$/, '');
+const normalizedConfiguredApiBase = (configuredApiBase?.trim() || '/api/v1').replace(/\/$/, '');
+
+/**
+ * In browser we always use same-origin /api/v1 and rely on Next.js rewrites.
+ * This avoids cross-origin fetch instability during OAuth and auth refresh.
+ */
+export const API_BASE =
+  typeof window === 'undefined' ? normalizedConfiguredApiBase : '/api/v1';
 export const IS_DEMO_MODE = demoModeFlag === 'true';
 const API_FETCH_TIMEOUT_MS = 8000;
 const ACCESS_TOKEN_KEY = 'lifeos-access-token';
