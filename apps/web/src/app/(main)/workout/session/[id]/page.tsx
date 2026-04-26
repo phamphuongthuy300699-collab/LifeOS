@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { getDictionary } from '@/shared/lib/i18n';
+import { ApiError, describeApiError } from '@/shared/lib/api';
 import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Dumbbell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +27,9 @@ export default function ActiveWorkoutPage() {
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
   const [weight, setWeight] = useState('');
   const [reps, setReps] = useState('');
+  const [setActionError, setSetActionError] = useState<string | null>(null);
+  const [setActionSuccess, setSetActionSuccess] = useState<string | null>(null);
+  const [finishWorkoutError, setFinishWorkoutError] = useState<string | null>(null);
 
   const activeExercise = exercises[activeExerciseIndex];
 
@@ -64,19 +68,47 @@ export default function ActiveWorkoutPage() {
     const weightValue = Number(weight);
     const repsValue = Number(reps);
 
-    await addSetMutation.mutateAsync({
-      workoutSessionExerciseId: activeExercise.id,
-      weightValue: Number.isFinite(weightValue) && weightValue > 0 ? weightValue : undefined,
-      repsCount: Number.isFinite(repsValue) && repsValue >= 0 ? repsValue : undefined,
-      isCompleted: true,
-    });
+    setSetActionError(null);
+    setSetActionSuccess(null);
+    try {
+      await addSetMutation.mutateAsync({
+        workoutSessionExerciseId: activeExercise.id,
+        weightValue: Number.isFinite(weightValue) && weightValue > 0 ? weightValue : undefined,
+        repsCount: Number.isFinite(repsValue) && repsValue >= 0 ? repsValue : undefined,
+        isCompleted: true,
+      });
+      setSetActionSuccess('Подход сохранен.');
+    } catch (error) {
+      const { userMessage, debugMessage } = describeApiError(
+        error,
+        '/workout-sessions/:id/sets',
+      );
+      setSetActionError(userMessage);
+      console.error('Failed to add workout set', debugMessage);
+      if (error instanceof ApiError) {
+        console.error('Failed to add workout set payload', error.details);
+      }
+    }
   };
 
   const handleFinishWorkout = async () => {
-    await updateSessionMutation.mutateAsync({
-      sessionStatus: 'completed',
-    });
-    router.push(`/workout/session/${sessionId}/summary`);
+    setFinishWorkoutError(null);
+    try {
+      await updateSessionMutation.mutateAsync({
+        sessionStatus: 'completed',
+      });
+      router.push(`/workout/session/${sessionId}/summary`);
+    } catch (error) {
+      const { userMessage, debugMessage } = describeApiError(
+        error,
+        '/workout-sessions/:id',
+      );
+      setFinishWorkoutError(userMessage);
+      console.error('Failed to finish workout', debugMessage);
+      if (error instanceof ApiError) {
+        console.error('Failed to finish workout payload', error.details);
+      }
+    }
   };
 
   if (isLoading) {
@@ -184,6 +216,12 @@ export default function ActiveWorkoutPage() {
             <CheckCircle2 className="mr-2 h-4 w-4" />
             {addSetMutation.isPending ? 'Сохраняю...' : 'Завершить подход'}
           </Button>
+          {setActionError ? (
+            <p className="mt-3 text-sm text-red-300">{setActionError}</p>
+          ) : null}
+          {setActionSuccess ? (
+            <p className="mt-3 text-sm text-emerald-300">{setActionSuccess}</p>
+          ) : null}
         </div>
 
         <div className="space-y-4 lg:col-span-5">
@@ -264,6 +302,9 @@ export default function ActiveWorkoutPage() {
                 ? 'Завершаю...'
                 : dict.workout.finishWorkout}
             </Button>
+            {finishWorkoutError ? (
+              <p className="mt-3 text-sm text-red-300">{finishWorkoutError}</p>
+            ) : null}
           </div>
         </div>
       </section>

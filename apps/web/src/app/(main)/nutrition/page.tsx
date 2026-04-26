@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { getDictionary } from '@/shared/lib/i18n';
+import { ApiError, describeApiError } from '@/shared/lib/api';
 import {
   type MealType,
   useAddQuickMeal,
@@ -29,7 +30,7 @@ function toNumberOrUndefined(value: string): number | undefined {
 export default function NutritionPage() {
   const dict = getDictionary('ru');
 
-  const { data, isLoading, isError } = useDailyNutrition();
+  const { data, isLoading, isError, refetch } = useDailyNutrition();
   const setGoalMutation = useSetCurrentNutritionGoal();
   const addQuickMealMutation = useAddQuickMeal();
 
@@ -44,6 +45,10 @@ export default function NutritionPage() {
   const [goalProtein, setGoalProtein] = useState('');
   const [goalFat, setGoalFat] = useState('');
   const [goalCarbs, setGoalCarbs] = useState('');
+  const [saveGoalError, setSaveGoalError] = useState<string | null>(null);
+  const [saveGoalSuccess, setSaveGoalSuccess] = useState<string | null>(null);
+  const [createMealError, setCreateMealError] = useState<string | null>(null);
+  const [createMealSuccess, setCreateMealSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -64,31 +69,61 @@ export default function NutritionPage() {
   const todayMeals = useMemo(() => data?.meals ?? [], [data?.meals]);
 
   const handleSetGoal = async () => {
-    await setGoalMutation.mutateAsync({
-      caloriesTarget: toNumberOrUndefined(goalCalories) ?? null,
-      proteinTargetG: toNumberOrUndefined(goalProtein) ?? null,
-      fatTargetG: toNumberOrUndefined(goalFat) ?? null,
-      carbsTargetG: toNumberOrUndefined(goalCarbs) ?? null,
-    });
+    setSaveGoalError(null);
+    setSaveGoalSuccess(null);
+    try {
+      await setGoalMutation.mutateAsync({
+        caloriesTarget: toNumberOrUndefined(goalCalories) ?? null,
+        proteinTargetG: toNumberOrUndefined(goalProtein) ?? null,
+        fatTargetG: toNumberOrUndefined(goalFat) ?? null,
+        carbsTargetG: toNumberOrUndefined(goalCarbs) ?? null,
+      });
+      await refetch();
+      setSaveGoalSuccess('Цели КБЖУ сохранены.');
+    } catch (error) {
+      const { userMessage, debugMessage } = describeApiError(
+        error,
+        '/nutrition-goals/current',
+      );
+      setSaveGoalError(userMessage);
+      console.error('Failed to save nutrition goals', debugMessage);
+      if (error instanceof ApiError) {
+        console.error('Failed to save nutrition goals payload', error.details);
+      }
+    }
   };
 
   const handleAddQuickMeal = async () => {
     if (!rawName.trim()) return;
-
-    await addQuickMealMutation.mutateAsync({
-      mealType,
-      rawName: rawName.trim(),
-      calories: toNumberOrUndefined(calories),
-      proteinG: toNumberOrUndefined(protein),
-      fatG: toNumberOrUndefined(fat),
-      carbsG: toNumberOrUndefined(carbs),
-    });
-
-    setRawName('');
-    setCalories('');
-    setProtein('');
-    setFat('');
-    setCarbs('');
+    setCreateMealError(null);
+    setCreateMealSuccess(null);
+    try {
+      await addQuickMealMutation.mutateAsync({
+        mealType,
+        rawName: rawName.trim(),
+        calories: toNumberOrUndefined(calories),
+        proteinG: toNumberOrUndefined(protein),
+        fatG: toNumberOrUndefined(fat),
+        carbsG: toNumberOrUndefined(carbs),
+      });
+      await refetch();
+      setCreateMealSuccess('Приём пищи сохранён.');
+      setRawName('');
+      setCalories('');
+      setProtein('');
+      setFat('');
+      setCarbs('');
+    } catch (error) {
+      const { userMessage, debugMessage } = describeApiError(
+        error,
+        '/meals + /meals/:id/entries',
+      );
+      setCreateMealError(userMessage);
+      console.error('Failed to create meal', debugMessage);
+      if (error instanceof ApiError) {
+        console.error('Failed to create meal payload', error.details);
+      }
+    }
   };
 
   if (isLoading && !data) {
@@ -261,6 +296,12 @@ export default function NutritionPage() {
             >
               {addQuickMealMutation.isPending ? 'Сохраняю...' : dict.nutrition.addMeal}
             </Button>
+            {createMealError ? (
+              <p className="mt-3 text-sm text-red-300">{createMealError}</p>
+            ) : null}
+            {createMealSuccess ? (
+              <p className="mt-3 text-sm text-emerald-300">{createMealSuccess}</p>
+            ) : null}
           </div>
         </article>
 
@@ -306,6 +347,12 @@ export default function NutritionPage() {
             >
               {setGoalMutation.isPending ? 'Обновляю...' : 'Сохранить цели'}
             </Button>
+            {saveGoalError ? (
+              <p className="mt-3 text-sm text-red-300">{saveGoalError}</p>
+            ) : null}
+            {saveGoalSuccess ? (
+              <p className="mt-3 text-sm text-emerald-300">{saveGoalSuccess}</p>
+            ) : null}
           </div>
         </article>
       </section>

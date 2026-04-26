@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { api } from '@/shared/lib/api';
+import { ApiError, api, describeApiError } from '@/shared/lib/api';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, Check, Clock, Reply, CheckSquare } from 'lucide-react';
 
@@ -25,7 +25,9 @@ export default function MailMessagePage() {
   
   const [message, setMessage] = useState<MailMessageDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState<null | 'done' | 'snoozed' | 'create-task'>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -37,7 +39,9 @@ export default function MailMessagePage() {
           setMessage(res.data.message);
         }
       } catch (err) {
-        console.error('Failed to fetch message', err);
+        const { userMessage, debugMessage } = describeApiError(err, '/mail/messages/:id');
+        console.error('Failed to fetch message', debugMessage);
+        setActionError(userMessage);
       } finally {
         setLoading(false);
       }
@@ -45,27 +49,57 @@ export default function MailMessagePage() {
     fetchMsg();
   }, [id]);
 
-  const updateState = async (triageStatus: string) => {
+  const updateState = async (triageStatus: 'done' | 'snoozed') => {
     try {
-      setActionLoading(true);
+      setActionLoading(triageStatus);
+      setActionError(null);
+      setActionSuccess(null);
       await api.patch(`/mail/messages/${id}/action-state`, { triageStatus });
-      router.push('/mail');
+      setActionSuccess(
+        triageStatus === 'done'
+          ? 'Письмо отмечено как Done.'
+          : 'Письмо перенесено в Snoozed.',
+      );
+      setTimeout(() => {
+        router.push('/mail');
+      }, 500);
     } catch (err) {
-      console.error('Failed to update state', err);
+      const { userMessage, debugMessage } = describeApiError(
+        err,
+        '/mail/messages/:id/action-state',
+      );
+      setActionError(userMessage);
+      console.error('Failed to update state', debugMessage);
+      if (err instanceof ApiError) {
+        console.error('Failed to update state payload', err.details);
+      }
     } finally {
-      setActionLoading(false);
+      setActionLoading(null);
     }
   };
 
   const createTask = async () => {
     try {
-      setActionLoading(true);
+      setActionLoading('create-task');
+      setActionError(null);
+      setActionSuccess(null);
       await api.post(`/mail/messages/${id}/create-task`, {});
-      router.push('/mail');
+      setActionSuccess('Задача создана из письма.');
+      setTimeout(() => {
+        router.push('/mail');
+      }, 500);
     } catch (err) {
-      console.error('Failed to create task', err);
+      const { userMessage, debugMessage } = describeApiError(
+        err,
+        '/mail/messages/:id/create-task',
+      );
+      setActionError(userMessage);
+      console.error('Failed to create task', debugMessage);
+      if (err instanceof ApiError) {
+        console.error('Failed to create task payload', err.details);
+      }
     } finally {
-      setActionLoading(false);
+      setActionLoading(null);
     }
   };
 
@@ -91,17 +125,46 @@ export default function MailMessagePage() {
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => updateState('done')} disabled={actionLoading}>
-            <Check className="w-4 h-4 mr-2" /> Done
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => updateState('done')}
+            disabled={Boolean(actionLoading)}
+          >
+            <Check className="w-4 h-4 mr-2" />
+            {actionLoading === 'done' ? 'Done...' : 'Done'}
           </Button>
-          <Button variant="outline" size="sm" onClick={() => updateState('snoozed')} disabled={actionLoading}>
-            <Clock className="w-4 h-4 mr-2" /> Snooze
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => updateState('snoozed')}
+            disabled={Boolean(actionLoading)}
+          >
+            <Clock className="w-4 h-4 mr-2" />
+            {actionLoading === 'snoozed' ? 'Snoozing...' : 'Snooze'}
           </Button>
-          <Button variant="default" size="sm" onClick={createTask} disabled={actionLoading}>
-            <CheckSquare className="w-4 h-4 mr-2" /> Create Task
+          <Button
+            variant="default"
+            size="sm"
+            onClick={createTask}
+            disabled={Boolean(actionLoading)}
+          >
+            <CheckSquare className="w-4 h-4 mr-2" />
+            {actionLoading === 'create-task' ? 'Creating...' : 'Create Task'}
           </Button>
         </div>
       </div>
+
+      {actionError ? (
+        <div className="mx-4 mt-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          Action error: {actionError}
+        </div>
+      ) : null}
+      {actionSuccess ? (
+        <div className="mx-4 mt-4 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          {actionSuccess}
+        </div>
+      ) : null}
 
       {/* Message Content */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6">

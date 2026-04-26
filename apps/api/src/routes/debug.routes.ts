@@ -7,10 +7,14 @@ import {
   mailActionStates,
   mailMessages,
   mailThreads,
+  mealEntries,
   meals,
+  nutritionGoals,
   syncJobs,
+  tasks,
   workoutPlanExercises,
   workoutPlans,
+  workoutSessionExercises,
   workoutSessions,
 } from '@lifeos/db';
 import { count } from 'drizzle-orm';
@@ -40,8 +44,12 @@ debugRoutes.get('/current-user-stats', async (c) => {
     mailMessagesResult,
     mailActionStatesResult,
     syncJobsResult,
+    tasksResult,
     mealsResult,
+    mealEntriesResult,
+    nutritionGoalsResult,
     workoutSessionsResult,
+    workoutSessionExercisesResult,
   ] = await Promise.all([
     db
       .select({ value: count(exercises.id) })
@@ -82,13 +90,44 @@ debugRoutes.get('/current-user-stats', async (c) => {
       .from(syncJobs)
       .where(and(eq(syncJobs.workspaceId, workspaceId), eq(syncJobs.userId, userId))),
     db
+      .select({ value: count(tasks.id) })
+      .from(tasks)
+      .where(and(eq(tasks.workspaceId, workspaceId), eq(tasks.userId, userId))),
+    db
       .select({ value: count(meals.id) })
       .from(meals)
       .where(and(eq(meals.workspaceId, workspaceId), eq(meals.userId, userId))),
     db
+      .select({ value: count(mealEntries.id) })
+      .from(mealEntries)
+      .leftJoin(meals, eq(meals.id, mealEntries.mealId))
+      .where(and(eq(meals.workspaceId, workspaceId), eq(meals.userId, userId))),
+    db
+      .select({ value: count(nutritionGoals.id) })
+      .from(nutritionGoals)
+      .where(
+        and(
+          eq(nutritionGoals.workspaceId, workspaceId),
+          eq(nutritionGoals.userId, userId),
+        ),
+      ),
+    db
       .select({ value: count(workoutSessions.id) })
       .from(workoutSessions)
       .where(and(eq(workoutSessions.workspaceId, workspaceId), eq(workoutSessions.userId, userId))),
+    db
+      .select({ value: count(workoutSessionExercises.id) })
+      .from(workoutSessionExercises)
+      .leftJoin(
+        workoutSessions,
+        eq(workoutSessions.id, workoutSessionExercises.workoutSessionId),
+      )
+      .where(
+        and(
+          eq(workoutSessions.workspaceId, workspaceId),
+          eq(workoutSessions.userId, userId),
+        ),
+      ),
   ]);
 
   return c.json({
@@ -104,8 +143,14 @@ debugRoutes.get('/current-user-stats', async (c) => {
       mailMessages: Number(mailMessagesResult[0]?.value ?? 0),
       mailActionStates: Number(mailActionStatesResult[0]?.value ?? 0),
       syncJobs: Number(syncJobsResult[0]?.value ?? 0),
+      tasks: Number(tasksResult[0]?.value ?? 0),
+      nutritionGoals: Number(nutritionGoalsResult[0]?.value ?? 0),
       meals: Number(mealsResult[0]?.value ?? 0),
+      mealEntries: Number(mealEntriesResult[0]?.value ?? 0),
       workoutSessions: Number(workoutSessionsResult[0]?.value ?? 0),
+      workoutSessionExercises: Number(
+        workoutSessionExercisesResult[0]?.value ?? 0,
+      ),
     },
   });
 });

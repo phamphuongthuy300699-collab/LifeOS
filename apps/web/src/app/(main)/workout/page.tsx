@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getDictionary } from '@/shared/lib/i18n';
+import { ApiError, describeApiError } from '@/shared/lib/api';
 import {
   Activity,
   ArrowRight,
@@ -33,6 +34,8 @@ export default function WorkoutPage() {
 
   const plans = data?.items ?? [];
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [startSessionError, setStartSessionError] = useState<string | null>(null);
+  const [startSessionSuccess, setStartSessionSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     const firstPlan = plans[0];
@@ -48,11 +51,27 @@ export default function WorkoutPage() {
 
   const handleStartWorkout = async () => {
     if (!selectedPlan) return;
+    if (startSessionMutation.isPending) return;
 
-    const session = await startSessionMutation.mutateAsync({
-      workoutPlanId: selectedPlan.id,
-    });
-    router.push(`/workout/session/${session.id}`);
+    setStartSessionError(null);
+    setStartSessionSuccess(null);
+    try {
+      const session = await startSessionMutation.mutateAsync({
+        workoutPlanId: selectedPlan.id,
+      });
+      setStartSessionSuccess('Сессия создана. Открываю активную тренировку...');
+      router.push(`/workout/session/${session.id}`);
+    } catch (error) {
+      const { userMessage, debugMessage } = describeApiError(
+        error,
+        '/workout-sessions',
+      );
+      setStartSessionError(userMessage);
+      console.error('Failed to start workout session', debugMessage);
+      if (error instanceof ApiError) {
+        console.error('Failed to start workout session payload', error.details);
+      }
+    }
   };
 
   const handleBootstrapDemo = async () => {
@@ -161,6 +180,12 @@ export default function WorkoutPage() {
             {startSessionMutation.isPending ? 'Запуск...' : dict.workout.startWorkout}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
+          {startSessionError ? (
+            <p className="mt-3 text-sm text-red-300">{startSessionError}</p>
+          ) : null}
+          {startSessionSuccess ? (
+            <p className="mt-3 text-sm text-emerald-300">{startSessionSuccess}</p>
+          ) : null}
         </div>
       </section>
 

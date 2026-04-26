@@ -28,9 +28,44 @@ export type AuthStorage = {
 };
 
 export class ApiError extends Error {
-  constructor(public code: string, message: string, public status: number) {
+  constructor(
+    public code: string,
+    message: string,
+    public status: number,
+    public endpoint?: string,
+    public details?: unknown,
+  ) {
     super(message);
   }
+}
+
+export function describeApiError(
+  error: unknown,
+  endpoint?: string,
+): { userMessage: string; debugMessage: string } {
+  if (error instanceof ApiError) {
+    const endpointInfo = error.endpoint ?? endpoint ?? 'unknown-endpoint';
+    const details =
+      error.details !== undefined ? JSON.stringify(error.details) : 'no-body';
+    return {
+      userMessage: error.message || 'Request failed',
+      debugMessage: `[api:${endpointInfo}] status=${error.status} code=${error.code} body=${details}`,
+    };
+  }
+
+  if (error instanceof Error) {
+    const endpointInfo = endpoint ?? 'unknown-endpoint';
+    return {
+      userMessage: error.message || 'Request failed',
+      debugMessage: `[api:${endpointInfo}] non-api-error=${error.message}`,
+    };
+  }
+
+  const endpointInfo = endpoint ?? 'unknown-endpoint';
+  return {
+    userMessage: 'Request failed',
+    debugMessage: `[api:${endpointInfo}] unknown-error=${String(error)}`,
+  };
 }
 
 export interface ApiResponse<T> {
@@ -151,14 +186,22 @@ export async function apiFetch<T>(endpoint: string, options?: RequestInit): Prom
   if (!response.ok) {
     let errorCode = 'UNKNOWN_ERROR';
     let errorMessage = 'An error occurred';
+    let errorDetails: unknown;
     try {
       const errorData = await response.json();
-      errorCode = errorData.code || errorCode;
-      errorMessage = errorData.message || errorMessage;
+      errorDetails = errorData;
+      errorCode = errorData.code || errorData.errorCode || errorCode;
+      errorMessage = errorData.message || errorData.error || errorMessage;
     } catch {
       // Fallback if not JSON
     }
-    throw new ApiError(errorCode, errorMessage, response.status);
+    throw new ApiError(
+      errorCode,
+      errorMessage,
+      response.status,
+      normalizedEndpoint,
+      errorDetails,
+    );
   }
 
   // Returns empty object for 204 No Content
