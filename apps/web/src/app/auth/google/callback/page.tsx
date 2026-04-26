@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { apiFetch, clearAuthStorage, setAuthStorage } from '@/shared/lib/api';
 import { emitAuthChanged } from '@/providers/auth-provider';
 
@@ -19,7 +18,6 @@ function parseHash(hash: string) {
 }
 
 export default function GoogleAuthCallbackPage() {
-  const router = useRouter();
   const [state, setState] = useState<CallbackState>('processing');
 
   const message = useMemo(() => {
@@ -30,6 +28,7 @@ export default function GoogleAuthCallbackPage() {
 
   useEffect(() => {
     const finishGoogleAuth = async () => {
+      let storedToken = false;
       try {
         const { accessToken, refreshToken, userId, workspaceId } = parseHash(
           window.location.hash,
@@ -57,28 +56,35 @@ export default function GoogleAuthCallbackPage() {
           userId,
           workspaceId,
         });
+        storedToken = true;
 
-        const authMe = await apiFetch<{
-          user: { id: string };
-          workspaceId: string | null;
-        }>('/auth/me');
+        try {
+          const authMe = await apiFetch<{
+            user: { id: string };
+            workspaceId: string | null;
+          }>('/auth/me');
 
-        setAuthStorage({
-          userId: authMe.user.id,
-          workspaceId: authMe.workspaceId,
-        });
+          setAuthStorage({
+            userId: authMe.user.id,
+            workspaceId: authMe.workspaceId,
+          });
+        } catch (authMeError) {
+          console.error('[google-callback] /auth/me failed, continue with stored token', authMeError);
+        }
 
-        setState('done');
         emitAuthChanged();
+        setState('done');
         window.history.replaceState({}, document.title, '/auth/google/callback');
-        router.replace('/today');
+        window.location.replace('/today');
       } catch {
-        clearAuthStorage();
+        if (!storedToken) {
+          clearAuthStorage();
+        }
         setState('error');
       }
     };
     void finishGoogleAuth();
-  }, [router]);
+  }, []);
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md items-center justify-center px-6">

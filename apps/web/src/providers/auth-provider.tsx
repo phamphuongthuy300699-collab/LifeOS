@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  ApiError,
   apiFetch,
   API_BASE,
   clearAuthStorage,
@@ -100,11 +101,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setGmailConnected(Boolean(me.integrations?.google?.connected));
       setStatus('authenticated');
     } catch (err) {
-      clearAuthStorage();
-      setUser(null);
-      setWorkspaceId(null);
-      setGmailConnected(false);
-      setStatus('error');
+      const unauthorized =
+        err instanceof ApiError && (err.status === 401 || err.status === 403);
+
+      if (unauthorized) {
+        clearAuthStorage();
+        setUser(null);
+        setWorkspaceId(null);
+        setGmailConnected(false);
+        setStatus('unauthenticated');
+      } else {
+        setStatus('error');
+      }
       setError(err instanceof Error ? err.message : 'Auth check failed');
     }
   }, []);
