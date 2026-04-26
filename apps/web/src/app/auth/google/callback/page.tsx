@@ -36,6 +36,17 @@ export default function GoogleAuthCallbackPage() {
         );
 
         if (!accessToken || !userId) {
+          const queryParams = new URLSearchParams(window.location.search);
+          const code = queryParams.get('code');
+          if (code) {
+            window.location.replace(
+              `/api/v1/auth/google/callback${window.location.search}`,
+            );
+            return;
+          }
+        }
+
+        if (!accessToken || !userId) {
           setState('error');
           return;
         }

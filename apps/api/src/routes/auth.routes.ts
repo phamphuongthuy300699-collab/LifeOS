@@ -68,6 +68,13 @@ authRoutes.get('/google', async (c) => {
 
   const forceConsent = isTruthy(c.req.query('upgrade')) || requestedUserId !== undefined;
 
+  console.info('[auth/google] start', {
+    redirectUri: googleEnv.redirectUri,
+    appUrl: env.APP_URL,
+    forceConsent,
+    hasUpgradeUser: Boolean(requestedUserId),
+  });
+
   const url = buildGoogleAuthUrl({
     clientId: googleEnv.clientId,
     redirectUri: googleEnv.redirectUri,
@@ -108,6 +115,11 @@ authRoutes.get('/google/callback', async (c) => {
     return c.json({ code: 'BAD_REQUEST', message: 'Missing OAuth code' }, 400);
   }
 
+  console.info('[auth/google/callback] reached', {
+    hasCode: Boolean(code),
+    state: c.req.query('state') ?? null,
+  });
+
   const state = c.req.query('state') ?? '';
   const stateUserId = state.startsWith('upgrade:') ? state.replace('upgrade:', '') : undefined;
 
@@ -126,6 +138,7 @@ authRoutes.get('/google/callback', async (c) => {
   let user = await db.query.users.findFirst({
     where: eq(users.email, userInfo.email),
   });
+  const userWasExisting = Boolean(user);
 
   if (!user) {
     const [createdUser] = await db
@@ -260,6 +273,13 @@ authRoutes.get('/google/callback', async (c) => {
 
   const appUrl = env.APP_URL.replace(/\/$/, '');
   const redirectUrl = `${appUrl}/auth/google/callback#accessToken=${encodeURIComponent(accessToken)}&refreshToken=${encodeURIComponent(refreshToken)}&userId=${encodeURIComponent(user.id)}&workspaceId=${encodeURIComponent(membership.workspaceId)}`;
+
+  console.info('[auth/google/callback] success', {
+    userId: user.id,
+    userWasExisting,
+    workspaceId: membership.workspaceId,
+    redirectTarget: `${appUrl}/auth/google/callback`,
+  });
 
   return c.redirect(redirectUrl, 302);
 });

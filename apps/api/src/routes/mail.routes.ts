@@ -44,7 +44,13 @@ const connection = {
   port: Number(process.env.REDIS_PORT || 6379),
 };
 
-const mailSyncQueue = new Queue('mail-sync', { connection });
+function createMailSyncQueue() {
+  const queue = new Queue('mail-sync', { connection });
+  queue.on('error', (err) => {
+    console.error('[mail-sync-queue] error', err);
+  });
+  return queue;
+}
 
 export const mailRoutes = new Hono<MailRouteEnv>();
 
@@ -65,48 +71,52 @@ mailRoutes.use('*', async (c, next) => {
 mailRoutes.post('/sync', async (c) => {
   const userId = c.get('userId');
   const workspaceId = c.get('workspaceId');
+  const mailSyncQueue = createMailSyncQueue();
+  try {
+    const extAccount = await db.query.externalAccounts.findFirst({
+      where: and(
+        eq(externalAccounts.userId, userId),
+        eq(externalAccounts.provider, 'google'),
+      ),
+    });
 
-  const extAccount = await db.query.externalAccounts.findFirst({
-    where: and(
-      eq(externalAccounts.userId, userId),
-      eq(externalAccounts.provider, 'google'),
-    ),
-  });
+    if (!extAccount || !extAccount.syncEnabled) {
+      return c.json({ error: 'Gmail sync not configured or disabled' }, 400);
+    }
 
-  if (!extAccount || !extAccount.syncEnabled) {
-    return c.json({ error: 'Gmail sync not configured or disabled' }, 400);
+    const [jobRecord] = await db
+      .insert(syncJobs)
+      .values({
+        workspaceId,
+        userId,
+        integrationType: 'google',
+        entityScope: 'mail',
+        status: 'pending',
+        runMode: 'manual',
+      })
+      .returning();
+
+    if (!jobRecord) {
+      return c.json({ error: 'Failed to create sync job' }, 500);
+    }
+
+    await mailSyncQueue.add(
+      'sync-gmail',
+      {
+        syncJobId: jobRecord.id,
+        userId,
+        workspaceId,
+        externalAccountId: extAccount.id,
+      },
+      {
+        jobId: jobRecord.id,
+      },
+    );
+
+    return c.json({ message: 'Sync job enqueued', jobId: jobRecord.id }, 202);
+  } finally {
+    await mailSyncQueue.close();
   }
-
-  const [jobRecord] = await db
-    .insert(syncJobs)
-    .values({
-      workspaceId,
-      userId,
-      integrationType: 'google',
-      entityScope: 'mail',
-      status: 'pending',
-      runMode: 'manual',
-    })
-    .returning();
-
-  if (!jobRecord) {
-    return c.json({ error: 'Failed to create sync job' }, 500);
-  }
-
-  await mailSyncQueue.add(
-    'sync-gmail',
-    {
-      syncJobId: jobRecord.id,
-      userId,
-      workspaceId,
-      externalAccountId: extAccount.id,
-    },
-    {
-      jobId: jobRecord.id,
-    },
-  );
-
-  return c.json({ message: 'Sync job enqueued', jobId: jobRecord.id }, 202);
 });
 
 /**
