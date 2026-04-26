@@ -61,6 +61,26 @@ async function loadAuthMe(): Promise<AuthMeResponse> {
   return apiFetch<AuthMeResponse>('/auth/me');
 }
 
+async function loadAuthMeWithRetry(maxAttempts = 3): Promise<AuthMeResponse> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      return await loadAuthMe();
+    } catch (error) {
+      lastError = error;
+      const unauthorized =
+        error instanceof ApiError && (error.status === 401 || error.status === 403);
+      if (unauthorized || attempt === maxAttempts) {
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 300 * attempt));
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error('Auth check failed');
+}
+
 export function emitAuthChanged(): void {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent(AUTH_CHANGED_EVENT));
@@ -87,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setStatus('loading');
     setError(null);
     try {
-      const me = await loadAuthMe();
+      const me = await loadAuthMeWithRetry();
       setAuthStorage({
         userId: me.user.id,
         workspaceId: me.workspaceId ?? null,
