@@ -394,10 +394,39 @@ export function useAddWorkoutSet(sessionId: string) {
   return useMutation({
     mutationFn: async (payload: AddWorkoutSetInput) => {
       try {
-        return await apiFetch<WorkoutSet>(`/workout-sessions/${sessionId}/sets`, {
+        const params = new URLSearchParams();
+        params.set('workoutSessionExerciseId', payload.workoutSessionExerciseId);
+        if (payload.weightValue !== undefined) {
+          params.set('weightValue', String(payload.weightValue));
+        }
+        if (payload.repsCount !== undefined) {
+          params.set('repsCount', String(payload.repsCount));
+        }
+        if (payload.durationSeconds !== undefined) {
+          params.set('durationSeconds', String(payload.durationSeconds));
+        }
+        if (payload.distanceMeters !== undefined) {
+          params.set('distanceMeters', String(payload.distanceMeters));
+        }
+        if (payload.rpe !== undefined) {
+          params.set('rpe', String(payload.rpe));
+        }
+        if (payload.rir !== undefined) {
+          params.set('rir', String(payload.rir));
+        }
+        if (payload.isWarmup !== undefined) {
+          params.set('isWarmup', String(payload.isWarmup));
+        }
+        if (payload.isCompleted !== undefined) {
+          params.set('isCompleted', String(payload.isCompleted));
+        }
+
+        return await apiFetch<WorkoutSet>(
+          `/workout-sessions/${sessionId}/sets?${params.toString()}`,
+          {
           method: 'POST',
-          body: JSON.stringify(payload),
-        });
+          },
+        );
       } catch (error) {
         if (!shouldUseDemoFallback()) throw error;
         const state = readMockState();
@@ -457,9 +486,29 @@ export function useUpdateWorkoutSession(sessionId: string) {
   return useMutation({
     mutationFn: async (payload: UpdateWorkoutSessionInput) => {
       try {
-        return await apiFetch<WorkoutSession>(`/workout-sessions/${sessionId}`, {
+        const params = new URLSearchParams();
+        if (payload.endedAt !== undefined) {
+          params.set('endedAt', payload.endedAt ?? 'null');
+        }
+        if (payload.sessionStatus !== undefined) {
+          params.set('sessionStatus', payload.sessionStatus);
+        }
+        if (payload.notes !== undefined) {
+          params.set('notes', payload.notes ?? 'null');
+        }
+        if (payload.perceivedIntensity !== undefined) {
+          params.set(
+            'perceivedIntensity',
+            payload.perceivedIntensity === null ? 'null' : String(payload.perceivedIntensity),
+          );
+        }
+
+        const endpoint = params.toString()
+          ? `/workout-sessions/${sessionId}?${params.toString()}`
+          : `/workout-sessions/${sessionId}`;
+
+        return await apiFetch<WorkoutSession>(endpoint, {
           method: 'PATCH',
-          body: JSON.stringify(payload),
         });
       } catch (error) {
         if (!shouldUseDemoFallback()) throw error;
