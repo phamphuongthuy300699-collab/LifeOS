@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { randomUUID } from 'node:crypto';
 import { zValidator } from '@hono/zod-validator';
 import {
   and,
@@ -34,14 +35,16 @@ type WorkoutSetInsert = typeof workoutSets.$inferInsert;
 workoutSessionRoutes.post(
   '/',
   async (c) => {
+    const requestId = randomUUID();
     const startedAt = Date.now();
-    console.info('[workout-sessions.create] request started');
+    c.header('x-request-id', requestId);
+    console.info('[workout-sessions.create] request started', { requestId });
 
     try {
       const context = await resolveWorkoutContext(c.req.raw);
       if (!context) {
-        console.info('[workout-sessions.create] context missing');
-        return c.json({ error: 'No workspace membership found' }, 403);
+        console.info('[workout-sessions.create] context missing', { requestId });
+        return c.json({ error: 'No workspace membership found', requestId }, 403);
       }
 
       const { workspaceId, userId } = context;
@@ -49,6 +52,7 @@ workoutSessionRoutes.post(
       const parsedPayload = createWorkoutSessionSchema.safeParse(payload);
       if (!parsedPayload.success) {
         console.info('[workout-sessions.create] invalid payload', {
+          requestId,
           issues: parsedPayload.error.issues,
           elapsedMs: Date.now() - startedAt,
         });
@@ -57,12 +61,14 @@ workoutSessionRoutes.post(
             code: 'VALIDATION_ERROR',
             message: 'Invalid workout session payload',
             details: parsedPayload.error.issues,
+            requestId,
           },
           400,
         );
       }
       const data = parsedPayload.data;
       console.info('[workout-sessions.create] context resolved', {
+        requestId,
         userId,
         workspaceId,
         workoutPlanId: data.workoutPlanId ?? null,
@@ -94,16 +100,18 @@ workoutSessionRoutes.post(
           .limit(1);
 
         console.info('[workout-sessions.create] plan lookup', {
+          requestId,
           workoutPlanId: data.workoutPlanId,
           planFound: Boolean(plan),
         });
 
         if (!plan) {
           console.info('[workout-sessions.create] response sent', {
+            requestId,
             status: 404,
             elapsedMs: Date.now() - startedAt,
           });
-          return c.json({ error: 'Workout plan not found' }, 404);
+          return c.json({ error: 'Workout plan not found', requestId }, 404);
         }
 
         if (seedExercises.length === 0) {
@@ -114,6 +122,7 @@ workoutSessionRoutes.post(
             .orderBy(asc(workoutPlanExercises.orderIndex));
 
           console.info('[workout-sessions.create] plan exercises loaded', {
+            requestId,
             count: planExercises.length,
           });
 
@@ -129,6 +138,7 @@ workoutSessionRoutes.post(
           }));
         } else {
           console.info('[workout-sessions.create] seed exercises from payload', {
+            requestId,
             count: seedExercises.length,
           });
         }
@@ -144,6 +154,7 @@ workoutSessionRoutes.post(
           throw new Error('Failed to create workout session');
         }
         console.info('[workout-sessions.create] session inserted', {
+          requestId,
           sessionId: session.id,
         });
 
@@ -165,6 +176,7 @@ workoutSessionRoutes.post(
             )
             .returning();
           console.info('[workout-sessions.create] session exercises inserted', {
+            requestId,
             count: sessionExercises.length,
           });
         }
@@ -173,6 +185,7 @@ workoutSessionRoutes.post(
       });
 
       console.info('[workout-sessions.create] response sent', {
+        requestId,
         status: 201,
         elapsedMs: Date.now() - startedAt,
       });
@@ -180,11 +193,13 @@ workoutSessionRoutes.post(
         {
           ...createResult.session,
           exercises: createResult.sessionExercises,
+          requestId,
         },
         201,
       );
     } catch (error) {
       console.error('[workout-sessions.create] failed', {
+        requestId,
         elapsedMs: Date.now() - startedAt,
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
@@ -193,6 +208,7 @@ workoutSessionRoutes.post(
         {
           code: 'WORKOUT_SESSION_CREATE_FAILED',
           message: 'Failed to start workout session',
+          requestId,
         },
         500,
       );

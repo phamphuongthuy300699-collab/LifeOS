@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { randomUUID } from 'node:crypto';
 import { zValidator } from '@hono/zod-validator';
 import {
   and,
@@ -405,14 +406,16 @@ nutritionRoutes.patch(
 nutritionRoutes.patch(
   '/nutrition-goals/current',
   async (c) => {
+    const requestId = randomUUID();
     const startedAt = Date.now();
-    console.info('[nutrition-goals.current.patch] request started');
+    c.header('x-request-id', requestId);
+    console.info('[nutrition-goals.current.patch] request started', { requestId });
 
     try {
       const context = await resolveNutritionContext(c.req.raw);
       if (!context) {
-        console.info('[nutrition-goals.current.patch] context missing');
-        return c.json({ error: 'No workspace membership found' }, 403);
+        console.info('[nutrition-goals.current.patch] context missing', { requestId });
+        return c.json({ error: 'No workspace membership found', requestId }, 403);
       }
 
       const { workspaceId, userId } = context;
@@ -420,6 +423,7 @@ nutritionRoutes.patch(
       const parsedPayload = updateCurrentNutritionGoalSchema.safeParse(payload);
       if (!parsedPayload.success) {
         console.info('[nutrition-goals.current.patch] invalid payload', {
+          requestId,
           issues: parsedPayload.error.issues,
           elapsedMs: Date.now() - startedAt,
         });
@@ -428,6 +432,7 @@ nutritionRoutes.patch(
             code: 'VALIDATION_ERROR',
             message: 'Invalid nutrition goal payload',
             details: parsedPayload.error.issues,
+            requestId,
           },
           400,
         );
@@ -435,6 +440,7 @@ nutritionRoutes.patch(
       const data = parsedPayload.data;
       const effectiveFrom = data.effectiveFrom ? new Date(data.effectiveFrom) : new Date();
       console.info('[nutrition-goals.current.patch] context resolved', {
+        requestId,
         userId,
         workspaceId,
         payload: data,
@@ -453,11 +459,13 @@ nutritionRoutes.patch(
           .orderBy(desc(nutritionGoals.effectiveFrom));
 
         console.info('[nutrition-goals.current.patch] existing goals loaded', {
+          requestId,
           count: existingGoals.length,
         });
 
         const currentGoal = existingGoals.find((goal) => !goal.effectiveTo);
         console.info('[nutrition-goals.current.patch] current goal lookup', {
+          requestId,
           found: Boolean(currentGoal),
           currentGoalId: currentGoal?.id ?? null,
         });
@@ -470,6 +478,7 @@ nutritionRoutes.patch(
             } as Partial<NutritionGoalInsert>)
             .where(eq(nutritionGoals.id, currentGoal.id));
           console.info('[nutrition-goals.current.patch] old goal closed', {
+            requestId,
             closedGoalId: currentGoal.id,
           });
         }
@@ -488,6 +497,7 @@ nutritionRoutes.patch(
           } as NutritionGoalInsert)
           .returning();
         console.info('[nutrition-goals.current.patch] new goal inserted', {
+          requestId,
           goalId: newGoal?.id ?? null,
         });
 
@@ -495,12 +505,17 @@ nutritionRoutes.patch(
       });
 
       console.info('[nutrition-goals.current.patch] response sent', {
+        requestId,
         status: 200,
         elapsedMs: Date.now() - startedAt,
       });
-      return c.json(createdGoal);
+      return c.json({
+        ...createdGoal,
+        requestId,
+      });
     } catch (error) {
       console.error('[nutrition-goals.current.patch] failed', {
+        requestId,
         elapsedMs: Date.now() - startedAt,
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
@@ -509,6 +524,7 @@ nutritionRoutes.patch(
         {
           code: 'NUTRITION_GOAL_UPDATE_FAILED',
           message: 'Failed to update nutrition goal',
+          requestId,
         },
         500,
       );

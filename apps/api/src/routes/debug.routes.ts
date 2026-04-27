@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { randomUUID } from 'node:crypto';
 import {
   eq,
   and,
@@ -28,12 +29,14 @@ export const debugRoutes = new Hono();
  * Returns scoped counters for currently authenticated user/workspace.
  */
 debugRoutes.get('/current-user-stats', async (c) => {
+  const requestId = randomUUID();
   const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
-    return c.json({ code: 'UNAUTHORIZED', message: 'Unauthorized' }, 401);
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unauthorized', requestId }, 401);
   }
 
   const { userId, workspaceId } = context;
+  c.header('x-request-id', requestId);
 
   const [
     exercisesResult,
@@ -131,6 +134,7 @@ debugRoutes.get('/current-user-stats', async (c) => {
   ]);
 
   return c.json({
+    requestId,
     userId,
     workspaceId,
     gmailConnected: Number(mailAccountsResult[0]?.value ?? 0) > 0,
@@ -160,13 +164,16 @@ debugRoutes.get('/current-user-stats', async (c) => {
  * Lightweight write-read-delete check for current user/workspace.
  */
 debugRoutes.get('/health-write', async (c) => {
+  const requestId = randomUUID();
   const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
-    return c.json({ code: 'UNAUTHORIZED', message: 'Unauthorized' }, 401);
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unauthorized', requestId }, 401);
   }
 
   const startedAt = Date.now();
   const { userId, workspaceId } = context;
+  c.header('x-request-id', requestId);
+  console.info('[debug.health-write] request started', { requestId, userId, workspaceId });
 
   try {
     const transactionResult = await db.transaction(async (tx) => {
@@ -185,6 +192,10 @@ debugRoutes.get('/health-write', async (c) => {
           id: nutritionGoals.id,
         });
 
+      if (!insertedGoal) {
+        throw new Error('Failed to insert health-write record');
+      }
+
       const [readBack] = await tx
         .select({ id: nutritionGoals.id })
         .from(nutritionGoals)
@@ -201,15 +212,23 @@ debugRoutes.get('/health-write', async (c) => {
 
     return c.json({
       status: 'ok',
+      requestId,
       userId,
       workspaceId,
       elapsedMs: Date.now() - startedAt,
       ...transactionResult,
     });
   } catch (error) {
+    console.error('[debug.health-write] failed', {
+      requestId,
+      elapsedMs: Date.now() - startedAt,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return c.json(
       {
         status: 'error',
+        requestId,
         userId,
         workspaceId,
         elapsedMs: Date.now() - startedAt,
