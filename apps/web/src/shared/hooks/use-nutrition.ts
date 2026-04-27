@@ -260,9 +260,26 @@ export function useSetCurrentNutritionGoal() {
   return useMutation({
     mutationFn: async (payload: SetGoalInput) => {
       try {
-        return await apiFetch<NutritionGoal>('/nutrition-goals/current', {
+        const params = new URLSearchParams();
+        if (payload.caloriesTarget !== undefined && payload.caloriesTarget !== null) {
+          params.set('caloriesTarget', String(payload.caloriesTarget));
+        }
+        if (payload.proteinTargetG !== undefined && payload.proteinTargetG !== null) {
+          params.set('proteinTargetG', String(payload.proteinTargetG));
+        }
+        if (payload.fatTargetG !== undefined && payload.fatTargetG !== null) {
+          params.set('fatTargetG', String(payload.fatTargetG));
+        }
+        if (payload.carbsTargetG !== undefined && payload.carbsTargetG !== null) {
+          params.set('carbsTargetG', String(payload.carbsTargetG));
+        }
+
+        const endpoint = params.toString()
+          ? `/nutrition-goals/current?${params.toString()}`
+          : '/nutrition-goals/current';
+
+        return await apiFetch<NutritionGoal>(endpoint, {
           method: 'PATCH',
-          body: JSON.stringify(payload),
         });
       } catch (error) {
         if (!shouldUseDemoFallback()) throw error;

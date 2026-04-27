@@ -22,6 +22,7 @@ import {
 } from '@lifeos/domain-workouts';
 import { db } from '../config/db';
 import { resolveWorkoutContext } from './_workout-context';
+import { readJsonBodySafe } from './_safe-body';
 
 export const workoutSessionRoutes = new Hono();
 type WorkoutSessionInsert = typeof workoutSessions.$inferInsert;
@@ -48,12 +49,21 @@ workoutSessionRoutes.post(
       }
 
       const { workspaceId, userId } = context;
-      const payload = await c.req.json().catch(() => ({}));
+      const workoutPlanIdFromQuery = c.req.query('workoutPlanId');
+      const bodyRead = workoutPlanIdFromQuery
+        ? { body: {}, parseTimedOut: false, parseError: null }
+        : await readJsonBodySafe(c.req.raw);
+      const payload = {
+        ...bodyRead.body,
+        ...(workoutPlanIdFromQuery ? { workoutPlanId: workoutPlanIdFromQuery } : {}),
+      };
       const parsedPayload = createWorkoutSessionSchema.safeParse(payload);
       if (!parsedPayload.success) {
         console.info('[workout-sessions.create] invalid payload', {
           requestId,
           issues: parsedPayload.error.issues,
+          parseTimedOut: bodyRead.parseTimedOut,
+          parseError: bodyRead.parseError,
           elapsedMs: Date.now() - startedAt,
         });
         return c.json(

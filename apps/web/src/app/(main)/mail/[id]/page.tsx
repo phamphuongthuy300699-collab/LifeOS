@@ -54,7 +54,9 @@ export default function MailMessagePage() {
       setActionLoading(triageStatus);
       setActionError(null);
       setActionSuccess(null);
-      await api.patch(`/mail/messages/${id}/action-state`, { triageStatus });
+      await api.patch(
+        `/mail/messages/${id}/action-state?triageStatus=${encodeURIComponent(triageStatus)}`,
+      );
       setActionSuccess(
         triageStatus === 'done'
           ? 'Письмо отмечено как Done.'

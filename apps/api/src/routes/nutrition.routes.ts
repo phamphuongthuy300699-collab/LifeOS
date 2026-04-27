@@ -23,6 +23,7 @@ import {
 } from '@lifeos/domain-nutrition';
 import { db } from '../config/db';
 import { resolveNutritionContext } from './_nutrition-context';
+import { readJsonBodySafe } from './_safe-body';
 
 export const nutritionRoutes = new Hono();
 
@@ -419,12 +420,29 @@ nutritionRoutes.patch(
       }
 
       const { workspaceId, userId } = context;
-      const payload = await c.req.json().catch(() => ({}));
+      const bodyRead = await readJsonBodySafe(c.req.raw);
+      const payload = {
+        ...bodyRead.body,
+        ...(c.req.query('caloriesTarget') !== undefined
+          ? { caloriesTarget: Number(c.req.query('caloriesTarget')) }
+          : {}),
+        ...(c.req.query('proteinTargetG') !== undefined
+          ? { proteinTargetG: Number(c.req.query('proteinTargetG')) }
+          : {}),
+        ...(c.req.query('fatTargetG') !== undefined
+          ? { fatTargetG: Number(c.req.query('fatTargetG')) }
+          : {}),
+        ...(c.req.query('carbsTargetG') !== undefined
+          ? { carbsTargetG: Number(c.req.query('carbsTargetG')) }
+          : {}),
+      };
       const parsedPayload = updateCurrentNutritionGoalSchema.safeParse(payload);
       if (!parsedPayload.success) {
         console.info('[nutrition-goals.current.patch] invalid payload', {
           requestId,
           issues: parsedPayload.error.issues,
+          parseTimedOut: bodyRead.parseTimedOut,
+          parseError: bodyRead.parseError,
           elapsedMs: Date.now() - startedAt,
         });
         return c.json(

@@ -8,13 +8,18 @@ const authDebugFlag =
   typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_SHOW_AUTH_DEBUG : undefined;
 
 const normalizedConfiguredApiBase = (configuredApiBase?.trim() || '/api/v1').replace(/\/$/, '');
+const absoluteConfiguredApiBase = normalizedConfiguredApiBase.startsWith('http')
+  ? (normalizedConfiguredApiBase.endsWith('/api/v1')
+      ? normalizedConfiguredApiBase
+      : `${normalizedConfiguredApiBase}/api/v1`)
+  : null;
 
 /**
- * In browser we always use same-origin /api/v1 and rely on Next.js rewrites.
- * This avoids cross-origin fetch instability during OAuth and auth refresh.
+ * Prefer direct API origin when explicitly configured to avoid proxy body-stream
+ * issues on write requests through platform rewrites.
  */
 export const API_BASE =
-  typeof window === 'undefined' ? normalizedConfiguredApiBase : '/api/v1';
+  absoluteConfiguredApiBase ?? '/api/v1';
 export const IS_DEMO_MODE = demoModeFlag === 'true';
 export const SHOW_AUTH_DEBUG =
   authDebugFlag === 'true' ||

@@ -16,7 +16,7 @@ import {
   TestTube2,
 } from 'lucide-react';
 import { useAuth } from '@/providers/auth-provider';
-import { API_BASE, ApiError, SHOW_AUTH_DEBUG, getAuthStorage } from '@/shared/lib/api';
+import { API_BASE, ApiError, getAuthStorage } from '@/shared/lib/api';
 
 const menuItems = [
   { key: 'learning' as const, href: '/learning', icon: BookOpen },
@@ -174,17 +174,12 @@ export default function MorePage() {
     setDebugRunState('nutrition-patch');
     setDebugError(null);
     setDebugResult(null);
-    const endpoint = '/nutrition-goals/current';
+    const endpoint =
+      '/nutrition-goals/current?caloriesTarget=2650&proteinTargetG=155&fatTargetG=70&carbsTargetG=350';
     const startedAt = performance.now();
     try {
       const result = await runDebugRequest(endpoint, {
         method: 'PATCH',
-        body: JSON.stringify({
-          caloriesTarget: 2650,
-          proteinTargetG: 155,
-          fatTargetG: 70,
-          carbsTargetG: 350,
-        }),
       });
       setDebugResult(result);
     } catch (error) {
@@ -237,9 +232,12 @@ export default function MorePage() {
         );
       }
 
-      const result = await runDebugRequest(endpoint, {
+      const endpointWithQuery = `${endpoint}?workoutPlanId=${encodeURIComponent(
+        workoutPlanId,
+      )}`;
+
+      const result = await runDebugRequest(endpointWithQuery, {
         method: 'POST',
-        body: JSON.stringify({ workoutPlanId }),
       });
       setDebugResult(result);
     } catch (error) {
@@ -322,21 +320,20 @@ export default function MorePage() {
         </div>
       </section>
 
-      {SHOW_AUTH_DEBUG ? (
-        <section className="mt-3 rounded-xl border border-outline-variant bg-surface p-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-content-muted">
-            Auth Debug
-          </h2>
-          <div className="mt-3 space-y-1 text-sm text-content">
-            <p>Статус: {status}</p>
-            <p>Email: {user?.email ?? '—'}</p>
-            <p>User ID: {user?.id ?? '—'}</p>
-            <p>Workspace ID: {workspaceId ?? '—'}</p>
-            <p>Gmail connected: {gmailConnected ? 'yes' : 'no'}</p>
-            <p>API base: {apiBaseUrl}</p>
-            <p>Demo mode: {isDemoMode ? 'true' : 'false'}</p>
-            {error ? <p className="text-red-500">Auth error: {error}</p> : null}
-          </div>
+      <section className="mt-3 rounded-xl border border-outline-variant bg-surface p-4">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-content-muted">
+          Auth Debug
+        </h2>
+        <div className="mt-3 space-y-1 text-sm text-content">
+          <p>Статус: {status}</p>
+          <p>Email: {user?.email ?? '—'}</p>
+          <p>User ID: {user?.id ?? '—'}</p>
+          <p>Workspace ID: {workspaceId ?? '—'}</p>
+          <p>Gmail connected: {gmailConnected ? 'yes' : 'no'}</p>
+          <p>API base: {apiBaseUrl}</p>
+          <p>Demo mode: {isDemoMode ? 'true' : 'false'}</p>
+          {error ? <p className="text-red-500">Auth error: {error}</p> : null}
+        </div>
 
           <div className="mt-4 grid gap-2 sm:grid-cols-3">
             <button
@@ -389,8 +386,7 @@ export default function MorePage() {
           {debugError ? (
             <p className="mt-3 text-sm text-red-400">Debug error: {debugError}</p>
           ) : null}
-        </section>
-      ) : null}
+      </section>
 
       <div className="mt-6 space-y-1">
         {menuItems.map(({ key, href, icon: Icon }) => (

@@ -21,6 +21,7 @@ import {
   type GmailMessageMetadata,
 } from '@lifeos/integrations-google';
 import { resolveStrictRequestContext } from './_request-context';
+import { readJsonBodySafe } from './_safe-body';
 import { env } from '../config/env';
 
 type MailRouteEnv = {
@@ -241,8 +242,15 @@ mailRoutes.patch('/messages/:id/action-state', async (c) => {
     const userId = c.get('userId');
     const workspaceId = c.get('workspaceId');
     const messageId = c.req.param('id');
-    const body = await c.req.json().catch(() => ({}));
-    const triageStatus = body?.triageStatus;
+    const triageStatusFromQuery = c.req.query('triageStatus');
+    const bodyRead = triageStatusFromQuery
+      ? { body: {}, parseTimedOut: false, parseError: null }
+      : await readJsonBodySafe(c.req.raw);
+    const triageStatus =
+      triageStatusFromQuery ??
+      (typeof bodyRead.body.triageStatus === 'string'
+        ? bodyRead.body.triageStatus
+        : undefined);
 
     console.info('[mail.action-state] context resolved', {
       requestId,
@@ -250,6 +258,8 @@ mailRoutes.patch('/messages/:id/action-state', async (c) => {
       workspaceId,
       messageId,
       triageStatus: triageStatus ?? null,
+      parseTimedOut: bodyRead.parseTimedOut,
+      parseError: bodyRead.parseError,
     });
 
     if (!isMailTriageStatus(triageStatus)) {

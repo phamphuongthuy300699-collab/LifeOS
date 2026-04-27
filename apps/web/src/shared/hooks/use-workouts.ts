@@ -328,9 +328,11 @@ export function useStartWorkoutSession() {
   return useMutation({
     mutationFn: async (payload: StartSessionInput) => {
       try {
-        return await apiFetch<WorkoutSessionDetails>('/workout-sessions', {
+        const endpoint = `/workout-sessions?workoutPlanId=${encodeURIComponent(
+          payload.workoutPlanId,
+        )}`;
+        return await apiFetch<WorkoutSessionDetails>(endpoint, {
           method: 'POST',
-          body: JSON.stringify(payload),
         });
       } catch (error) {
         if (!shouldUseDemoFallback()) throw error;
