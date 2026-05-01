@@ -45,7 +45,6 @@ export type CalendarEventsResponse = {
   filters: {
     from: string | null;
     to: string | null;
-    status: string | null;
     sourceProvider: string | null;
     limit: number;
   };

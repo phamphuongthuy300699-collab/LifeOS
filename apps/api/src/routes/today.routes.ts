@@ -3,30 +3,12 @@ import { db } from '../config/db';
 import { events, inboxItems, mailMessages, tasks } from '@lifeos/db';
 import { and, asc, desc, eq, gte, lt, lte, notInArray } from 'drizzle-orm';
 import { resolveStrictRequestContext } from './_request-context';
+import {
+  extractMeetingUrlFromText,
+  resolveCalendarProvider,
+} from './calendar.utils';
 
 export const todayRoutes = new Hono();
-
-function resolveCalendarProvider(calendarRef: string | null | undefined): 'manual' | 'google' | 'yandex' {
-  if (!calendarRef) return 'manual';
-  if (calendarRef.startsWith('google:')) return 'google';
-  if (calendarRef.startsWith('yandex:')) return 'yandex';
-  return 'manual';
-}
-
-function extractMeetingUrlFromText(value: string | null | undefined): string | null {
-  if (!value) return null;
-  const line = value
-    .split('\n')
-    .find((row) => row.trimStart().startsWith('Meeting: '));
-  if (line) {
-    const candidate = line.replace('Meeting: ', '').trim();
-    if (candidate.startsWith('http://') || candidate.startsWith('https://')) {
-      return candidate;
-    }
-  }
-  const urlMatch = value.match(/https?:\/\/[^\s]+/);
-  return urlMatch ? urlMatch[0] : null;
-}
 
 todayRoutes.get('/', async (c) => {
   const context = await resolveStrictRequestContext(c.req.raw);

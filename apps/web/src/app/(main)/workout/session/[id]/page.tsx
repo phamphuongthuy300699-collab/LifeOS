@@ -47,19 +47,19 @@ export default function ActiveWorkoutPage() {
 
   const completedSets = useMemo(
     () =>
-      session?.exercises.reduce((sum, exercise) => {
+      (session?.exercises ?? []).reduce((sum, exercise) => {
         return sum + exercise.sets.filter((set) => set.isCompleted).length;
-      }, 0) ?? 0,
+      }, 0),
     [session?.exercises],
   );
 
   const totalSets = useMemo(
     () =>
-      session?.exercises.reduce((sum, exercise) => {
+      (session?.exercises ?? []).reduce((sum, exercise) => {
         const targetSets = exercise.targetSchemeJson?.targetSets;
         if (typeof targetSets === 'number') return sum + targetSets;
         return sum + 3;
-      }, 0) ?? 0,
+      }, 0),
     [session?.exercises],
   );
 

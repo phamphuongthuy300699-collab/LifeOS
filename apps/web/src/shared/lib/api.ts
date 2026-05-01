@@ -136,7 +136,10 @@ export function shouldUseDemoFallback(): boolean {
   return IS_DEMO_MODE;
 }
 
-function resolveTimeoutMs(method: string | undefined, explicitTimeout: number | undefined): number {
+export function getTimeoutForMethod(
+  method: string | undefined,
+  explicitTimeout: number | undefined,
+): number {
   if (explicitTimeout && explicitTimeout > 0) return explicitTimeout;
 
   const normalizedMethod = (method ?? 'GET').toUpperCase();
@@ -171,7 +174,7 @@ function buildDefaultHeaders(): Headers {
 export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): Promise<T> {
   const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   const url = `${API_BASE}${normalizedEndpoint}`;
-  const timeoutMs = resolveTimeoutMs(options?.method, options?.timeoutMs);
+  const timeoutMs = getTimeoutForMethod(options?.method, options?.timeoutMs);
   
   const headers = buildDefaultHeaders();
   const requestHeaders = new Headers(options?.headers);
@@ -208,7 +211,7 @@ export async function apiFetch<T>(endpoint: string, options?: ApiFetchOptions): 
     });
   } catch (error) {
     if ((error as Error).name === 'AbortError') {
-      throw new ApiError('TIMEOUT', 'Request timeout', 408);
+      throw new ApiError('TIMEOUT', 'Request timeout', 408, normalizedEndpoint);
     }
     throw error;
   } finally {
