@@ -13,6 +13,29 @@ export type Project = {
   updatedAt: string;
 };
 
+export type ProjectMilestone = {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string | null;
+  targetDate: string | null;
+  status: string;
+  orderIndex: number;
+  tasks?: Array<{
+    taskId: string;
+    title: string;
+    status: string;
+    priority: string;
+    dueAt: string | null;
+    scheduledStartAt: string | null;
+    completedAt: string | null;
+  }>;
+};
+
+export type ProjectDetails = Project & {
+  milestones: ProjectMilestone[];
+};
+
 export type CreateProjectInput = {
   name: string;
   slug: string;
@@ -57,6 +80,23 @@ export function useProjects() {
   });
 }
 
+export function useProject(projectId?: string) {
+  return useQuery({
+    queryKey: ['project', projectId],
+    enabled: Boolean(projectId),
+    queryFn: () => apiFetch<ProjectDetails>(`/projects/${projectId}`),
+  });
+}
+
+export function useProjectMilestones(projectId?: string) {
+  return useQuery({
+    queryKey: ['project', projectId, 'milestones'],
+    enabled: Boolean(projectId),
+    queryFn: () =>
+      apiFetch<{ items: ProjectMilestone[] }>(`/projects/${projectId}/milestones`),
+  });
+}
+
 export function useCreateProject() {
   const queryClient = useQueryClient();
 
@@ -86,6 +126,53 @@ export function useCreateProject() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}
+
+export function useCreateProjectMilestone(projectId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: {
+      title: string;
+      description?: string;
+      targetDate?: string;
+      status?: string;
+      orderIndex?: number;
+    }) =>
+      apiFetch<ProjectMilestone>(`/projects/${projectId}/milestones`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        timeoutMs: 30_000,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['project', projectId, 'milestones'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}
+
+export function useUpdateProjectMilestone(milestoneId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: {
+      title?: string;
+      description?: string | null;
+      targetDate?: string | null;
+      status?: string;
+      orderIndex?: number;
+    }) =>
+      apiFetch<ProjectMilestone>(`/project-milestones/${milestoneId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+        timeoutMs: 30_000,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['project'] });
     },
   });
 }

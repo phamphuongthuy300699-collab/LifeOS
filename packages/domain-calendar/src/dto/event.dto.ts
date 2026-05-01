@@ -8,6 +8,14 @@ export const createEventSchema = z.object({
   endAt: z.string().datetime(),
   isAllDay: z.boolean().optional().default(false),
   status: z.enum(['tentative', 'confirmed', 'cancelled']).optional().default('confirmed'),
+  sourceProvider: z.enum(['manual', 'google', 'yandex']).optional().default('manual'),
+  calendarRef: z.string().max(255).optional(),
+  externalId: z.string().max(500).optional(),
+  externalCalendarId: z.string().max(255).optional(),
+  externalEventId: z.string().max(500).optional(),
+  timezone: z.string().max(100).optional(),
+  meetingUrl: z.string().max(2000).optional(),
+  metadataJson: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type CreateEventDto = z.infer<typeof createEventSchema>;

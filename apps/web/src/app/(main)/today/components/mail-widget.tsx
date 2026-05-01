@@ -54,7 +54,7 @@ export function MailWidget() {
             : 'Перейдите во входящие и разберите новые письма.'}
         </p>
       </div>
-      <Link href="/mail" className="w-full md:w-auto">
+      <Link href="/inbox" className="w-full md:w-auto">
         <button className="w-full bg-primary text-on-primary px-6 py-3 rounded-full font-semibold hover:opacity-90 transition-shadow flex items-center justify-center gap-2">
           Открыть triage <ArrowRight size={18} />
         </button>

@@ -116,6 +116,21 @@ type UpdateWorkoutSessionInput = {
   perceivedIntensity?: number | null;
 };
 
+function normalizeWorkoutSessionDetails(
+  session: WorkoutSessionDetails,
+): WorkoutSessionDetails {
+  return {
+    ...session,
+    exercises: (session.exercises ?? []).map((exercise) => ({
+      ...exercise,
+      sets: Array.isArray(exercise.sets) ? exercise.sets : [],
+      exercise: exercise.exercise ?? null,
+      targetSchemeJson: exercise.targetSchemeJson ?? null,
+      previousResultJson: exercise.previousResultJson ?? null,
+    })),
+  };
+}
+
 const demoExercisesSeed = [
   {
     name: 'Жим штанги лежа',
@@ -308,7 +323,8 @@ export function useWorkoutSession(sessionId?: string) {
     enabled: Boolean(sessionId),
     queryFn: async () => {
       try {
-        return await apiFetch<WorkoutSessionDetails>(`/workout-sessions/${sessionId}`);
+        const session = await apiFetch<WorkoutSessionDetails>(`/workout-sessions/${sessionId}`);
+        return normalizeWorkoutSessionDetails(session);
       } catch (error) {
         if (!shouldUseDemoFallback()) throw error;
         const state = readMockState();
@@ -382,8 +398,9 @@ export function useStartWorkoutSession() {
       }
     },
     onSuccess: (session) => {
+      const normalizedSession = normalizeWorkoutSessionDetails(session);
       queryClient.invalidateQueries({ queryKey: ['workout-plans'] });
-      queryClient.setQueryData(['workout-session', session.id], session);
+      queryClient.setQueryData(['workout-session', session.id], normalizedSession);
     },
   });
 }

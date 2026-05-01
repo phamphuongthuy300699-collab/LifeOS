@@ -36,7 +36,8 @@ export default function ActiveWorkoutPage() {
   useEffect(() => {
     if (!activeExercise) return;
 
-    const lastSet = [...activeExercise.sets]
+    const safeSets = Array.isArray(activeExercise.sets) ? activeExercise.sets : [];
+    const lastSet = [...safeSets]
       .sort((a, b) => a.setNumber - b.setNumber)
       .at(-1);
 
@@ -230,12 +231,12 @@ export default function ActiveWorkoutPage() {
               Выполненные подходы
             </h2>
             <div className="space-y-2">
-              {activeExercise.sets.length === 0 && (
+              {(activeExercise.sets?.length ?? 0) === 0 && (
                 <p className="text-sm text-on-surface-variant">
                   Пока нет подходов. Добавьте первый.
                 </p>
               )}
-              {activeExercise.sets
+              {(activeExercise.sets ?? [])
                 .slice()
                 .sort((a, b) => a.setNumber - b.setNumber)
                 .map((set) => (

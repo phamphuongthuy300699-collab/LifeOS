@@ -11,7 +11,7 @@ export function BottomNav() {
 
   const navItems = [
     { href: '/today', icon: CalendarDays, label: dict.nav.today },
-    { href: '/mail', icon: Inbox, label: dict.nav.inbox },
+    { href: '/inbox', icon: Inbox, label: dict.nav.inbox },
     { href: '/workout', icon: Dumbbell, label: dict.nav.workout },
     { href: '/nutrition', icon: Utensils, label: dict.nav.nutrition },
     { href: '/more', icon: MoreHorizontal, label: dict.nav.more },

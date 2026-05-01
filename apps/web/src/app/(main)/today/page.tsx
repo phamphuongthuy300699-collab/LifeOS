@@ -20,6 +20,18 @@ function formatEventTime(value: string | null | undefined): string {
   return parsed.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 }
 
+function formatEventDateTime(value: string | null | undefined): string {
+  if (!value) return '—';
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return '—';
+  return parsed.toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 export default function TodayPage() {
   const dict = getDictionary('ru');
   const { data, isLoading, isError } = useTodayData();
@@ -155,7 +167,7 @@ export default function TodayPage() {
         <section className="rounded-xl border border-outline-variant bg-surface p-6">
           <div className="mb-5 flex items-center justify-between">
             <h3 className="text-lg font-semibold text-on-surface">{dict.today.topTasks}</h3>
-            <Link href="/projects" className="text-sm font-semibold text-primary">
+            <Link href="/inbox" className="text-sm font-semibold text-primary">
               Все задачи
             </Link>
           </div>
@@ -172,23 +184,105 @@ export default function TodayPage() {
           )}
         </section>
 
+        <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <article className="rounded-xl border border-outline-variant bg-surface p-5">
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-on-surface-variant">
+                Overdue tasks
+              </h3>
+              <Link href="/calendar" className="text-xs font-semibold text-primary">
+                Все
+              </Link>
+            </div>
+            {(data?.overdueTasks ?? []).length === 0 ? (
+              <p className="text-sm text-on-surface-variant">Просроченных задач нет.</p>
+            ) : (
+              <div className="space-y-2">
+                {(data?.overdueTasks ?? []).slice(0, 4).map((task) => (
+                  <Link
+                    key={task.id}
+                    href={`/tasks/${task.id}`}
+                    className="block rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2"
+                  >
+                    <p className="text-sm font-semibold text-on-surface">{task.title}</p>
+                    <p className="text-xs text-red-300">
+                      due {formatEventTime(task.dueAt)}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </article>
+
+          <article className="rounded-xl border border-outline-variant bg-surface p-5">
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-on-surface-variant">
+                Scheduled today
+              </h3>
+              <Link href="/calendar" className="text-xs font-semibold text-primary">
+                К календарю
+              </Link>
+            </div>
+            {(data?.scheduledTasks ?? []).length === 0 ? (
+              <p className="text-sm text-on-surface-variant">Запланированных задач нет.</p>
+            ) : (
+              <div className="space-y-2">
+                {(data?.scheduledTasks ?? []).slice(0, 4).map((task) => (
+                  <Link
+                    key={task.id}
+                    href={`/tasks/${task.id}`}
+                    className="block rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2"
+                  >
+                    <p className="text-sm font-semibold text-on-surface">{task.title}</p>
+                    <p className="text-xs text-on-surface-variant">
+                      start {formatEventTime(task.scheduledStartAt)}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </article>
+        </section>
+
         <section className="rounded-xl border border-outline-variant bg-surface p-6">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-semibold text-on-surface">{dict.today.events}</h3>
-            <span className="text-xs uppercase tracking-wider text-on-surface-variant">Календарь</span>
+            <Link href="/calendar" className="text-xs uppercase tracking-wider text-primary">
+              Календарь
+            </Link>
           </div>
           {data?.events && data.events.length > 0 ? (
             <div className="space-y-2">
               {data.events.map((event: any) => (
                 <article
                   key={event.id}
-                  className="flex items-center justify-between rounded-lg border border-outline-variant bg-surface-container-low p-3"
+                  className="rounded-lg border border-outline-variant bg-surface-container-low p-3"
                 >
-                  <div>
-                    <p className="font-medium text-on-surface">{event.title || 'Событие'}</p>
-                    <p className="text-xs text-on-surface-variant">{event.location || 'Без локации'}</p>
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-on-surface">{event.title || 'Событие'}</p>
+                      <p className="text-xs text-on-surface-variant">{event.location || 'Без локации'}</p>
+                      <p className="mt-1 text-xs text-on-surface-variant">
+                        {formatEventDateTime(event.startAt)}
+                      </p>
+                      {event.meetingUrl ? (
+                        <a
+                          href={event.meetingUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-1 inline-block text-xs font-semibold text-primary hover:underline"
+                        >
+                          Открыть встречу
+                        </a>
+                      ) : null}
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-primary">{formatEventTime(event.startAt)}</p>
+                      <p className="mt-1 text-[10px] uppercase tracking-wider text-on-surface-variant">
+                        {event.sourceProvider || 'manual'}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-sm font-semibold text-primary">{formatEventTime(event.startAt)}</p>
                 </article>
               ))}
             </div>

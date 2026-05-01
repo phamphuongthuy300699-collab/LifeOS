@@ -63,7 +63,7 @@ export default function MailMessagePage() {
           : 'Письмо перенесено в Snoozed.',
       );
       setTimeout(() => {
-        router.push('/mail');
+        router.push('/inbox');
       }, 500);
     } catch (err) {
       const { userMessage, debugMessage } = describeApiError(
@@ -88,7 +88,7 @@ export default function MailMessagePage() {
       await api.post(`/mail/messages/${id}/create-task`, {});
       setActionSuccess('Задача создана из письма.');
       setTimeout(() => {
-        router.push('/mail');
+        router.push('/inbox');
       }, 500);
     } catch (err) {
       const { userMessage, debugMessage } = describeApiError(
@@ -123,7 +123,7 @@ export default function MailMessagePage() {
     <div className="max-w-4xl mx-auto flex flex-col h-[calc(100vh-4rem)]">
       {/* Header Actions */}
       <div className="p-4 border-b flex items-center justify-between sticky top-0 bg-background/80 backdrop-blur z-10">
-        <Button variant="ghost" size="icon" onClick={() => router.push('/mail')}>
+        <Button variant="ghost" size="icon" onClick={() => router.push('/inbox')}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex items-center gap-2">

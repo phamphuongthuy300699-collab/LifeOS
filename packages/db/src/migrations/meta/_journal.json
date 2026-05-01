@@ -50,6 +50,13 @@
       "when": 1777123815230,
       "tag": "0006_pretty_starbolt",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1777261200000,
+      "tag": "0007_calendar_provider_ready",
+      "breakpoints": true
     }
   ]
 }

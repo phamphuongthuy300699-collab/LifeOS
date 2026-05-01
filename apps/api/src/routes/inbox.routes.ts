@@ -5,7 +5,7 @@ import { inboxItems, tasks, notes } from '@lifeos/db';
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { InboxStatus, TriageTargetType } from '@lifeos/shared';
-import { resolveRequestContext } from './_request-context';
+import { resolveStrictRequestContext } from './_request-context';
 
 export const inboxRoutes = new Hono();
 
@@ -28,9 +28,9 @@ const triageInboxItemSchema = z.object({
 
 // GET /inbox-items — list pending inbox items
 inboxRoutes.get('/', async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
-    return c.json({ items: [] });
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unauthorized' }, 401);
   }
 
   const items = await db
@@ -50,7 +50,7 @@ inboxRoutes.get('/', async (c) => {
 
 // POST /inbox-items — create an inbox item
 inboxRoutes.post('/', zValidator('json', createInboxItemSchema), async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
     return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
   }
@@ -69,7 +69,7 @@ inboxRoutes.post('/', zValidator('json', createInboxItemSchema), async (c) => {
 
 // PATCH /inbox-items/:id - generic update
 inboxRoutes.patch('/:id', zValidator('json', updateInboxItemSchema), async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
     return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
   }
@@ -94,7 +94,7 @@ inboxRoutes.patch('/:id', zValidator('json', updateInboxItemSchema), async (c) =
 
 // POST /inbox-items/:id/triage — convert inbox item
 inboxRoutes.post('/:id/triage', zValidator('json', triageInboxItemSchema), async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
     return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
   }

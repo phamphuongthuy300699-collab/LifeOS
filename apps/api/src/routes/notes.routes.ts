@@ -4,15 +4,15 @@ import { db } from '../config/db';
 import { notes } from '@lifeos/db';
 import { createNoteSchema, updateNoteSchema } from '@lifeos/domain-notes';
 import { and, desc, eq } from 'drizzle-orm';
-import { resolveRequestContext } from './_request-context';
+import { resolveStrictRequestContext } from './_request-context';
 
 export const noteRoutes = new Hono();
 
 // GET /notes — list notes
 noteRoutes.get('/', async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
-    return c.json({ items: [] });
+    return c.json({ code: 'UNAUTHORIZED', message: 'Unauthorized' }, 401);
   }
 
   const allNotes = await db
@@ -31,7 +31,7 @@ noteRoutes.get('/', async (c) => {
 
 // POST /notes — create a note
 noteRoutes.post('/', zValidator('json', createNoteSchema), async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
     return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
   }
@@ -53,7 +53,7 @@ noteRoutes.post('/', zValidator('json', createNoteSchema), async (c) => {
 
 // GET /notes/:id — get a single note
 noteRoutes.get('/:id', async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
     return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
   }
@@ -77,7 +77,7 @@ noteRoutes.get('/:id', async (c) => {
 
 // PATCH /notes/:id — update note
 noteRoutes.patch('/:id', zValidator('json', updateNoteSchema), async (c) => {
-  const context = await resolveRequestContext(c.req.raw, { allowFallback: true });
+  const context = await resolveStrictRequestContext(c.req.raw);
   if (!context) {
     return c.json({ code: 'UNAUTHORIZED', message: 'Unable to resolve user context' }, 401);
   }
