@@ -3,7 +3,7 @@
  * Converts a pending InboxItem into the target entity (task, note, etc.).
  */
 import type { Result } from '@lifeos/shared';
-import { ok, err } from '@lifeos/shared';
+import { err } from '@lifeos/shared';
 import type { TriageTargetType } from '@lifeos/shared';
 
 export interface TriageInboxItemInput {

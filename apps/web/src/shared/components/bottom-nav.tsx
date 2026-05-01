@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { getDictionary } from '@lifeos/i18n';
+import { getDictionary } from '@/shared/lib/i18n';
 import { CalendarDays, Inbox, Dumbbell, Utensils, MoreHorizontal } from 'lucide-react';
 
 export function BottomNav() {
@@ -21,7 +21,8 @@ export function BottomNav() {
     <nav className="fixed bottom-0 w-full z-40 border-t border-outline-variant bg-surface/80 backdrop-blur-xl">
       <div className="flex justify-around items-center pt-3 pb-8 px-4 w-full">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
 
           return (

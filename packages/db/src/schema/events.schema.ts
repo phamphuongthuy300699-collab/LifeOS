@@ -10,6 +10,8 @@ import {
   boolean,
   pgEnum,
   index,
+  uniqueIndex,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { users, workspaces } from './auth.schema';
@@ -28,8 +30,14 @@ export const events = pgTable(
       .references(() => users.id, { onDelete: 'cascade' }),
 
     // External sync
+    sourceProvider: varchar('source_provider', { length: 30 }).notNull().default('manual'),
     calendarRef: varchar('calendar_ref', { length: 255 }), // e.g. google_calendar_id
     externalId: varchar('external_id', { length: 500 }),
+    externalCalendarId: varchar('external_calendar_id', { length: 255 }),
+    externalEventId: varchar('external_event_id', { length: 500 }),
+    timezone: varchar('timezone', { length: 100 }),
+    meetingUrl: text('meeting_url'),
+    metadataJson: jsonb('metadata_json').$type<Record<string, unknown>>(),
 
     // Content
     title: varchar('title', { length: 500 }).notNull(),
@@ -58,6 +66,11 @@ export const events = pgTable(
       table.workspaceId,
       table.startAt,
       table.endAt
+    ),
+    wsProviderExternalEventIdx: uniqueIndex('uidx_events_ws_provider_external_event').on(
+      table.workspaceId,
+      table.sourceProvider,
+      table.externalEventId,
     ),
   })
 );

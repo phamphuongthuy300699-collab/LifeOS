@@ -124,8 +124,8 @@ export const GOOGLE_SCOPES = {
   /** Basic profile + email (auth) */
   profile: [
     'openid',
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
+    'email',
+    'profile',
   ],
   /** Gmail read-only (Sprint 3) */
   gmail: ['https://www.googleapis.com/auth/gmail.readonly'],

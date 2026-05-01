@@ -30,7 +30,11 @@ export const updateTaskSchema = z.object({
   scheduledStartAt: z.string().datetime().optional().nullable(),
   scheduledEndAt: z.string().datetime().optional().nullable(),
   estimateMinutes: z.number().int().positive().optional().nullable(),
+  parentTaskId: z.string().uuid().optional().nullable(),
   projectId: z.string().uuid().optional().nullable(),
+  sourceType: z.enum(SourceType).optional(),
+  sourceRefType: z.string().max(50).optional().nullable(),
+  sourceRefId: z.string().uuid().optional().nullable(),
   sortOrder: z.number().int().optional(),
 });
 

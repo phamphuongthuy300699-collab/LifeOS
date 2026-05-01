@@ -8,6 +8,15 @@ importers:
 
   .:
     devDependencies:
+      '@hono/node-server':
+        specifier: ^1.13.0
+        version: 1.19.14(hono@4.12.14)
+      esbuild:
+        specifier: ^0.27.7
+        version: 0.27.7
+      hono:
+        specifier: ^4.6.0
+        version: 4.12.14
       turbo:
         specifier: ^2.3.0
         version: 2.9.6
@@ -20,6 +29,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.13.0
         version: 1.19.14(hono@4.12.14)
+      '@hono/zod-validator':
+        specifier: ^0.3.0
+        version: 0.3.0(hono@4.12.14)(zod@3.25.76)
       '@lifeos/auth':
         specifier: workspace:*
         version: link:../../packages/auth
@@ -29,12 +41,42 @@ importers:
       '@lifeos/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@lifeos/domain-calendar':
+        specifier: workspace:*
+        version: link:../../packages/domain-calendar
+      '@lifeos/domain-contacts':
+        specifier: workspace:*
+        version: link:../../packages/domain-contacts
+      '@lifeos/domain-learning':
+        specifier: workspace:*
+        version: link:../../packages/domain-learning
+      '@lifeos/domain-notes':
+        specifier: workspace:*
+        version: link:../../packages/domain-notes
+      '@lifeos/domain-nutrition':
+        specifier: workspace:*
+        version: link:../../packages/domain-nutrition
+      '@lifeos/domain-projects':
+        specifier: workspace:*
+        version: link:../../packages/domain-projects
+      '@lifeos/domain-tasks':
+        specifier: workspace:*
+        version: link:../../packages/domain-tasks
+      '@lifeos/domain-workouts':
+        specifier: workspace:*
+        version: link:../../packages/domain-workouts
+      '@lifeos/integrations-google':
+        specifier: workspace:*
+        version: link:../../packages/integrations-google
       '@lifeos/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       bullmq:
         specifier: ^5.76.0
         version: 5.76.0
+      drizzle-orm:
+        specifier: ^0.38.0
+        version: 0.38.4(@types/react@19.2.14)(postgres@3.4.9)(react@19.2.5)
       hono:
         specifier: ^4.6.0
         version: 4.12.14
@@ -60,15 +102,6 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.10.0(react-hook-form@7.73.1(react@19.2.5))
-      '@lifeos/i18n':
-        specifier: workspace:*
-        version: link:../../packages/i18n
-      '@lifeos/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
-      '@lifeos/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@tanstack/react-query':
         specifier: ^5.62.0
         version: 5.99.2(react@19.2.5)
@@ -146,8 +179,8 @@ importers:
         specifier: ^5.76.0
         version: 5.76.0
       drizzle-orm:
-        specifier: ^0.36.0
-        version: 0.36.4(@types/react@19.2.14)(postgres@3.4.9)(react@19.2.5)
+        specifier: ^0.38.0
+        version: 0.38.4(@types/react@19.2.14)(postgres@3.4.9)(react@19.2.5)
       ioredis:
         specifier: ^5.10.1
         version: 5.10.1
@@ -193,6 +226,9 @@ importers:
 
   packages/db:
     dependencies:
+      '@lifeos/domain-workouts':
+        specifier: workspace:*
+        version: link:../domain-workouts
       '@lifeos/shared':
         specifier: workspace:*
         version: link:../shared
@@ -203,6 +239,9 @@ importers:
         specifier: ^3.4.0
         version: 3.4.9
     devDependencies:
+      '@types/node':
+        specifier: 22.0.0
+        version: 22.0.0
       drizzle-kit:
         specifier: ^0.30.0
         version: 0.30.6
@@ -234,6 +273,9 @@ importers:
       '@lifeos/shared':
         specifier: workspace:*
         version: link:../shared
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       typescript:
         specifier: ^5.7.0
@@ -247,6 +289,9 @@ importers:
       '@lifeos/shared':
         specifier: workspace:*
         version: link:../shared
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       typescript:
         specifier: ^5.7.0
@@ -296,6 +341,9 @@ importers:
       '@lifeos/shared':
         specifier: workspace:*
         version: link:../shared
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       typescript:
         specifier: ^5.7.0
@@ -338,6 +386,9 @@ importers:
       '@lifeos/shared':
         specifier: workspace:*
         version: link:../shared
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       typescript:
         specifier: ^5.7.0
@@ -351,6 +402,9 @@ importers:
       '@lifeos/shared':
         specifier: workspace:*
         version: link:../shared
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       typescript:
         specifier: ^5.7.0
@@ -380,6 +434,9 @@ importers:
       '@lifeos/shared':
         specifier: workspace:*
         version: link:../shared
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
     devDependencies:
       typescript:
         specifier: ^5.7.0
@@ -911,6 +968,12 @@ packages:
     peerDependencies:
       hono: ^4
 
+  '@hono/zod-validator@0.3.0':
+    resolution: {integrity: sha512-7XcTk3yYyk6ldrO/VuqsroE7stvDZxHJQcpATRAyha8rUxJNBPV3+6waDrARfgEqxOVlzIadm3/6sE/dPseXgQ==}
+    peerDependencies:
+      hono: '>=3.9.0'
+      zod: ^3.19.1
+
   '@hookform/resolvers@3.10.0':
     resolution: {integrity: sha512-79Dv+3mDF7i+2ajj7SkypSKHhl1cbln1OGavqrsF7p6mbUv11xpqpacPsGDCTRvCSjEEIez2ef1NveSVL3b0Ag==}
     peerDependencies:
@@ -1353,98 +1416,6 @@ packages:
   drizzle-kit@0.30.6:
     resolution: {integrity: sha512-U4wWit0fyZuGuP7iNmRleQyK2V8wCuv57vf5l3MnG4z4fzNTjY/U13M8owyQ5RavqvqxBifWORaR3wIUzlN64g==}
     hasBin: true
-
-  drizzle-orm@0.36.4:
-    resolution: {integrity: sha512-1OZY3PXD7BR00Gl61UUOFihslDldfH4NFRH2MbP54Yxi0G/PKn4HfO65JYZ7c16DeP3SpM3Aw+VXVG9j6CRSXA==}
-    peerDependencies:
-      '@aws-sdk/client-rds-data': '>=3'
-      '@cloudflare/workers-types': '>=3'
-      '@electric-sql/pglite': '>=0.2.0'
-      '@libsql/client': '>=0.10.0'
-      '@libsql/client-wasm': '>=0.10.0'
-      '@neondatabase/serverless': '>=0.10.0'
-      '@op-engineering/op-sqlite': '>=2'
-      '@opentelemetry/api': ^1.4.1
-      '@planetscale/database': '>=1'
-      '@prisma/client': '*'
-      '@tidbcloud/serverless': '*'
-      '@types/better-sqlite3': '*'
-      '@types/pg': '*'
-      '@types/react': '>=18'
-      '@types/sql.js': '*'
-      '@vercel/postgres': '>=0.8.0'
-      '@xata.io/client': '*'
-      better-sqlite3: '>=7'
-      bun-types: '*'
-      expo-sqlite: '>=14.0.0'
-      knex: '*'
-      kysely: '*'
-      mysql2: '>=2'
-      pg: '>=8'
-      postgres: '>=3'
-      prisma: '*'
-      react: '>=18'
-      sql.js: '>=1'
-      sqlite3: '>=5'
-    peerDependenciesMeta:
-      '@aws-sdk/client-rds-data':
-        optional: true
-      '@cloudflare/workers-types':
-        optional: true
-      '@electric-sql/pglite':
-        optional: true
-      '@libsql/client':
-        optional: true
-      '@libsql/client-wasm':
-        optional: true
-      '@neondatabase/serverless':
-        optional: true
-      '@op-engineering/op-sqlite':
-        optional: true
-      '@opentelemetry/api':
-        optional: true
-      '@planetscale/database':
-        optional: true
-      '@prisma/client':
-        optional: true
-      '@tidbcloud/serverless':
-        optional: true
-      '@types/better-sqlite3':
-        optional: true
-      '@types/pg':
-        optional: true
-      '@types/react':
-        optional: true
-      '@types/sql.js':
-        optional: true
-      '@vercel/postgres':
-        optional: true
-      '@xata.io/client':
-        optional: true
-      better-sqlite3:
-        optional: true
-      bun-types:
-        optional: true
-      expo-sqlite:
-        optional: true
-      knex:
-        optional: true
-      kysely:
-        optional: true
-      mysql2:
-        optional: true
-      pg:
-        optional: true
-      postgres:
-        optional: true
-      prisma:
-        optional: true
-      react:
-        optional: true
-      sql.js:
-        optional: true
-      sqlite3:
-        optional: true
 
   drizzle-orm@0.38.4:
     resolution: {integrity: sha512-s7/5BpLKO+WJRHspvpqTydxFob8i1vo2rEx4pY6TGY7QSMuUfWUuzaY0DIpXCkgHOo37BaFC+SJQb99dDUXT3Q==}
@@ -2383,6 +2354,11 @@ snapshots:
     dependencies:
       hono: 4.12.14
 
+  '@hono/zod-validator@0.3.0(hono@4.12.14)(zod@3.25.76)':
+    dependencies:
+      hono: 4.12.14
+      zod: 3.25.76
+
   '@hookform/resolvers@3.10.0(react-hook-form@7.73.1(react@19.2.5))':
     dependencies:
       react-hook-form: 7.73.1(react@19.2.5)
@@ -2729,12 +2705,6 @@ snapshots:
       gel: 2.2.0
     transitivePeerDependencies:
       - supports-color
-
-  drizzle-orm@0.36.4(@types/react@19.2.14)(postgres@3.4.9)(react@19.2.5):
-    optionalDependencies:
-      '@types/react': 19.2.14
-      postgres: 3.4.9
-      react: 19.2.5
 
   drizzle-orm@0.38.4(@types/react@19.2.14)(postgres@3.4.9)(react@19.2.5):
     optionalDependencies:

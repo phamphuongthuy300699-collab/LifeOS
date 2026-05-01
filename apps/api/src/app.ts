@@ -6,10 +6,22 @@ import { healthRoutes } from './routes/health.routes';
 import { authRoutes } from './routes/auth.routes';
 import { todayRoutes } from './routes/today.routes';
 import { inboxRoutes } from './routes/inbox.routes';
-import { taskRoutes } from './routes/tasks.routes';
+import { inboxHubRoutes } from './routes/inbox-hub.routes';
 import { noteRoutes } from './routes/notes.routes';
-import { eventRoutes } from './routes/events.routes';
 import { mailRoutes } from './routes/mail.routes';
+import { debugRoutes } from './routes/debug.routes';
+import { taskRoutes } from './routes/tasks.routes';
+import { eventRoutes } from './routes/events.routes';
+import { exerciseRoutes } from './routes/exercises.routes';
+import { workoutPlanRoutes } from './routes/workout-plans.routes';
+import { workoutSessionRoutes } from './routes/workout-sessions.routes';
+import { workoutSetRoutes } from './routes/workout-sets.routes';
+import { nutritionRoutes } from './routes/nutrition.routes';
+import { calendarRoutes } from './routes/calendar.routes';
+import { learningRoutes } from './routes/learning.routes';
+import { contactRoutes } from './routes/contacts.routes';
+import { projectRoutes } from './routes/projects.routes';
+import { projectMilestoneRoutes } from './routes/project-milestones.routes';
 
 /**
  * Create the Hono application with all middleware and routes.
@@ -26,28 +38,32 @@ export function createApp() {
       origin: (origin) => origin, // Allow configured origins in production
       credentials: true,
       allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowHeaders: ['Content-Type', 'Authorization'],
+      allowHeaders: ['Content-Type', 'Authorization', 'x-user-id'],
     }),
   );
 
   // ── Routes ──
   app.route('/', healthRoutes);
   app.route('/auth', authRoutes);
-
-  // ── Future routes (uncomment per sprint) ──
   app.route('/today', todayRoutes);
+  app.route('/inbox', inboxHubRoutes);
   app.route('/inbox-items', inboxRoutes);
-  app.route('/tasks', taskRoutes);
   app.route('/notes', noteRoutes);
-  app.route('/events', eventRoutes);
   app.route('/mail', mailRoutes);
-  // app.route('/exercises', exerciseRoutes);
-  // app.route('/workout-plans', workoutPlanRoutes);
-  // app.route('/workout-sessions', workoutSessionRoutes);
-  // app.route('/nutrition', nutritionRoutes);
-  // app.route('/learning', learningRoutes);
-  // app.route('/contacts', contactRoutes);
-  // app.route('/projects', projectRoutes);
+  app.route('/debug', debugRoutes);
+  app.route('/tasks', taskRoutes);
+  app.route('/events', eventRoutes);
+  // Sprint 4 production scope
+  app.route('/exercises', exerciseRoutes);
+  app.route('/workout-plans', workoutPlanRoutes);
+  app.route('/workout-sessions', workoutSessionRoutes);
+  app.route('/workout-sets', workoutSetRoutes);
+  app.route('/', nutritionRoutes);
+  app.route('/calendar', calendarRoutes);
+  app.route('/learning', learningRoutes);
+  app.route('/contacts', contactRoutes);
+  app.route('/projects', projectRoutes);
+  app.route('/project-milestones', projectMilestoneRoutes);
   // app.route('/transactions', financeRoutes);
   // app.route('/exports', exportRoutes);
   // app.route('/ai', aiRoutes);

@@ -1,7 +1,2 @@
-/**
- * @lifeos/domain-contacts
- * Contacts domain
- *
- * Exports will be added as the domain is implemented.
- */
-export {};
+export { createContactSchema, updateContactSchema } from './dto/contact.dto';
+export type { CreateContactDto, UpdateContactDto } from './dto/contact.dto';

@@ -2,6 +2,7 @@ import { BottomNav } from '@/shared/components/bottom-nav';
 import { QuickAddFab } from '@/shared/components/quick-add-fab';
 import { QuickAddSheet } from '@/shared/components/quick-add-sheet';
 import { CalendarDays } from 'lucide-react';
+import Link from 'next/link';
 
 /**
  * Main authenticated layout — wraps all (main)/* routes.
@@ -26,9 +27,12 @@ export default function MainLayout({
             <p className="text-xs font-medium text-on-surface-variant">Четверг, 24 октября</p>
           </div>
         </div>
-        <button className="flex h-10 w-10 items-center justify-center rounded-full text-primary transition-colors hover:bg-surface-container">
+        <Link
+          href="/calendar"
+          className="flex h-10 w-10 items-center justify-center rounded-full text-primary transition-colors hover:bg-surface-container"
+        >
           <CalendarDays size={20} />
-        </button>
+        </Link>
       </header>
 
       {/* Main content grid area wrapper */}

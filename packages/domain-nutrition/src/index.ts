@@ -1,7 +1,22 @@
 /**
  * @lifeos/domain-nutrition
  * Nutrition tracking domain
- *
- * Exports will be added as the domain is implemented.
  */
-export {};
+
+export {
+  updateCurrentNutritionGoalSchema,
+} from './dto/nutrition-goal.dto';
+export type { UpdateCurrentNutritionGoalDto } from './dto/nutrition-goal.dto';
+
+export {
+  createMealSchema,
+  updateMealSchema,
+  createMealEntrySchema,
+  updateMealEntrySchema,
+} from './dto/meal.dto';
+export type {
+  CreateMealDto,
+  UpdateMealDto,
+  CreateMealEntryDto,
+  UpdateMealEntryDto,
+} from './dto/meal.dto';

@@ -3,7 +3,7 @@
  */
 import { WorkspaceEntity } from '@lifeos/domain-core';
 import type { WorkspaceEntityProps } from '@lifeos/domain-core';
-import type { NoteType, SourceType } from '@lifeos/shared';
+import type { NoteType } from '@lifeos/shared';
 
 export interface NoteEntityProps extends WorkspaceEntityProps {
   title: string | null;
