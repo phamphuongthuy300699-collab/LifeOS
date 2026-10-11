@@ -7,8 +7,8 @@ export function createOAuthState(): string {
 
 export function validateOAuthState(received?: string, expected?: string): boolean {
   if (!received || !expected || received.length < 32 || expected.length < 32) return false;
-  const a = Buffer.from(received, 'utf8');
-  const b = Buffer.from(expected, 'utf8');
+  const a = new TextEncoder().encode(received);
+  const b = new TextEncoder().encode(expected);
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
