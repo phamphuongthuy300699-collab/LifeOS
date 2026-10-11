@@ -17,7 +17,11 @@ function extractBearerToken(authHeader: string | undefined): string | null {
 }
 
 /** Never trust x-user-id or a fallback membership; every request requires a JWT. */
-export async function resolveRequestContext(request: Request): Promise<RequestContext | null> {
+export async function resolveRequestContext(
+  request: Request,
+  // Legacy call sites may pass these flags; both are deliberately ignored.
+  _options: { allowFallback?: boolean; allowHeaderAuth?: boolean } = {},
+): Promise<RequestContext | null> {
   const token = extractBearerToken(request.headers.get('authorization') ?? undefined);
   if (!token) return null;
   const payload = await verifyToken(token, env.JWT_SECRET);
