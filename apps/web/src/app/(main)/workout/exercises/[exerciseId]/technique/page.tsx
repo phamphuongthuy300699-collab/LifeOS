@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { ArrowLeft, CirclePlay, Flame, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useExerciseById } from '@/shared/hooks/use-workouts';
+import { findAtlasExercise } from '@/shared/lib/workout-atlas';
 
 function formatValueList(values: string[] | null | undefined): string {
   if (!values || values.length === 0) {
@@ -21,6 +22,7 @@ export default function ExerciseTechniquePage() {
   const sessionId = searchParams.get('sessionId');
 
   const { data: exercise, isLoading, isError } = useExerciseById(exerciseId);
+  const atlas = findAtlasExercise(exercise?.slug) ?? findAtlasExercise(exercise?.name);
 
   const backHref = sessionId
     ? `/workout/session/${sessionId}`
@@ -66,7 +68,22 @@ export default function ExerciseTechniquePage() {
           Technique sheet
         </div>
 
-        <h1 className="text-3xl font-semibold text-on-surface">{exercise.name}</h1>
+        <h1 className="editorial-heading text-3xl text-on-surface">{exercise.name}</h1>
+        {atlas && (
+          <div className="mt-6">
+            <p className="editorial-kicker mb-3 text-[#4763FF]">ATLAS / TWO PHASES</p>
+            <div className="grid grid-cols-2 gap-3">
+              {atlas.images.map((src, index) => (
+                <figure key={src} className="overflow-hidden rounded-xl border-2 border-outline bg-[#F5F5F0]">
+                  <img src={src} width={320} height={240} loading="lazy"
+                    alt={`${atlas.name}: ${index === 0 ? 'исходная' : 'конечная'} фаза, условная схема`} className="w-full"/>
+                  <figcaption className="bg-[#D7FF3F] p-2 text-center text-[11px] font-extrabold text-[#111111]">{index === 0 ? 'СТАРТ' : 'ФИНИШ'}</figcaption>
+                </figure>
+              ))}
+            </div>
+            <p className="mt-3 text-xs text-on-surface-variant">Схемы условные: это не точная инструкция по технике выполнения.</p>
+          </div>
+        )}
         <p className="mt-3 text-on-surface-variant">
           {exercise.descriptionShort || 'Описание отсутствует. Добавь краткий cue для этого упражнения.'}
         </p>

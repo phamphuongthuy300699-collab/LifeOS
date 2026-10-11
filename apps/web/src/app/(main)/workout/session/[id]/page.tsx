@@ -3,6 +3,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { apiFetch } from '@/shared/lib/api';
+import { findAtlasExercise } from '@/shared/lib/workout-atlas';
 import { getDictionary } from '@/shared/lib/i18n';
 import { ApiError, describeApiError } from '@/shared/lib/api';
 import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Dumbbell } from 'lucide-react';
@@ -32,6 +35,22 @@ export default function ActiveWorkoutPage() {
   const [finishWorkoutError, setFinishWorkoutError] = useState<string | null>(null);
 
   const activeExercise = exercises[activeExerciseIndex];
+  const atlas = findAtlasExercise(activeExercise?.exercise?.slug) ?? findAtlasExercise(activeExercise?.exercise?.name);
+  const previousQuery = useQuery({
+    queryKey: ['workout-atlas-history'],
+    queryFn: () => apiFetch<{items: Array<{
+      id:string; date:string; exercises:Array<{
+        slug:string|null; name:string; raw:string|null;
+        sets:Array<{weight:number|null;reps:number|null;isWarmup:boolean}>;
+      }>;
+    }>}>('/workout-atlas/history'),
+    enabled: Boolean(activeExercise),
+    retry: false,
+  });
+  const previousResult = previousQuery.data?.items
+    .filter(item => item.id !== sessionId)
+    .flatMap(item => item.exercises.map(entry => ({...entry, date:item.date})))
+    .find(entry => entry.slug === atlas?.slug || (!atlas && entry.name === activeExercise?.exercise?.name));
 
   useEffect(() => {
     if (!activeExercise) return;
@@ -145,7 +164,7 @@ export default function ActiveWorkoutPage() {
   const isFirstExercise = activeExerciseIndex === 0;
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
+    <main className="editorial-enter mx-auto flex w-full max-w-[1300px] flex-col gap-6 px-5 py-7 sm:px-8 sm:py-10">
       <section className="flex items-center justify-between">
         <Link href="/workout" className="inline-flex items-center">
           <Button variant="ghost" className="rounded-full">
@@ -173,7 +192,7 @@ export default function ActiveWorkoutPage() {
             </Link>
           </div>
 
-          <h1 className="text-3xl font-semibold tracking-tight text-on-surface">
+          <h1 className="editorial-heading text-3xl text-on-surface">
             {activeExercise.exercise?.name || 'Exercise'}
           </h1>
           <p className="mt-2 text-on-surface-variant">
@@ -181,6 +200,34 @@ export default function ActiveWorkoutPage() {
             {String(activeExercise.targetSchemeJson?.targetReps ?? 10)}
           </p>
 
+          {atlas && (
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              {atlas.images.map((src, index) => (
+                <figure key={src} className="overflow-hidden rounded-xl border-2 border-outline bg-[#F5F5F0]">
+                  <img src={src} width={320} height={240} loading="lazy"
+                    alt={`${atlas.name}: условная фаза ${index + 1}`} className="w-full"/>
+                  <figcaption className="bg-[#D7FF3F] p-2 text-center text-[11px] font-extrabold text-[#111111]">
+                    {index === 0 ? 'СТАРТ' : 'ФИНИШ'}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          )}
+          {previousResult && (
+            <div className="mt-5 rounded-xl border-2 border-outline bg-surface-container-low p-4">
+              <p className="editorial-kicker text-[#4763FF]">PREVIOUS / {previousResult.date}</p>
+              {previousResult.raw ? (
+                <p className="mt-2 whitespace-pre-wrap text-sm font-semibold text-on-surface">{previousResult.raw}</p>
+              ) : (
+                <p className="mt-2 text-sm font-semibold text-on-surface">
+                  {previousResult.sets.filter(set => !set.isWarmup).map(set =>
+                    `${set.weight ?? '—'} кг × ${set.reps ?? '—'}`
+                  ).join(' · ') || 'Нет записанных подходов'}
+                </p>
+              )}
+              <p className="mt-2 text-[11px] text-on-surface-variant">Данные предыдущего упражнения — не обязательный целевой вес.</p>
+            </div>
+          )}
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label className="space-y-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">

@@ -31,3 +31,7 @@ jobs:
         run: pnpm --filter @lifeos/web typecheck
       - name: Typecheck API
         run: pnpm --filter @lifeos/api typecheck
+      - name: Build API
+        run: pnpm --filter @lifeos/api build
+      - name: Build web
+        run: pnpm --filter @lifeos/web build
