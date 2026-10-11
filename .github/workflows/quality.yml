@@ -1,0 +1,33 @@
+name: LifeOS quality checks
+on:
+  pull_request:
+  push:
+    branches:
+      - fix/security-editorial-redesign
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run API security and calendar unit tests
+        run: pnpm --filter @lifeos/api test
+      - name: Run web security and API unit tests
+        run: pnpm --filter @lifeos/web test
+      - name: Typecheck web
+        run: pnpm --filter @lifeos/web typecheck
+      - name: Typecheck API
+        run: pnpm --filter @lifeos/api typecheck
