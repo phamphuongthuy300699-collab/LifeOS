@@ -1,4 +1,4 @@
-import { resolveRequestContext } from './_request-context';
+import { resolveStrictRequestContext } from './_request-context';
 
 export type GrowthRouteContext = {
   userId: string;
@@ -6,7 +6,7 @@ export type GrowthRouteContext = {
 };
 
 export async function resolveGrowthContext(request: Request): Promise<GrowthRouteContext | null> {
-  const context = await resolveRequestContext(request, { allowFallback: true });
+  const context = await resolveStrictRequestContext(request);
   if (!context) return null;
 
   return {
