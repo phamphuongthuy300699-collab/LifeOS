@@ -1,4 +1,6 @@
 import { Hono } from 'hono';
+import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
+import { createOAuthState, createPkcePair, validateOAuthState } from './auth-state';
 import {
   GOOGLE_SCOPES,
   buildGoogleAuthUrl,
@@ -37,10 +39,6 @@ function buildScopes() {
   return [...GOOGLE_SCOPES.profile, ...GOOGLE_SCOPES.gmail, ...GOOGLE_SCOPES.calendar];
 }
 
-function isTruthy(value: string | undefined) {
-  return value === '1' || value === 'true' || value === 'yes';
-}
-
 authRoutes.get('/google', async (c) => {
   const googleEnv = getGoogleEnv();
   if (!googleEnv) {
@@ -53,26 +51,27 @@ authRoutes.get('/google', async (c) => {
     );
   }
 
-  const requestedUserId = c.req.query('userId');
-  let state = 'google_oauth';
-
-  if (requestedUserId) {
-    const foundUser = await db.query.users.findFirst({
-      where: eq(users.id, requestedUserId),
-    });
-    if (!foundUser) {
-      return c.json({ code: 'BAD_REQUEST', message: 'Unknown userId for scope upgrade' }, 400);
-    }
-    state = `upgrade:${requestedUserId}`;
+  // Linking an existing account must be a separate, authenticated flow.
+  // The public login endpoint must never accept a caller-supplied userId.
+  if (c.req.query('userId') !== undefined || c.req.query('upgrade') !== undefined) {
+    return c.json({ code: 'FORBIDDEN', message: 'Account linking requires authentication' }, 403);
   }
 
-  const forceConsent = isTruthy(c.req.query('upgrade')) || requestedUserId !== undefined;
-
-  console.info('[auth/google] start', {
-    redirectUri: googleEnv.redirectUri,
-    appUrl: env.APP_URL,
-    forceConsent,
-    hasUpgradeUser: Boolean(requestedUserId),
+  const state = createOAuthState();
+  const pkce = createPkcePair();
+  setCookie(c, 'lifeos_oauth_pkce', pkce.verifier, {
+    path: '/api/v1/auth/google',
+    httpOnly: true,
+    secure: env.NODE_ENV === 'production',
+    sameSite: 'Lax',
+    maxAge: 600,
+  });
+  setCookie(c, 'lifeos_oauth_state', state, {
+    path: '/api/v1/auth/google',
+    httpOnly: true,
+    secure: env.NODE_ENV === 'production',
+    sameSite: 'Lax',
+    maxAge: 600,
   });
 
   const url = buildGoogleAuthUrl({
@@ -80,8 +79,9 @@ authRoutes.get('/google', async (c) => {
     redirectUri: googleEnv.redirectUri,
     scopes: buildScopes(),
     state,
+    codeChallenge: pkce.challenge,
     accessType: 'offline',
-    prompt: forceConsent ? 'consent' : 'select_account',
+    prompt: 'consent',
   });
 
   return c.redirect(url, 302);
@@ -117,20 +117,30 @@ authRoutes.get('/google/callback', async (c) => {
 
   console.info('[auth/google/callback] reached', {
     hasCode: Boolean(code),
-    state: c.req.query('state') ?? null,
+    statePresent: Boolean(c.req.query('state')),
   });
 
-  const state = c.req.query('state') ?? '';
-  const stateUserId = state.startsWith('upgrade:') ? state.replace('upgrade:', '') : undefined;
+  const state = c.req.query('state');
+  const expectedState = getCookie(c, 'lifeos_oauth_state');
+  const codeVerifier = getCookie(c, 'lifeos_oauth_pkce');
+  deleteCookie(c, 'lifeos_oauth_state', { path: '/api/v1/auth/google' });
+  deleteCookie(c, 'lifeos_oauth_pkce', { path: '/api/v1/auth/google' });
+  if (!validateOAuthState(state, expectedState) || !codeVerifier || codeVerifier.length < 43) {
+    return c.json({ code: 'INVALID_OAUTH_STATE', message: 'Invalid or expired OAuth state' }, 403);
+  }
 
   const tokenResponse = await exchangeGoogleCode({
     code,
     clientId: googleEnv.clientId,
     clientSecret: googleEnv.clientSecret,
     redirectUri: googleEnv.redirectUri,
+    codeVerifier,
   });
 
   const userInfo = await getGoogleUserInfo(tokenResponse.access_token);
+  if (!userInfo.email || !userInfo.email_verified) {
+    return c.json({ code: 'UNVERIFIED_EMAIL', message: 'Google email is not verified' }, 403);
+  }
   const now = new Date();
   const expiresAt = new Date(now.getTime() + tokenResponse.expires_in * 1000);
   const scopes = (tokenResponse.scope || '').split(' ').filter(Boolean);
@@ -188,13 +198,17 @@ authRoutes.get('/google/callback', async (c) => {
     membership = createdMembership;
   }
 
-  const linkedUserId = stateUserId || user.id;
+  const linkedUserId = user.id;
   const existingExternalAccount = await db.query.externalAccounts.findFirst({
     where: and(
       eq(externalAccounts.provider, 'google'),
       eq(externalAccounts.providerAccountId, userInfo.sub),
     ),
   });
+
+  if (existingExternalAccount && existingExternalAccount.userId !== linkedUserId) {
+    return c.json({ code: 'ACCOUNT_ALREADY_LINKED', message: 'Google identity belongs to another account' }, 409);
+  }
 
   const encryptedAccessToken = encryptToken(tokenResponse.access_token);
   const encryptedRefreshToken = tokenResponse.refresh_token

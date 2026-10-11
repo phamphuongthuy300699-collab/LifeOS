@@ -29,6 +29,7 @@ export function buildGoogleAuthUrl(params: {
   redirectUri: string;
   scopes: readonly string[];
   state?: string;
+  codeChallenge?: string;
   accessType?: 'online' | 'offline';
   prompt?: 'none' | 'consent' | 'select_account';
 }): string {
@@ -42,6 +43,10 @@ export function buildGoogleAuthUrl(params: {
   if (params.state) {
     url.searchParams.set('state', params.state);
   }
+  if (params.codeChallenge) {
+    url.searchParams.set('code_challenge', params.codeChallenge);
+    url.searchParams.set('code_challenge_method', 'S256');
+  }
   return url.toString();
 }
 
@@ -53,17 +58,21 @@ export async function exchangeGoogleCode(params: {
   clientId: string;
   clientSecret: string;
   redirectUri: string;
+  codeVerifier?: string;
 }): Promise<GoogleTokenResponse> {
+  const body = new URLSearchParams({
+    code: params.code,
+    client_id: params.clientId,
+    client_secret: params.clientSecret,
+    redirect_uri: params.redirectUri,
+    grant_type: 'authorization_code',
+  });
+  if (params.codeVerifier) body.set('code_verifier', params.codeVerifier);
+
   const response = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      code: params.code,
-      client_id: params.clientId,
-      client_secret: params.clientSecret,
-      redirect_uri: params.redirectUri,
-      grant_type: 'authorization_code',
-    }),
+    body,
   });
 
   if (!response.ok) {

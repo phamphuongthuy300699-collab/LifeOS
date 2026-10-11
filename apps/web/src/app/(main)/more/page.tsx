@@ -7,24 +7,18 @@ import {
   BookOpen,
   Users,
   FolderKanban,
-  Wallet,
-  Download,
-  Settings,
   LogIn,
   LogOut,
   RefreshCw,
   TestTube2,
 } from 'lucide-react';
 import { useAuth } from '@/providers/auth-provider';
-import { API_BASE, ApiError, getAuthStorage } from '@/shared/lib/api';
+import { API_BASE, ApiError, SHOW_AUTH_DEBUG, getAuthStorage } from '@/shared/lib/api';
 
 const menuItems = [
   { key: 'learning' as const, href: '/learning', icon: BookOpen },
   { key: 'contacts' as const, href: '/contacts', icon: Users },
   { key: 'projects' as const, href: '/projects', icon: FolderKanban },
-  { key: 'finance' as const, href: '/finance', icon: Wallet },
-  { key: 'export' as const, href: '/export', icon: Download },
-  { key: 'settings' as const, href: '/settings', icon: Settings },
 ] as const;
 
 export default function MorePage() {
@@ -277,8 +271,9 @@ export default function MorePage() {
   };
 
   return (
-    <div className="px-4 pt-6">
-      <h1 className="text-2xl font-bold text-content">{dict.nav.more}</h1>
+    <main className="editorial-enter mx-auto max-w-[1100px] px-5 py-7 sm:px-8 sm:py-10">
+      <p className="editorial-kicker mb-2 text-[#4763FF]">04 / MORE LIFE</p>
+      <h1 className="editorial-heading text-[clamp(2rem,5vw,3.8rem)] text-content">Твой мир.</h1>
 
       <section className="mt-4 rounded-xl border border-outline-variant bg-surface p-4">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-content-muted">
@@ -324,7 +319,7 @@ export default function MorePage() {
         </div>
       </section>
 
-      <section className="mt-3 rounded-xl border border-outline-variant bg-surface p-4">
+      {SHOW_AUTH_DEBUG && <section className="mt-3 rounded-xl border border-outline-variant bg-surface p-4">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-content-muted">
           Auth Debug
         </h2>
@@ -390,7 +385,7 @@ export default function MorePage() {
           {debugError ? (
             <p className="mt-3 text-sm text-red-400">Debug error: {debugError}</p>
           ) : null}
-      </section>
+      </section>}
 
       <div className="mt-6 space-y-1">
         {menuItems.map(({ key, href, icon: Icon }) => (
@@ -404,6 +399,6 @@ export default function MorePage() {
           </Link>
         ))}
       </div>
-    </div>
+    </main>
   );
 }

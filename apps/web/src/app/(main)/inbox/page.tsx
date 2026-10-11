@@ -337,13 +337,14 @@ export default function InboxPage() {
   const items = data?.items ?? [];
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
+    <main className="editorial-enter mx-auto flex w-full max-w-[1400px] flex-col gap-7 px-5 py-7 sm:px-8 sm:py-10">
       <section className="rounded-xl border border-outline-variant bg-surface p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-on-surface">Inbox Triage Center</h1>
+            <p className="editorial-kicker mb-2 text-[#4763FF]">02 / SIGNAL CENTER</p>
+            <h1 className="editorial-heading text-[clamp(2rem,5vw,3.8rem)] text-on-surface">Всё входящее.</h1>
             <p className="mt-1 text-sm text-on-surface-variant">
-              Единый поток входящего: письма, задачи, capture, заметки и события.
+              Письма, задачи, заметки и идеи. Превращай шум в конкретные действия.
             </p>
           </div>
           <Button
@@ -366,8 +367,8 @@ export default function InboxPage() {
                 onClick={() => setSegment(item.key)}
                 className={`rounded-full border px-4 py-2 text-sm transition ${
                   active
-                    ? 'border-primary bg-primary text-on-primary'
-                    : 'border-outline-variant bg-surface-container-low text-on-surface hover:border-primary/40'
+                    ? 'border-ink bg-[#D7FF3F] text-[#111111] font-extrabold'
+                    : 'border-outline bg-surface-container-low text-on-surface hover:bg-lime hover:text-ink font-bold'
                 }`}
               >
                 {item.label} • {item.count}
@@ -395,7 +396,7 @@ export default function InboxPage() {
         </div>
 
         <div className="mt-5 rounded-lg border border-outline-variant bg-surface-container-low p-3">
-          <p className="text-xs uppercase tracking-wider text-on-surface-variant">Quick task capture</p>
+          <p className="editorial-kicker text-[#4763FF]">БЫСТРЫЙ ЗАХВАТ / 01</p>
           <div className="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-4">
             <input
               className="rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface outline-none lg:col-span-2"
@@ -436,13 +437,13 @@ export default function InboxPage() {
         </div>
 
         {actionError ? (
-          <div className="mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div className="mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-700">
             {actionError}
           </div>
         ) : null}
 
         {actionSuccess ? (
-          <div className="mt-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          <div className="mt-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-800">
             {actionSuccess}
           </div>
         ) : null}

@@ -1,341 +1,196 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, BrainCircuit, CalendarDays, CheckCircle2, Flame, Inbox, Rocket } from 'lucide-react';
-import { getDictionary } from '@/shared/lib/i18n';
+import { ArrowRight, ArrowUpRight, CalendarDays, Check, Clock3, Flame, Inbox, MoveUpRight, Sparkles, Target } from 'lucide-react';
 import { TaskCard } from '@/shared/components/task-card';
 import { useTodayData, useCompleteTask } from '@/shared/hooks/use-tasks';
 import { useLearningTracks } from '@/shared/hooks/use-learning';
 import { useProjects } from '@/shared/hooks/use-projects';
-import { useContacts } from '@/shared/hooks/use-contacts';
 import { useWorkoutPlans } from '@/shared/hooks/use-workouts';
 import { useDailyNutrition } from '@/shared/hooks/use-nutrition';
-
 import { MailWidget } from './components/mail-widget';
 
-function formatEventTime(value: string | null | undefined): string {
+function time(value: string | null | undefined) {
   if (!value) return '—';
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return '—';
-  return parsed.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '—' : date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 }
 
-function formatEventDateTime(value: string | null | undefined): string {
+function day(value: string | null | undefined) {
   if (!value) return '—';
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return '—';
-  return parsed.toLocaleString('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
 }
 
 export default function TodayPage() {
-  const dict = getDictionary('ru');
-  const { data, isLoading, isError } = useTodayData();
-  const completeMutation = useCompleteTask();
-  const { data: learningData } = useLearningTracks();
-  const { data: projectData } = useProjects();
-  const { data: contactData } = useContacts();
-  const { data: workoutPlansData } = useWorkoutPlans();
-  const { data: nutritionData } = useDailyNutrition();
-
-  const workoutPlan = workoutPlansData?.items?.[0] ?? null;
-
-  const eveningSuggestion = (() => {
-    const projects = projectData?.items ?? [];
-    if (projects.length > 0) {
-      return {
-        title: 'Вечерний проектный контекст',
-        text:
-          projects[0]?.currentNextAction ||
-          'Откройте проект и обновите next action на завтра.',
-        href: '/projects',
-        cta: 'Открыть проекты',
-      };
-    }
-
-    const learning = learningData?.items ?? [];
-    if (learning.length > 0) {
-      return {
-        title: 'Вечернее обучение',
-        text: learning[0]?.goal || 'Продвиньте активный трек минимум на 30 минут.',
-        href: '/learning',
-        cta: 'Начать обучение',
-      };
-    }
-
-    const contacts = contactData?.items ?? [];
-    if (contacts.length > 0) {
-      return {
-        title: 'Вечерние контакты',
-        text: 'Обновите заметку по ключевому контакту и зафиксируйте следующий шаг.',
-        href: '/contacts',
-        cta: 'Открыть контакты',
-      };
-    }
-
-    return {
-      title: 'Вечерний фокус',
-      text: 'Добавьте первый учебный трек или проект, чтобы получать персональные рекомендации.',
-      href: '/more',
-      cta: 'Открыть разделы',
-    };
-  })();
-
-  const handleComplete = (id: string) => {
-    completeMutation.mutate(id);
-  };
+  const { data, isLoading, isError, refetch } = useTodayData();
+  const completeTask = useCompleteTask();
+  const { data: learning } = useLearningTracks();
+  const { data: projects } = useProjects();
+  const { data: plans } = useWorkoutPlans();
+  const { data: nutrition } = useDailyNutrition();
 
   if (isLoading && !data) {
-    return <div className="p-6 text-on-surface-variant">{dict.common.loading}</div>;
+    return <main className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
+      <div className="editorial-panel animate-pulse bg-lime p-8">
+        <p className="editorial-kicker text-ink">LIFE/OS — DAILY EDITION</p>
+        <h1 className="editorial-heading mt-6 text-4xl text-ink">Собираем твой день...</h1>
+      </div>
+    </main>;
   }
 
   if (isError) {
-    return (
-      <main className="px-6 py-8">
-        <section className="rounded-xl border border-outline-variant bg-surface-container-low p-6">
-          <h2 className="text-xl font-semibold text-on-surface">Today временно недоступен</h2>
-          <p className="mt-2 text-sm text-on-surface-variant">
-            Не удалось загрузить данные. Проверь подключение к API или настройки авторизации.
-          </p>
-        </section>
-      </main>
-    );
+    return <main className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
+      <div className="editorial-panel bg-[#FF6863] p-8 text-[#111111]">
+        <p className="editorial-kicker">NO SIGNAL / 503</p>
+        <h1 className="editorial-heading mt-5 text-3xl sm:text-5xl">Нет связи с твоим днём.</h1>
+        <p className="mt-4 max-w-xl text-sm font-semibold">Не удалось получить задачи и события. Проверь подключение к API или авторизацию.</p>
+        <button type="button" onClick={() => void refetch()} className="editorial-outline-button mt-6 bg-paper text-ink">Повторить <ArrowUpRight size={16}/></button>
+      </div>
+    </main>;
   }
 
-  const pendingTasksCount = data?.topTasks?.length ?? 0;
-  const todayEventsCount = data?.events?.length ?? 0;
-  const unreadMailCount = data?.emailsRequiringAction?.length ?? 0;
+  const tasks = data?.topTasks ?? [];
+  const events = data?.events ?? [];
+  const due = data?.dueTodayTasks ?? [];
+  const overdue = data?.overdueTasks ?? [];
+  const scheduled = data?.scheduledTasks ?? [];
+  const mails = data?.emailsRequiringAction ?? [];
+  const plan = plans?.items?.[0];
+  const consumed = Math.round(nutrition?.totals.calories ?? 0);
+  const evening = projects?.items?.[0]
+    ? { title: 'Проектный фокус', description: projects.items[0].currentNextAction || 'Продолжи работу над главным проектом.', href: '/projects' }
+    : learning?.items?.[0]
+      ? { title: 'Время учиться', description: learning.items[0].goal || 'Продвинь учебный трек на один шаг.', href: '/learning' }
+      : { title: 'Новый импульс', description: 'Добавь проект или трек обучения, чтобы видеть следующие шаги.', href: '/more' };
 
   return (
-    <main className="grid grid-cols-1 gap-gutter px-6 py-8 md:grid-cols-12">
-      <div className="flex flex-col gap-xl md:col-span-8">
-        <section className="rounded-xl border border-outline-variant bg-surface p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-primary">{dict.today.focusBlock}</p>
-              <h2 className="mt-2 text-2xl font-semibold text-on-surface">{data?.focusBlock || 'Фокус дня ещё не задан'}</h2>
-              <p className="mt-2 text-sm text-on-surface-variant">Сконцентрируйтесь на главной задаче до обеда, потом переключайтесь на обработку входящих.</p>
-            </div>
-            <div className="hidden h-12 w-12 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed md:flex">
-              <Rocket size={20} />
-            </div>
-          </div>
-
-          <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
-            <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                Задачи
-              </div>
-              <p className="mt-2 text-2xl font-semibold text-on-surface">{pendingTasksCount}</p>
-            </article>
-            <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant">
-                <CalendarDays className="h-3.5 w-3.5" />
-                События
-              </div>
-              <p className="mt-2 text-2xl font-semibold text-on-surface">{todayEventsCount}</p>
-            </article>
-            <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant">
-                <Inbox className="h-3.5 w-3.5" />
-                Mail
-              </div>
-              <p className="mt-2 text-2xl font-semibold text-on-surface">{unreadMailCount}</p>
-            </article>
-            <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant">
-                <BrainCircuit className="h-3.5 w-3.5" />
-                Workout
-              </div>
-              <p className="mt-2 truncate text-sm font-semibold text-on-surface">{workoutPlan?.name || 'План не выбран'}</p>
-            </article>
-            <article className="rounded-lg border border-outline-variant bg-surface-container-low p-3">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant">
-                <Flame className="h-3.5 w-3.5" />
-                Ккал
-              </div>
-              <p className="mt-2 text-2xl font-semibold text-on-surface">{Math.round(nutritionData?.totals.calories ?? 0)}</p>
-            </article>
-          </div>
-        </section>
-
-        <section className="rounded-xl border border-outline-variant bg-surface p-6">
-          <div className="mb-5 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-on-surface">{dict.today.topTasks}</h3>
-            <Link href="/inbox" className="text-sm font-semibold text-primary">
-              Все задачи
-            </Link>
-          </div>
-          {data?.topTasks && data.topTasks.length > 0 ? (
-            <ul className="space-y-3">
-              {data.topTasks.map((task) => (
-                <li key={task.id}>
-                  <TaskCard task={task} onComplete={handleComplete} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-on-surface-variant">Сегодня нет активных задач. Добавьте первую через быстрый плюс.</p>
-          )}
-        </section>
-
-        <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <article className="rounded-xl border border-outline-variant bg-surface p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-on-surface-variant">
-                Overdue tasks
-              </h3>
-              <Link href="/calendar" className="text-xs font-semibold text-primary">
-                Все
-              </Link>
-            </div>
-            {(data?.overdueTasks ?? []).length === 0 ? (
-              <p className="text-sm text-on-surface-variant">Просроченных задач нет.</p>
-            ) : (
-              <div className="space-y-2">
-                {(data?.overdueTasks ?? []).slice(0, 4).map((task) => (
-                  <Link
-                    key={task.id}
-                    href={`/tasks/${task.id}`}
-                    className="block rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2"
-                  >
-                    <p className="text-sm font-semibold text-on-surface">{task.title}</p>
-                    <p className="text-xs text-red-300">
-                      due {formatEventTime(task.dueAt)}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </article>
-
-          <article className="rounded-xl border border-outline-variant bg-surface p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-on-surface-variant">
-                Scheduled today
-              </h3>
-              <Link href="/calendar" className="text-xs font-semibold text-primary">
-                К календарю
-              </Link>
-            </div>
-            {(data?.scheduledTasks ?? []).length === 0 ? (
-              <p className="text-sm text-on-surface-variant">Запланированных задач нет.</p>
-            ) : (
-              <div className="space-y-2">
-                {(data?.scheduledTasks ?? []).slice(0, 4).map((task) => (
-                  <Link
-                    key={task.id}
-                    href={`/tasks/${task.id}`}
-                    className="block rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2"
-                  >
-                    <p className="text-sm font-semibold text-on-surface">{task.title}</p>
-                    <p className="text-xs text-on-surface-variant">
-                      start {formatEventTime(task.scheduledStartAt)}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </article>
-        </section>
-
-        <section className="rounded-xl border border-outline-variant bg-surface p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-on-surface">{dict.today.events}</h3>
-            <Link href="/calendar" className="text-xs uppercase tracking-wider text-primary">
-              Календарь
-            </Link>
-          </div>
-          {data?.events && data.events.length > 0 ? (
-            <div className="space-y-2">
-              {data.events.map((event: any) => (
-                <article
-                  key={event.id}
-                  className="rounded-lg border border-outline-variant bg-surface-container-low p-3"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-medium text-on-surface">{event.title || 'Событие'}</p>
-                      <p className="text-xs text-on-surface-variant">{event.location || 'Без локации'}</p>
-                      <p className="mt-1 text-xs text-on-surface-variant">
-                        {formatEventDateTime(event.startAt)}
-                      </p>
-                      {event.meetingUrl ? (
-                        <a
-                          href={event.meetingUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="mt-1 inline-block text-xs font-semibold text-primary hover:underline"
-                        >
-                          Открыть встречу
-                        </a>
-                      ) : null}
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-primary">{formatEventTime(event.startAt)}</p>
-                      <p className="mt-1 text-[10px] uppercase tracking-wider text-on-surface-variant">
-                        {event.sourceProvider || 'manual'}
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-on-surface-variant">На сегодня событий в календаре нет.</p>
-          )}
-        </section>
-
-        <MailWidget />
+    <main className="editorial-enter mx-auto max-w-[1460px] space-y-7 px-5 py-7 sm:px-8 sm:py-10">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="editorial-kicker flex items-center gap-2 text-on-surface-variant"><span className="inline-block h-3 w-3 rounded-full bg-[#4763FF]"/> 01 / ЛИЧНАЯ СИСТЕМА</p>
+        <p className="editorial-kicker text-on-surface-variant">CAPTURE → PLAN → DO</p>
       </div>
 
-      <aside className="flex flex-col gap-xl md:col-span-4">
-        <section className="rounded-xl border border-outline-variant bg-surface p-6">
-          <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Workout today</p>
-          <h3 className="mt-2 text-xl font-semibold text-on-surface">{workoutPlan?.name || 'Подберите план'}</h3>
-          <p className="mt-2 text-sm text-on-surface-variant">{workoutPlan?.goal || 'Откройте тренировку, чтобы выбрать план на сегодня.'}</p>
-          <Link
-            href="/workout"
-            className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-on-primary"
-          >
-            Открыть тренировку
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </section>
-
-        <section className="rounded-xl border border-outline-variant bg-surface p-6">
-          <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Nutrition summary</p>
-          <h3 className="mt-2 text-xl font-semibold text-on-surface">Питание сегодня</h3>
-          <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-            <p className="rounded-lg bg-surface-container-low px-3 py-2 text-on-surface">Ккал: {Math.round(nutritionData?.totals.calories ?? 0)}</p>
-            <p className="rounded-lg bg-surface-container-low px-3 py-2 text-on-surface">Б: {Math.round(nutritionData?.totals.protein ?? 0)} г</p>
-            <p className="rounded-lg bg-surface-container-low px-3 py-2 text-on-surface">Ж: {Math.round(nutritionData?.totals.fat ?? 0)} г</p>
-            <p className="rounded-lg bg-surface-container-low px-3 py-2 text-on-surface">У: {Math.round(nutritionData?.totals.carbs ?? 0)} г</p>
+      <section className="editorial-panel editorial-panel-invert relative isolate overflow-hidden">
+        <div className="grid lg:grid-cols-[minmax(0,1.65fr)_minmax(290px,.85fr)]">
+          <div className="relative z-10 flex min-h-[350px] flex-col justify-between gap-9 p-7 sm:p-11 xl:p-14">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-[#D7FF3F] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[.2em] text-[#D7FF3F]">Daily edition</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Выпуск 001</span>
+            </div>
+            <div>
+              <h1 className="editorial-heading text-[clamp(2.4rem,5.8vw,6.3rem)] leading-[1.06] text-[#F5F5F0]">ТВОЙ ДЕНЬ.<span className="block text-[#D7FF3F]">ТВОЙ ХОД.</span></h1>
+              <p className="mt-6 max-w-xl text-sm font-semibold leading-7 text-[#D9D9D2] sm:text-base">Собери главное, убери лишний шум и двигайся в своём темпе. Всё важное — здесь.</p>
+            </div>
+            <Link href="/inbox" className="editorial-outline-button w-fit border-[#D7FF3F] bg-[#D7FF3F] text-[#111111] hover:bg-[#F5F5F0]">
+              Разобрать входящие <ArrowUpRight size={19}/>
+            </Link>
           </div>
-          <Link
-            href="/nutrition"
-            className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-on-primary"
-          >
-            Открыть питание
-            <ArrowRight className="h-4 w-4" />
+          <div className="editorial-stripe relative flex min-h-[260px] flex-col justify-between overflow-hidden border-t-2 border-[#111111] bg-[#D7FF3F] p-8 text-[#111111] lg:border-l-2 lg:border-t-0">
+            <div className="flex items-start justify-between">
+              <span className="editorial-kicker">TODAY / FOCUS</span><MoveUpRight size={28} strokeWidth={2.3}/>
+            </div>
+            <div className="relative">
+              <span className="editorial-heading block text-[clamp(6rem,12vw,11rem)] leading-none">{String(tasks.length).padStart(2, '0')}</span>
+              <span className="editorial-kicker mt-3 block">приоритетных задач</span>
+            </div>
+            <p className="max-w-[260px] border-t-2 border-[#111111] pt-4 text-sm font-extrabold">{data?.focusBlock || 'Планируй. Делай. Повторяй.'}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4" aria-label="Сводка дня">
+        {[
+          { label: 'Задачи на сегодня', value: due.length, icon: Check, href: '/calendar', tone: 'bg-surface-bright' },
+          { label: 'Входящие', value: data?.pendingInboxCount ?? 0, icon: Inbox, href: '/inbox', tone: 'bg-[#4763FF] text-white' },
+          { label: 'События', value: events.length, icon: CalendarDays, href: '/calendar', tone: 'bg-surface-bright' },
+          { label: 'Письма к действию', value: mails.length, icon: ArrowUpRight, href: '/mail', tone: 'bg-[#FF6863] text-[#111111]' },
+        ].map(({ label, value, icon: Icon, href, tone }) => (
+          <Link href={href} key={label} className={`editorial-panel group relative flex min-h-[145px] flex-col justify-between gap-5 p-5 transition-transform hover:-translate-y-1 ${tone}`}>
+            <div className="flex items-start justify-between gap-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-[.13em]">{label}</span><Icon size={19}/>
+            </div>
+            <span className="editorial-heading text-[clamp(2.3rem,4vw,3.8rem)] leading-none">{String(value).padStart(2, '0')}</span>
           </Link>
+        ))}
+      </section>
+
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(290px,1fr)]">
+        <section className="editorial-panel min-w-0 bg-surface-bright p-5 sm:p-8">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="editorial-kicker text-[#4763FF]">02 / EXECUTE</p>
+              <h2 className="editorial-heading mt-2 text-[clamp(1.7rem,3vw,2.7rem)]">Главное сейчас.</h2>
+            </div>
+            <Link href="/calendar" className="editorial-outline-button bg-paper text-ink">Весь план <ArrowUpRight size={16}/></Link>
+          </div>
+          {completeTask.isError && <p role="alert" className="mb-4 rounded-lg bg-[#FF6863] p-3 text-sm font-semibold text-ink">Не удалось завершить задачу. Попробуй снова.</p>}
+          {tasks.length ? (
+            <ul className="space-y-4">{tasks.map(task => (
+              <li key={task.id}><TaskCard task={task} onComplete={id => completeTask.mutate(id)}/></li>
+            ))}</ul>
+          ) : (
+            <div className="rounded-xl border-2 border-dashed border-outline-variant p-8 text-center">
+              <Target className="mx-auto mb-3" size={30}/>
+              <p className="font-extrabold">Чистый лист — тоже начало.</p>
+              <p className="mt-2 text-sm text-on-surface-variant">Добавь задачу или разбери входящие, чтобы составить план дня.</p>
+              <Link href="/inbox" className="mt-4 inline-flex items-center gap-1 text-sm font-extrabold underline">Перейти во входящие <ArrowRight size={15}/></Link>
+            </div>
+          )}
         </section>
 
-        <section className="relative overflow-hidden rounded-xl bg-inverse-surface p-6 text-inverse-on-surface">
-          <h3 className="text-xl font-semibold">{eveningSuggestion.title}</h3>
-          <p className="mt-2 text-sm text-outline-variant">{eveningSuggestion.text}</p>
-          <Link href={eveningSuggestion.href} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-inverse-primary">
-            {eveningSuggestion.cta}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-          <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-primary/25 blur-3xl" />
-        </section>
-      </aside>
+        <aside className="space-y-6">
+          <section className="editorial-panel bg-[#4763FF] p-6 text-white sm:p-8">
+            <p className="editorial-kicker text-white/75">03 / KEEP MOVING</p>
+            <div className="mt-7 flex items-center gap-3"><Sparkles size={30}/><h2 className="editorial-heading text-2xl sm:text-3xl">Продолжай движение.</h2></div>
+            <p className="mt-4 text-sm font-semibold leading-6 text-white/90">{evening.title}: {evening.description}</p>
+            <Link href={evening.href} className="editorial-outline-button mt-8 border-white bg-white text-ink">Следующий шаг <ArrowUpRight size={17}/></Link>
+          </section>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            <Link href="/workout" className="editorial-panel flex items-center justify-between gap-3 bg-surface-bright p-6 transition-transform hover:-translate-y-1">
+              <div><p className="editorial-kicker text-[#4763FF]">MOVE / SPORT</p><h3 className="editorial-heading mt-2 text-lg">Тренировки</h3><p className="mt-1 text-xs text-on-surface-variant">{plan?.name || 'Выбери план на сегодня'}</p></div>
+              <ArrowUpRight className="shrink-0" size={25}/>
+            </Link>
+            <Link href="/nutrition" className="editorial-panel flex items-center justify-between gap-3 bg-[#D7FF3F] p-6 text-[#111111] transition-transform hover:-translate-y-1">
+              <div><p className="editorial-kicker">ENERGY / FOOD</p><h3 className="editorial-heading mt-2 text-lg">{consumed} ккал</h3><p className="mt-1 text-xs font-semibold">Учёт питания сегодня</p></div>
+              <Flame className="shrink-0" size={25}/>
+            </Link>
+          </div>
+        </aside>
+      </div>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <div className="editorial-panel bg-surface-bright p-6 sm:p-8">
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <div><p className="editorial-kicker text-[#4763FF]">04 / CALENDAR</p><h2 className="editorial-heading mt-2 text-xl sm:text-2xl">На горизонте.</h2></div>
+            <Link href="/calendar" className="rounded-full border-2 border-outline p-2 hover:bg-lime" aria-label="Открыть календарь"><ArrowUpRight size={20}/></Link>
+          </div>
+          {events.length ? <div className="space-y-3">{events.map(event => (
+            <div key={event.id} className="flex items-start gap-4 border-t-2 border-outline-variant py-3">
+              <span className="shrink-0 rounded-md bg-[#111111] px-3 py-2 font-extrabold text-[#D7FF3F]">{time(event.startAt)}</span>
+              <div className="min-w-0"><p className="font-extrabold">{event.title || 'Событие'}</p><p className="mt-1 text-xs text-on-surface-variant">{event.location || day(event.startAt)}</p></div>
+            </div>
+          ))}</div> : <p className="text-sm text-on-surface-variant">На сегодня событий нет. Хороший момент спланировать что-то важное.</p>}
+        </div>
+        <div className="editorial-panel bg-surface-bright p-6 sm:p-8">
+          <div className="mb-6"><p className="editorial-kicker text-[#FF6863]">05 / TIME BLOCKS</p><h2 className="editorial-heading mt-2 text-xl sm:text-2xl">Ритм дня.</h2></div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b-2 border-outline-variant pb-3"><span className="flex items-center gap-2 font-bold"><Clock3 size={17}/> Запланировано</span><span className="editorial-heading text-2xl">{scheduled.length}</span></div>
+            <div className="flex items-center justify-between border-b-2 border-outline-variant pb-3"><span className="flex items-center gap-2 font-bold"><Target size={17}/> Просрочено</span><span className="editorial-heading text-2xl">{overdue.length}</span></div>
+            {(scheduled.length ? scheduled : overdue).slice(0, 3).map(task => (
+              <Link href={`/tasks/${task.id}`} key={task.id} className="flex items-center justify-between gap-2 rounded-lg bg-surface-container-low px-4 py-3 text-sm font-bold hover:bg-lime">
+                <span className="truncate">{task.title}</span><ArrowUpRight size={16}/>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="editorial-panel bg-surface-bright p-5 sm:p-8">
+        <div className="mb-4 flex items-center justify-between"><div><p className="editorial-kicker text-[#4763FF]">06 / INCOMING</p><h2 className="editorial-heading mt-2 text-xl sm:text-2xl">Почта и действия.</h2></div><Inbox size={24}/></div>
+        <MailWidget />
+      </section>
+      <p className="pb-4 text-center text-[10px] font-extrabold uppercase tracking-[.22em] text-on-surface-variant">LIFE/OS — LESS NOISE. MORE LIFE. © 2026</p>
     </main>
   );
 }

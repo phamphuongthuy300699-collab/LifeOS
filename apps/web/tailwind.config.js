@@ -10,6 +10,8 @@ module.exports = {
       colors: {
         // Stitch LifeOS core tokens mapping to CSS variables
         surface: 'var(--surface)',
+        'surface-elevated': 'var(--surface-elevated)',
+        ink: '#111111', paper: '#F5F5F0', lime: '#D7FF3F', electric: '#4763FF', coral: '#FF6863',
         'surface-dim': 'var(--surface-dim)',
         'surface-bright': 'var(--surface-bright)',
         'surface-container-lowest': 'var(--surface-container-lowest)',
@@ -62,12 +64,13 @@ module.exports = {
         },
       },
       fontFamily: {
-        'headline-lg': ['Inter', 'system-ui', 'sans-serif'],
-        'headline-md': ['Inter', 'system-ui', 'sans-serif'],
-        'body-lg': ['Inter', 'system-ui', 'sans-serif'],
-        'body-md': ['Inter', 'system-ui', 'sans-serif'],
-        'label-caps': ['Space Grotesk', 'sans-serif'],
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        'headline-lg': ['Unbounded', 'system-ui', 'sans-serif'],
+        'headline-md': ['Unbounded', 'system-ui', 'sans-serif'],
+        'body-lg': ['Manrope', 'system-ui', 'sans-serif'],
+        'body-md': ['Manrope', 'system-ui', 'sans-serif'],
+        'label-caps': ['Unbounded', 'sans-serif'],
+        sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Unbounded', 'Arial Black', 'sans-serif'],
       },
       fontSize: {
         'headline-lg': ['32px', { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '600' }],
@@ -85,6 +88,10 @@ module.exports = {
         xl: '40px',
         'container-margin': '24px',
         gutter: '16px',
+      },
+      boxShadow: {
+        brutal: '6px 6px 0 rgba(17,17,17,.22)',
+        'brutal-sm': '3px 3px 0 rgba(17,17,17,.22)',
       },
       borderRadius: {
         sm: '0.125rem',

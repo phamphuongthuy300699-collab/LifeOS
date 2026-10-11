@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { htmlToSafeText } from '@/shared/lib/safe-mail';
 import { useParams, useRouter } from 'next/navigation';
 import { ApiError, api, describeApiError } from '@/shared/lib/api';
 import { Button } from '@/components/ui/button';
@@ -205,7 +206,7 @@ export default function MailMessagePage() {
         {/* Body */}
         <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none break-words">
           {message.bodyHtml ? (
-            <div dangerouslySetInnerHTML={{ __html: message.bodyHtml }} />
+            <pre className="whitespace-pre-wrap break-words font-sans">{htmlToSafeText(message.bodyHtml)}</pre>
           ) : message.bodyText ? (
             <pre className="whitespace-pre-wrap font-sans">{message.bodyText}</pre>
           ) : (

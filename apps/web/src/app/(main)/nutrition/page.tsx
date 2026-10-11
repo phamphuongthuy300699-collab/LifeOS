@@ -148,14 +148,14 @@ export default function NutritionPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-8">
+    <main className="editorial-enter mx-auto flex w-full max-w-[1400px] flex-col gap-8 px-5 py-7 sm:px-8 sm:py-10">
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-        <article className="rounded-xl border border-outline-variant bg-gradient-to-br from-primary to-secondary p-6 text-white lg:col-span-8">
+        <article className="rounded-xl border border-outline-variant border-2 border-[#111111] bg-[#4763FF] p-8 text-white shadow-[6px_6px_0_#111111] lg:col-span-8">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider">
             <Flame className="h-3.5 w-3.5" />
-            Sprint 5
+            FUEL / NUTRITION
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight">{dict.nutrition.title}</h1>
+          <h1 className="editorial-heading text-[clamp(2rem,4vw,3.8rem)]">{dict.nutrition.title}</h1>
           <p className="mt-2 max-w-2xl text-white/85">
             Дневной баланс КБЖУ, быстрый ввод приемов пищи и связка с post-workout
             сценарием.

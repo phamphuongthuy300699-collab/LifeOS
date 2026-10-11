@@ -1,6 +1,7 @@
 'use client';
 
-import { CheckCircle2, Circle } from 'lucide-react';
+import { Check, ArrowUpRight } from 'lucide-react';
+import Link from 'next/link';
 import type { Task } from '../hooks/use-tasks';
 
 interface TaskCardProps {
@@ -9,30 +10,25 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, onComplete }: TaskCardProps) {
-  const isDone = task.status === 'done';
-
+  const done = task.status === 'done';
   return (
-    <div className={`flex items-center gap-3 rounded-card border border-border bg-surface-elevated p-4 transition-all ${isDone ? 'opacity-60' : 'hover:border-border-strong'}`}>
-      <button 
-        onClick={() => onComplete?.(task.id)}
-        disabled={isDone}
-        className="text-content-muted hover:text-accent transition-colors"
-      >
-        {isDone ? <CheckCircle2 className="text-accent" size={24} /> : <Circle size={24} />}
+    <article className={`group flex items-center gap-4 rounded-[14px] border-2 border-outline bg-surface-bright px-4 py-4 shadow-[4px_4px_0_rgba(17,17,17,.16)] transition-transform hover:-translate-y-0.5 ${done ? 'opacity-60' : ''}`}>
+      <button type="button" onClick={() => onComplete?.(task.id)} disabled={done || !onComplete}
+        aria-label={done ? 'Задача выполнена' : `Выполнить: ${task.title}`}
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-outline transition-colors ${done ? 'bg-lime text-ink' : 'bg-transparent hover:bg-lime hover:text-ink'}`}>
+        {done ? <Check size={21} strokeWidth={3}/> : <span className="h-2 w-2 rounded-full bg-current"/>}
       </button>
-      <div className="flex-1 overflow-hidden">
-        <h4 className={`truncate text-sm font-medium ${isDone ? 'line-through text-content-muted' : 'text-content'}`}>
-          {task.title}
-        </h4>
-        {(task.dueAt || task.priority !== 'none') && (
-          <div className="mt-1 flex items-center gap-2 text-xs text-content-muted">
-            {task.dueAt && <span>{new Date(task.dueAt).toLocaleDateString()}</span>}
-            {task.priority !== 'none' && (
-              <span className="capitalize text-accent">{task.priority}</span>
-            )}
-          </div>
-        )}
+      <div className="min-w-0 flex-1">
+        <p className={`truncate text-[14px] font-extrabold text-on-surface ${done ? 'line-through' : ''}`}>{task.title}</p>
+        <div className="mt-1 flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+          {task.dueAt && <span>{new Date(task.dueAt).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' })}</span>}
+          {task.priority && task.priority !== 'none' && <span className="text-[#4763FF]">{task.priority}</span>}
+        </div>
       </div>
-    </div>
+      <Link href={`/tasks/${task.id}`} aria-label={`Открыть задачу ${task.title}`}
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-outline text-on-surface hover:bg-electric hover:text-white">
+        <ArrowUpRight size={18}/>
+      </Link>
+    </article>
   );
 }
