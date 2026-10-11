@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { apiFetch, describeApiError } from '@/shared/lib/api';
 import { workoutAtlas, type AtlasExercise } from '@/shared/lib/workout-atlas';
 import { atlasCycle, getAtlasInstallPayload, progressionRules } from '@/shared/lib/workout-cycle';
-import { parseWorkoutHistoryMarkdown, type HistoryImportEntry } from '@/shared/lib/workout-history-parser';
+import { parseWorkoutHistoryMarkdown, parseWorkoutProfileMarkdown, type HistoryImportEntry, type TrainingProfileImport } from '@/shared/lib/workout-history-parser';
 import { useWorkoutPlans, useStartWorkoutSession } from '@/shared/hooks/use-workouts';
 
 type Tab = 'cycle' | 'atlas' | 'journal' | 'progress';
@@ -27,7 +27,7 @@ type HistorySession = {
     sets: { weight: number | null; reps: number | null; rir: number | null; rpe: number | null; isWarmup: boolean }[];
   }[];
 };
-type HistoryResponse = { items: HistorySession[] };
+type HistoryResponse = { items: HistorySession[]; profile?: TrainingProfileImport | null };
 const groups = ['Все', 'грудь', 'спина', 'ноги', 'плечи', 'бицепс', 'трицепс', 'кор'] as const;
 
 function AtlasPictures({ exercise, compact = false }: { exercise: AtlasExercise; compact?: boolean }) {
@@ -57,6 +57,7 @@ export default function WorkoutPage() {
   const [query, setQuery] = useState('');
   const [group, setGroup] = useState<string>('Все');
   const [preview, setPreview] = useState<HistoryImportEntry[]>([]);
+  const [previewProfile, setPreviewProfile] = useState<TrainingProfileImport | null>(null);
   const [fileName, setFileName] = useState('');
   const [fileError, setFileError] = useState('');
   const [actionError, setActionError] = useState('');
@@ -84,23 +85,23 @@ export default function WorkoutPage() {
 
   const importHistory = useMutation({
     mutationFn: (entries: HistoryImportEntry[]) => apiFetch<{datesCreated:number;entriesCreated:number;datesSkipped:number}>('/workout-atlas/history/import', {
-      method:'POST',body:JSON.stringify({entries}),timeoutMs:60000,
+      method:'POST',body:JSON.stringify({entries,profile:previewProfile}),timeoutMs:60000,
     }),
     onSuccess: async result => {
       setImportResult(`Импортировано записей: ${result.entriesCreated}; новых дат: ${result.datesCreated}; повторных дат пропущено: ${result.datesSkipped}.`);
-      setPreview([]);
+      setPreview([]); setPreviewProfile(null);
       await queryClient.invalidateQueries({queryKey:['workout-atlas-history']});
     },
     onError: err => setFileError(describeApiError(err).userMessage),
   });
 
   const openHistoryFile = async (file?: File) => {
-    setPreview([]); setFileError(''); setImportResult('');
+    setPreview([]); setPreviewProfile(null); setFileError(''); setImportResult('');
     if(!file)return;
     if(file.size > 1024*1024) {setFileError('Файл больше 1 МБ. Выбери исходный Markdown-журнал.');return;}
     try {
       const entries = parseWorkoutHistoryMarkdown(await file.text());
-      setPreview(entries); setFileName(file.name);
+      setPreview(entries); setPreviewProfile(parseWorkoutProfileMarkdown(await file.text())); setFileName(file.name);
     } catch (err) { setFileError(err instanceof Error ? err.message : 'Не удалось прочитать журнал'); }
   };
 
@@ -280,6 +281,19 @@ export default function WorkoutPage() {
             <p className="editorial-kicker text-[#4763FF]">03 / TRAINING LOG</p>
             <h2 className="editorial-heading mt-2 text-3xl">История движений.</h2>
             <p className="mt-3 text-sm text-on-surface-variant">Импортированные записи сохраняются дословно: диапазоны, помощь партнёра, паузы и комментарии не превращаются в вымышленные точные подходы.</p>
+            {historyQuery.data?.profile && (
+              <div className="mt-6 rounded-[16px] border-2 border-outline bg-surface-container-low p-5">
+                <p className="editorial-kicker text-[#4763FF]">ЛИЧНЫЙ ПРОФИЛЬ / PRIVATE</p>
+                <h3 className="editorial-heading mt-3 text-lg">Цели и условия тренировок</h3>
+                <ul className="mt-3 space-y-2 text-sm font-semibold leading-6">
+                  {historyQuery.data.profile.goalsAndConstraints.map((line,index)=><li key={index}>• {line}</li>)}
+                </ul>
+                <h3 className="editorial-heading mt-5 text-lg">Правила прогрессии из журнала</h3>
+                <ul className="mt-3 space-y-2 text-sm font-semibold leading-6">
+                  {historyQuery.data.profile.progressionRules.map((line,index)=><li key={index}>• {line}</li>)}
+                </ul>
+              </div>
+            )}
             {historyQuery.isLoading && <p className="mt-6 text-sm">Загрузка журнала...</p>}
             {historyQuery.isError && <p className="mt-6 text-sm text-[#BF3434]">История не загружена. Войди в аккаунт и проверь подключение к API.</p>}
             <div className="mt-6 space-y-5">
@@ -321,7 +335,7 @@ export default function WorkoutPage() {
             </div>}
             {fileError && <p role="alert" className="mt-3 rounded-lg bg-[#FF6863] p-3 text-xs font-bold">{fileError}</p>}
             {importResult && <p role="status" className="mt-3 rounded-lg bg-[#F5F5F0] p-3 text-xs font-bold">{importResult}</p>}
-            <p className="mt-4 text-[11px] font-semibold leading-5">Дубликаты дат из этого же архива не создаются. Для личных данных требуется авторизация.</p>
+            <p className="mt-4 text-[11px] font-semibold leading-5">Дубликаты дат из этого же архива не создаются. Личные цели и ограничения сохраняются только в твоём приватном пространстве после подтверждения импорта.</p>
           </aside>
         </div>
       )}

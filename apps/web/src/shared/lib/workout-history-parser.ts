@@ -1,6 +1,25 @@
 import { workoutAtlas } from './workout-atlas';
 
 export type HistoryImportEntry = { date: string; label: string; raw: string; slug?: string };
+export type TrainingProfileImport = {
+  goalsAndConstraints: string[];
+  progressionRules: string[];
+};
+/** Extract source-authored profile lines without interpreting them as medical facts. */
+export function parseWorkoutProfileMarkdown(markdown: string): TrainingProfileImport {
+  const section = (heading: string) => {
+    const after = markdown.split('## ' + heading, 2)[1];
+    return after?.split('\n## ', 1)[0] ?? '';
+  };
+  const bullets = (body: string) => body.split('\n')
+    .filter(line => /^-\s+/.test(line))
+    .map(line => line.replace(/^-\s+/, '').trim()).filter(Boolean);
+  return {
+    goalsAndConstraints: bullets(section('Цели и исходные данные')).slice(0, 15),
+    progressionRules: bullets(section('Принципы прогрессии на 1–3 месяца')).slice(0, 15),
+  };
+}
+
 const aliases: Record<string, number> = {
   'жим лёжа': 1,
   'тяга нижнего блока': 9,

@@ -45,6 +45,10 @@ const historySchema = z.object({
     raw: z.string().trim().min(1).max(1500),
     slug: z.string().regex(/^[a-z0-9-]{2,110}$/).optional(),
   })).min(1).max(160),
+  profile: z.object({
+    goalsAndConstraints: z.array(z.string().trim().min(1).max(1000)).max(15),
+    progressionRules: z.array(z.string().trim().min(1).max(1000)).max(15),
+  }).optional(),
 });
 
 function fallbackSlug(label: string): string {
@@ -119,6 +123,7 @@ workoutAtlasRoutes.post('/history/import', async c => {
   const result = await db.transaction(async tx => {
     await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${userId + ':atlas-history'}))`);
     let datesCreated=0,entriesCreated=0,datesSkipped=0;
+    let profileSaved = false;
     for(const [date,entries] of groups) {
       const marker='atlas-history:v1:'+date;
       const existing=await tx.select({id:workoutSessions.id}).from(workoutSessions)
@@ -148,9 +153,13 @@ workoutAtlasRoutes.post('/history/import', async c => {
         // assisted reps and even historical references rather than exact performed sets.
         await tx.insert(workoutSessionExercises).values({
           workoutSessionId:session.id,exerciseId:exercise.id,orderIndex:i,
-          previousResultJson:{atlasLabel:entry.label,atlasRaw:entry.raw,source:'training-history-markdown'},
+          previousResultJson:{
+            atlasLabel:entry.label,atlasRaw:entry.raw,source:'training-history-markdown',
+            ...(i === 0 && !profileSaved && parsed.data.profile ? {trainingProfile: parsed.data.profile}: {}),
+          },
         });
         entriesCreated++;
+        if(i === 0 && !profileSaved && parsed.data.profile) profileSaved = true;
       }
       datesCreated++;
     }
@@ -167,7 +176,7 @@ workoutAtlasRoutes.get('/history', async c => {
   const sessions=await db.select().from(workoutSessions)
     .where(and(eq(workoutSessions.userId,userId),eq(workoutSessions.workspaceId,workspaceId)))
     .orderBy(desc(workoutSessions.startedAt)).limit(100);
-  if(!sessions.length) return c.json({items:[]});
+  if(!sessions.length) return c.json({profile:null,items:[]});
   const sesRows=await db.select().from(workoutSessionExercises)
     .where(inArray(workoutSessionExercises.workoutSessionId,sessions.map(s=>s.id)))
     .orderBy(asc(workoutSessionExercises.orderIndex));
@@ -179,9 +188,15 @@ workoutAtlasRoutes.get('/history', async c => {
     .where(inArray(workoutSets.workoutSessionExerciseId,sesRows.map(r=>r.id))):[];
   const setsByExercise=new Map<string,typeof setRows>();
   for(const item of setRows)setsByExercise.set(item.workoutSessionExerciseId,[...(setsByExercise.get(item.workoutSessionExerciseId)??[]),item]);
+  const profileSource = sesRows.find(row => {
+    const data = row.previousResultJson as Record<string,unknown>|null;
+    return data?.trainingProfile && typeof data.trainingProfile === 'object';
+  });
+  const profileJson = profileSource?.previousResultJson as Record<string,unknown>|null;
+  const profile = profileJson?.trainingProfile ?? null;
   const entriesBySession=new Map<string,typeof sesRows>();
   for(const row of sesRows) entriesBySession.set(row.workoutSessionId,[...(entriesBySession.get(row.workoutSessionId)??[]),row]);
-  return c.json({items:sessions.map(session=>({
+  return c.json({profile,items:sessions.map(session=>({
     id:session.id,date:session.startedAt.toISOString().slice(0,10),
     status:session.sessionStatus,imported:session.notes?.startsWith('atlas-history:v1:')??false,
     exercises:(entriesBySession.get(session.id)??[]).map(item=>{
