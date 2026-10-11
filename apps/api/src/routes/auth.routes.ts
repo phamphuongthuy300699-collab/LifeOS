@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
-import { createOAuthState, validateOAuthState } from './auth-state';
+import { createOAuthState, createPkcePair, validateOAuthState } from './auth-state';
 import {
   GOOGLE_SCOPES,
   buildGoogleAuthUrl,
@@ -58,6 +58,14 @@ authRoutes.get('/google', async (c) => {
   }
 
   const state = createOAuthState();
+  const pkce = createPkcePair();
+  setCookie(c, 'lifeos_oauth_pkce', pkce.verifier, {
+    path: '/api/v1/auth/google',
+    httpOnly: true,
+    secure: env.NODE_ENV === 'production',
+    sameSite: 'Lax',
+    maxAge: 600,
+  });
   setCookie(c, 'lifeos_oauth_state', state, {
     path: '/api/v1/auth/google',
     httpOnly: true,
@@ -71,6 +79,7 @@ authRoutes.get('/google', async (c) => {
     redirectUri: googleEnv.redirectUri,
     scopes: buildScopes(),
     state,
+    codeChallenge: pkce.challenge,
     accessType: 'offline',
     prompt: 'consent',
   });
@@ -108,13 +117,15 @@ authRoutes.get('/google/callback', async (c) => {
 
   console.info('[auth/google/callback] reached', {
     hasCode: Boolean(code),
-    state: c.req.query('state') ?? null,
+    statePresent: Boolean(c.req.query('state')),
   });
 
   const state = c.req.query('state');
   const expectedState = getCookie(c, 'lifeos_oauth_state');
+  const codeVerifier = getCookie(c, 'lifeos_oauth_pkce');
   deleteCookie(c, 'lifeos_oauth_state', { path: '/api/v1/auth/google' });
-  if (!validateOAuthState(state, expectedState)) {
+  deleteCookie(c, 'lifeos_oauth_pkce', { path: '/api/v1/auth/google' });
+  if (!validateOAuthState(state, expectedState) || !codeVerifier || codeVerifier.length < 43) {
     return c.json({ code: 'INVALID_OAUTH_STATE', message: 'Invalid or expired OAuth state' }, 403);
   }
 
@@ -123,6 +134,7 @@ authRoutes.get('/google/callback', async (c) => {
     clientId: googleEnv.clientId,
     clientSecret: googleEnv.clientSecret,
     redirectUri: googleEnv.redirectUri,
+    codeVerifier,
   });
 
   const userInfo = await getGoogleUserInfo(tokenResponse.access_token);

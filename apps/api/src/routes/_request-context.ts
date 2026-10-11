@@ -7,98 +7,30 @@ import { env } from '../config/env';
 export type RequestContext = {
   userId: string;
   workspaceId: string;
-  authSource: 'jwt' | 'header' | 'fallback';
-};
-
-type ResolveOptions = {
-  allowFallback?: boolean;
-  allowHeaderAuth?: boolean;
+  authSource: 'jwt';
 };
 
 function extractBearerToken(authHeader: string | undefined): string | null {
   if (!authHeader) return null;
   const [scheme, token] = authHeader.split(' ');
-  if (!scheme || !token) return null;
-  if (scheme.toLowerCase() !== 'bearer') return null;
-  return token;
+  return scheme?.toLowerCase() === 'bearer' && token ? token : null;
 }
 
-async function resolveMembershipByUserId(
-  userId: string,
-): Promise<{ userId: string; workspaceId: string } | null> {
-  const membership = await db.query.memberships.findFirst({
-    where: eq(memberships.userId, userId),
-  });
-
-  if (!membership) return null;
-
-  return {
-    userId: membership.userId,
-    workspaceId: membership.workspaceId,
-  };
-}
-
-export async function resolveRequestContext(
-  request: Request,
-  options: ResolveOptions = {},
-): Promise<RequestContext | null> {
-  const allowFallback = options.allowFallback ?? false;
-  const allowHeaderAuth = options.allowHeaderAuth ?? env.NODE_ENV !== 'production';
-
+/** Never trust x-user-id or a fallback membership; every request requires a JWT. */
+export async function resolveRequestContext(request: Request): Promise<RequestContext | null> {
   const token = extractBearerToken(request.headers.get('authorization') ?? undefined);
-  if (token) {
-    const payload = await verifyToken(token, env.JWT_SECRET);
-    if (payload?.sub && payload.workspaceId) {
-      const membership = await db.query.memberships.findFirst({
-        where: and(
-          eq(memberships.userId, payload.sub),
-          eq(memberships.workspaceId, payload.workspaceId),
-        ),
-      });
-
-      if (membership) {
-        return {
-          userId: membership.userId,
-          workspaceId: membership.workspaceId,
-          authSource: 'jwt',
-        };
-      }
-    }
-  }
-
-  const requestedUserId = request.headers.get('x-user-id') ?? undefined;
-  if (allowHeaderAuth && requestedUserId) {
-    const membership = await resolveMembershipByUserId(requestedUserId);
-    if (membership) {
-      return {
-        userId: membership.userId,
-        workspaceId: membership.workspaceId,
-        authSource: 'header',
-      };
-    }
-  }
-
-  if (!allowFallback) return null;
-
-  const fallbackMembership = await db.query.memberships.findFirst();
-  if (!fallbackMembership) {
-    return null;
-  }
-
-  return {
-    userId: String(fallbackMembership.userId),
-    workspaceId: String(fallbackMembership.workspaceId),
-    authSource: 'fallback',
-  };
+  if (!token) return null;
+  const payload = await verifyToken(token, env.JWT_SECRET);
+  if (!payload?.sub || !payload.workspaceId) return null;
+  const membership = await db.query.memberships.findFirst({
+    where: and(eq(memberships.userId, payload.sub), eq(memberships.workspaceId, payload.workspaceId)),
+  });
+  if (!membership) return null;
+  return { userId: membership.userId, workspaceId: membership.workspaceId, authSource: 'jwt' };
 }
 
-export async function resolveStrictRequestContext(
-  request: Request,
-): Promise<RequestContext | null> {
-  return resolveRequestContext(request, {
-    allowFallback: false,
-    allowHeaderAuth: false,
-  });
+export async function resolveStrictRequestContext(request: Request): Promise<RequestContext | null> {
+  return resolveRequestContext(request);
 }
 
 export async function getCurrentUserProfile(

@@ -1,4 +1,4 @@
-import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 
 /** OAuth CSRF nonce. One-time validation uses an HttpOnly Lax cookie in the callback. */
 export function createOAuthState(): string {
@@ -10,4 +10,11 @@ export function validateOAuthState(received?: string, expected?: string): boolea
   const a = Buffer.from(received, 'utf8');
   const b = Buffer.from(expected, 'utf8');
   return a.length === b.length && timingSafeEqual(a, b);
+}
+
+/** S256 PKCE pair to bind a Google authorization code to its initiator. */
+export function createPkcePair(): { verifier: string; challenge: string } {
+  const verifier = randomBytes(32).toString('base64url');
+  const challenge = createHash('sha256').update(verifier).digest('base64url');
+  return { verifier, challenge };
 }
