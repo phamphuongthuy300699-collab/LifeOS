@@ -16,6 +16,7 @@ import { exerciseRoutes } from './routes/exercises.routes';
 import { workoutPlanRoutes } from './routes/workout-plans.routes';
 import { workoutSessionRoutes } from './routes/workout-sessions.routes';
 import { workoutSetRoutes } from './routes/workout-sets.routes';
+import { workoutAtlasRoutes } from './routes/workout-atlas.routes';
 import { nutritionRoutes } from './routes/nutrition.routes';
 import { calendarRoutes } from './routes/calendar.routes';
 import { learningRoutes } from './routes/learning.routes';
@@ -58,6 +59,7 @@ export function createApp() {
   app.route('/workout-plans', workoutPlanRoutes);
   app.route('/workout-sessions', workoutSessionRoutes);
   app.route('/workout-sets', workoutSetRoutes);
+  app.route('/workout-atlas', workoutAtlasRoutes);
   app.route('/', nutritionRoutes);
   app.route('/calendar', calendarRoutes);
   app.route('/learning', learningRoutes);
