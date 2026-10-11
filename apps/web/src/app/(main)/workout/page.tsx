@@ -108,7 +108,7 @@ export default function WorkoutPage() {
       <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-8">
         <section className="rounded-xl border border-outline-variant bg-surface-container-low p-6">
           <div className="mb-4 inline-flex rounded-full bg-primary-fixed px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-on-primary-fixed">
-            Sprint 4
+            MOVE / WORKOUT
           </div>
           <h1 className="mb-2 text-2xl font-semibold text-on-surface">
             {dict.workout.title}
@@ -135,15 +135,15 @@ export default function WorkoutPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-8">
+    <main className="editorial-enter mx-auto flex w-full max-w-[1400px] flex-col gap-8 px-5 py-7 sm:px-8 sm:py-10">
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-        <div className="relative overflow-hidden rounded-xl border border-outline-variant bg-gradient-to-br from-primary to-secondary p-6 text-white lg:col-span-8">
+        <div className="relative overflow-hidden rounded-xl border border-outline-variant border-2 border-[#111111] bg-[#111111] p-8 text-[#F5F5F0] shadow-[6px_6px_0_#D7FF3F] lg:col-span-8">
           <div className="relative z-10">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider">
               <Flame className="h-3.5 w-3.5" />
               Активный фокус
             </div>
-            <h1 className="text-3xl font-semibold tracking-tight">
+            <h1 className="editorial-heading text-[clamp(2rem,4vw,3.8rem)]">
               {selectedPlan?.name}
             </h1>
             <p className="mt-2 max-w-2xl text-white/85">
@@ -168,7 +168,7 @@ export default function WorkoutPage() {
             <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
               Готовность
             </p>
-            <h2 className="text-2xl font-semibold text-on-surface">Workout Preview</h2>
+            <h2 className="text-2xl font-semibold text-on-surface">ПЛАН ТРЕНИРОВКИ</h2>
             <p className="mt-2 text-sm text-on-surface-variant">
               Запускаем сессию и переносим вас в Active workout mode.
             </p>

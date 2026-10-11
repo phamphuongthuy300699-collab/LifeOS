@@ -134,16 +134,14 @@ export default function CalendarPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
+    <main className="editorial-enter mx-auto flex w-full max-w-[1400px] flex-col gap-7 px-5 py-7 sm:px-8 sm:py-10">
       <section className="rounded-xl border border-outline-variant bg-surface p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="flex items-center gap-2 text-2xl font-semibold text-on-surface">
-              <CalendarClock className="h-6 w-6 text-primary" />
-              Calendar & Planning
-            </h1>
+            <p className="editorial-kicker mb-2 text-[#4763FF]">03 / YOUR TIMELINE</p>
+            <h1 className="editorial-heading flex items-center gap-3 text-[clamp(2rem,5vw,3.8rem)] text-on-surface"><CalendarClock size={32} className="text-[#4763FF]"/> Планы и даты.</h1>
             <p className="mt-1 text-sm text-on-surface-variant">
-              Today, overdue, ближайшие 7 дней и события (manual + Google sync).
+              Твоя временная шкала: задачи, встречи, дедлайны и ближайшие решения.
             </p>
           </div>
 
@@ -183,8 +181,8 @@ export default function CalendarPage() {
                 onClick={() => setSegment(item.key)}
                 className={`rounded-full border px-4 py-2 text-sm transition ${
                   active
-                    ? 'border-primary bg-primary text-on-primary'
-                    : 'border-outline-variant bg-surface-container-low text-on-surface hover:border-primary/40'
+                    ? 'border-ink bg-[#D7FF3F] text-[#111111] font-extrabold'
+                    : 'border-outline bg-surface-container-low text-on-surface hover:bg-lime hover:text-ink font-bold'
                 }`}
               >
                 {item.label}
@@ -194,7 +192,7 @@ export default function CalendarPage() {
         </div>
 
         <div className="mt-5 rounded-xl border border-outline-variant bg-surface-container-low p-4">
-          <p className="text-xs uppercase tracking-wider text-on-surface-variant">Новое событие</p>
+          <p className="text-xs uppercase tracking-wider text-on-surface-variant">НОВОЕ СОБЫТИЕ / ADD TO TIMELINE</p>
           <div className="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-4">
             <input
               className="rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface outline-none lg:col-span-2"
@@ -232,13 +230,13 @@ export default function CalendarPage() {
         </div>
 
         {actionError ? (
-          <div className="mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div className="mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-700">
             {actionError}
           </div>
         ) : null}
 
         {actionSuccess ? (
-          <div className="mt-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          <div className="mt-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-800">
             {actionSuccess}
           </div>
         ) : null}
@@ -316,7 +314,7 @@ export default function CalendarPage() {
       {segment === 'overdue' ? (
         <section className="rounded-xl border border-outline-variant bg-surface p-6">
           <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-on-surface-variant">
-            <AlertTriangle className="h-4 w-4 text-red-300" />
+            <AlertTriangle className="h-4 w-4 text-red-700" />
             Overdue
           </h2>
           {(overdueData?.items ?? []).length === 0 ? (
@@ -326,7 +324,7 @@ export default function CalendarPage() {
               {(overdueData?.items ?? []).map((task) => (
                 <Link key={task.id} href={`/tasks/${task.id}`} className="block rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2">
                   <p className="font-semibold text-on-surface">{task.title}</p>
-                  <p className="text-xs text-red-300">due: {formatDateTime(task.dueAt)}</p>
+                  <p className="text-xs text-red-700">due: {formatDateTime(task.dueAt)}</p>
                 </Link>
               ))}
             </div>
@@ -403,7 +401,7 @@ export default function CalendarPage() {
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <article className="rounded-xl border border-outline-variant bg-surface-container-low p-4">
           <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant">
-            <AlertTriangle className="h-4 w-4 text-red-300" />
+            <AlertTriangle className="h-4 w-4 text-red-700" />
             Overdue
           </div>
           <p className="mt-2 text-2xl font-semibold text-on-surface">{overdueData?.total ?? 0}</p>
